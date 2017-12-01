@@ -1,0 +1,11 @@
+## Interface: 20400
+## Title: Kats Assignment Tool
+## Author: Katcheese
+## Version: 2.0
+## Notes: Assignment tools - by Katcheese<milaninavid@gmail.com>
+## DefaultState: Enabled
+## LoadOnDemand: 0
+## SavedVariablesPerCharacter: KatsAssignmentsTools_Settings
+
+KAT.xml
+KAT.lua
