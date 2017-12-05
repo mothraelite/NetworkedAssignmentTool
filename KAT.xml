@@ -19,8 +19,10 @@
 				<OnLoad>
 					KAT_init();
 				</OnLoad>
-				  <OnDragStart>KAT:StartMoving();</OnDragStart>
-				  <OnDragStop>KAT:StopMovingOrSizing();</OnDragStop>
+				<OnUpdate>
+				</OnUpdate>
+				<OnDragStart>KAT:StartMoving();</OnDragStart>
+				<OnDragStop>KAT:StopMovingOrSizing();</OnDragStop>
 			</Scripts>
 			
 			 <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background"
@@ -64,85 +66,7 @@
 				</Layer>
 				
 				<Layer level="OVERLAY">
-					<FontString name='skull_text' inherits="GameFontNormal" text="">
-						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="90" y="-45" />
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</FontString>
 					
-					<FontString name='x_text' inherits="GameFontNormal" text="">
-						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="90" y="-85" />
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</FontString>
-					
-					<FontString name='square_text' inherits="GameFontNormal" text="">
-						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="90" y="-125" />
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</FontString>
-					
-					<FontString name='moon_text' inherits="GameFontNormal" text="">
-						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="90" y="-165" />
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</FontString>
-					
-					<FontString name='triangle_text' inherits="GameFontNormal" text="">
-						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="90" y="-205" />
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</FontString>
-					
-					<FontString name='diamond_text' inherits="GameFontNormal" text="">
-						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="90" y="-245" />
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</FontString>
-					
-					<FontString name='circle_text' inherits="GameFontNormal" text="">
-						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="90" y="-285" />
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</FontString>
-					
-					<FontString name='star_text' inherits="GameFontNormal" text="">
-						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="90" y="-325" />
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</FontString>
 
 				</Layer>
 				
@@ -158,7 +82,7 @@
 					<Size><AbsDimension x="30" y="30"/></Size>
 					<Scripts>
 						<OnEnter>
-	
+							KAT_show_tanks(self, "skull");
 						</OnEnter>
 					</Scripts>
 					<Anchors>
@@ -189,7 +113,7 @@
 					<!-- X //-->
 				<Frame name='mark2' enableMouse="true">
 					<Size><AbsDimension x="30" y="30"/></Size>
-					<Scripts><OnEnter>KAT_show_tanks(self);</OnEnter></Scripts>
+					<Scripts><OnEnter>KAT_show_tanks(self, "x");</OnEnter></Scripts>
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -218,6 +142,7 @@
 					<!-- [  ] //-->
 				<Frame name='mark3' enableMouse="true">
 					<Size><AbsDimension x="30" y="30"/></Size>
+					<Scripts><OnEnter>KAT_show_tanks(self, "square");</OnEnter></Scripts>
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -246,6 +171,7 @@
 					<!-- moon //-->
 				<Frame name='mark4' enableMouse="true">
 					<Size><AbsDimension x="30" y="30"/></Size>
+					<Scripts><OnEnter>KAT_show_tanks(self, "moon");</OnEnter></Scripts>
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -274,6 +200,7 @@
 					<!-- triangle //-->
 				<Frame name='mark5' enableMouse="true">
 					<Size><AbsDimension x="30" y="30"/></Size>
+					<Scripts><OnEnter>KAT_show_tanks(self, "triangle");</OnEnter></Scripts>
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -302,6 +229,7 @@
 					<!-- diamond //-->
 				<Frame name='mark6' enableMouse="true">
 					<Size><AbsDimension x="30" y="30"/></Size>
+					<Scripts><OnEnter>KAT_show_tanks(self, "diamond");</OnEnter></Scripts>
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -330,6 +258,7 @@
 					<!-- circle //-->
 				<Frame name='mark7' enableMouse="true">
 					<Size><AbsDimension x="30" y="30"/></Size>
+					<Scripts><OnEnter>KAT_show_tanks(self, "circle");</OnEnter></Scripts>
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -358,6 +287,7 @@
 				<!-- star //-->
 				<Frame name='mark8' enableMouse="true">
 					<Size><AbsDimension x="30" y="30"/></Size>
+					<Scripts><OnEnter>KAT_show_tanks(self, "star");</OnEnter></Scripts>
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -683,7 +613,7 @@
 						
 					</Anchors>
 					<Scripts>
-						<OnClick></OnClick>
+						<OnClick>KAT_post();</OnClick>
 					</Scripts>
 				</Button>
 			   

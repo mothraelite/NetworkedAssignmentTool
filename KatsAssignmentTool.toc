@@ -2,7 +2,7 @@
 ## Title: Kats Assignment Tool
 ## Author: Katcheese
 ## Version: 2.0
-## Notes: Assignment tools - by Katcheese<milaninavid@gmail.com>
+## Notes: Assignment tools - by Katcheese
 ## DefaultState: Enabled
 ## LoadOnDemand: 0
 ## SavedVariablesPerCharacter: KatsAssignmentsTools_Settings

@@ -22,7 +22,7 @@ function(obj)
 	obj.rogue = {};
 end
 
-local tanks = {["skull"]={}, ["x"]={}, ["square"]={},["moon"]={},["triangle"]={},["diamond"]={},["circle"]={},["star"]={}};
+kat_tanks = {["skull"]={}, ["x"]={}, ["square"]={},["moon"]={},["triangle"]={},["diamond"]={},["circle"]={},["star"]={}};
 local healers = {};
 local interupters = {}; 
 local misc = {};
@@ -38,6 +38,12 @@ local available_misc = {}; setup_obj(available_misc);
 	--3: interupters
 	--4: misc
 local current_mode = 1; 
+
+--currented focus
+current_focus_mark = "";
+
+local kat_assignment_labels = nil;
+
 --VARIABLES-------------------------------------------------------------------------------------------------------V
 
 function KAT_handle_events(self, event, ...)
@@ -52,12 +58,37 @@ function KAT_init()
 	KAT:RegisterForDrag("LeftButton");
 	KAT:RegisterEvent("RAID_ROSTER_UPDATE");
 	KAT:SetScript("OnEvent", KAT_handle_events);
-	
+
 	--get initial list of raid mems
 	KAT_poll_for_players();
 
 	--See if someone is in the raid that is running the addon
 		--take a copy of their assignments so far
+		
+	-- Slash commands
+	SlashCmdList["KATCOMMAND"] = KAT_slashCommandHandler;
+	SLASH_KATCOMMAND1 = "/kat";
+
+	--Init handler
+	DEFAULT_CHAT_FRAME:AddMessage("Initializing KAT version 0.1d.", 0.6,1.0,0.6);
+end
+
+function KAT_slashCommandHandler(msg)
+	if msg == "" or msg == " "
+	then
+		KAT_post();
+	elseif msg == "show"
+	then
+		KAT:Show();
+	elseif msg == "hide"
+	then
+		KAT:Hide();
+	elseif strsub(msg, 1, 4) == "post"
+	then
+		KAT_post();
+	else
+		DEFAULT_CHAT_FRAME:AddMessage("KAT: Error, could not understand input.\nValid commands:\n1)/kat show\n2)/kat hide\n3)/kat post\n4)/kat", 0.6,1.0,0.6);
+	end
 end
 
 --show submenu when mousing over current tanks
@@ -65,8 +96,73 @@ function KAT_show_healers()
 
 end
 
+--update the text that reflects changes to current mode
+function KAT_update_mark_text()
+	--lazy instantiate labels (just in case user doesn't end up using addon rn)
+	if kat_assignment_labels == nil
+	then
+		kat_assignment_labels = {};
+		local create_label =
+		function()
+			local guiString = KAT:CreateFontString("text_label"..table.getn(kat_assignment_labels),"OVERLAY","GameFontNormal");
+			guiString:SetText("If you see this, something broke with text assignments");
+			guiString:SetPoint("TOP",  0,  -table.getn(kat_assignment_labels)*40-45);
+			return guiString;
+		end
+		
+		for i=1, 8, 1
+		do
+			table.insert(kat_assignment_labels, create_label());
+		end 
+	end
+
+	--tanks
+	if current_mode == 1
+	then
+		--set text to selected tanks
+		local key = 1;
+		for mark, mark_list in pairs(kat_tanks)
+		do
+			local text = " ";
+			for index, tank in ipairs(kat_tanks[mark])
+			do
+				text = text .. tank .. "    ";
+			end
+
+			kat_assignment_labels[key]:SetText(text);
+			key = key + 1;
+		end
+		
+	end
+end
+
+function KAT_post()
+	--tanks
+	SendChatMessage(" -- Tank Assignments --", "RAID", nil);
+	for mark, mark_list in pairs(kat_tanks)
+	do
+		if table.getn(mark_list) > 0
+		then
+			local tank_list = "";
+			for index, tank in ipairs(kat_tanks[mark])
+			do
+				tank_list = tank_list .. tank .. " ";
+			end
+			
+			if mark == "x"
+			then
+				mark = "Cross";
+			end
+			
+			SendChatMessage("{"..mark.."}: " ..tank_list, "RAID", nil);
+		end
+	end
+	
+end
+
 --show submenu when mousing over current marks
-function KAT_show_tanks(parent)
+function KAT_show_tanks(parent, focus_mark)
+	current_focus_mark = focus_mark;
 	ToggleDropDownMenu(nil, 1, KAT_tank_list, parent, 0, 0);
 end
 
@@ -107,8 +203,38 @@ function KAT_tank_picker_clicked(index)
 
 end
 
+
 --function to setup tank list
 function KAT_init_tank_list(self)
+	--create layer 2 information
+	local create_sub_info =  
+	function(name, i)
+		local info = {};
+	   info.hasArrow = false; -- no submenus this time
+	   info.text = name;
+	   info.value = {UIDROPDOWNMENU_MENU_VALUE, i};
+	   info.func = 
+	   function() 
+			--UIDropDownMenu_SetSelectedName(KAT_tank_list, info.text); 
+			--Am I in the list already? note: func call above doesn't care about that
+			for entry, list_name in ipairs(kat_tanks[current_focus_mark])
+			do
+				if info.text == list_name
+				then
+					table.remove(kat_tanks[current_focus_mark], entry);
+					KAT_update_mark_text();
+					return;
+				end
+			end
+			
+			--add to list
+			table.insert(kat_tanks[current_focus_mark], info.text);
+			KAT_update_mark_text();
+		end
+		
+		return info;
+	end
+
 	if UIDROPDOWNMENU_MENU_LEVEL== 1
 	then
 		local warriors = {};
@@ -183,34 +309,63 @@ function KAT_init_tank_list(self)
 			hunter.text = "|cff545454Hunter";
 		end
 		
+		local warlock = {};
+		warlock.text = "|cff9482C9Warlock";
+		warlock.value = 6;
+		warlock.hasArrow = true;
+		warlock.func = function()  end;
+		
+		if table.getn(available_tanks.warlock) == 0
+		then
+			warlock.disabled = true;
+			warlock.hasArrow = false;
+			warlock.text = "|cff545454Warlock";
+		end
+		
 		UIDropDownMenu_AddButton(warriors, 1);
 		UIDropDownMenu_AddButton(druids, 1);
 		UIDropDownMenu_AddButton(paladins, 1);
 		UIDropDownMenu_AddButton(mage, 1);
 		UIDropDownMenu_AddButton(hunter, 1);
+		UIDropDownMenu_AddButton(warlock, 1);
 	elseif UIDROPDOWNMENU_MENU_LEVEL == 2
 	then
 		if UIDROPDOWNMENU_MENU_VALUE == 1 -- warriors
 		then
-			for i, war_name in ipairs(available_tanks.warrior)
+			for i, name in ipairs(available_tanks.warrior)
 			do
-				local war = UIDropDownMenu_CreateInfo();
-			   war.hasArrow = false; -- no submenus this time
-			   war.text = war_name;
-			   war.value = {UIDROPDOWNMENU_MENU_VALUE, i};
-			   war.func = function() end;
-			   
-			   UIDropDownMenu_AddButton(war, 2);
+			   UIDropDownMenu_AddButton(create_sub_info(name,i), 2);
 			end
 		elseif UIDROPDOWNMENU_MENU_VALUE == 2 --druids
 		then
+			for i, name in ipairs(available_tanks.druid)
+			do
+				UIDropDownMenu_AddButton(create_sub_info(name,i), 2);
+			end
 		elseif UIDROPDOWNMENU_MENU_VALUE== 3 --paladins
 		then
+			for i, name in ipairs(available_tanks.paladin)
+			do
+				UIDropDownMenu_AddButton(create_sub_info(name,i), 2);
+			end
 		elseif UIDROPDOWNMENU_MENU_VALUE == 4 --mage 
 		then
+			for i, name in ipairs(available_tanks.mage)
+			do
+				UIDropDownMenu_AddButton(create_sub_info(name,i), 2);
+			end
 		elseif UIDROPDOWNMENU_MENU_VALUE == 5 --hunter
 		then
-
+			for i, name in ipairs(available_tanks.hunter)
+			do
+				UIDropDownMenu_AddButton(create_sub_info(name,i), 2);
+			end
+		elseif UIDROPDOWNMENU_MENU_VALUE == 6 --lock
+		then
+			for i, name in ipairs(available_tanks.warlock)
+			do
+				UIDropDownMenu_AddButton(create_sub_info(name,i), 2);
+			end
 		end
 	end
 end
