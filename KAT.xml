@@ -23,6 +23,7 @@
 				</OnUpdate>
 				<OnDragStart>KAT:StartMoving();</OnDragStart>
 				<OnDragStop>KAT:StopMovingOrSizing();</OnDragStop>
+				<OnClick>KAT_close_tank_menu()</OnClick>
 			</Scripts>
 			
 			 <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background"
@@ -574,11 +575,11 @@
 			 
 				<!-- Choose between tank/healing/interupt/misc assignments //-->
 			   <Button name="KAT_mode_chooser" inherits="UIDropDownMenuTemplate" id='1'>
-					<Size><AbsDimension x="320" y="50"/></Size>
+					<Size></Size>
 					<Anchors>
 							<Anchor point="BOTTOM">
 								<Offset>
-									<AbsDimension x="80" y="10" />
+									<AbsDimension x="-70" y="15" />
 								</Offset>
 							</Anchor>
 						</Anchors>

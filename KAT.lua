@@ -23,6 +23,8 @@ function(obj)
 end
 
 kat_tanks = {["skull"]={}, ["x"]={}, ["square"]={},["moon"]={},["triangle"]={},["diamond"]={},["circle"]={},["star"]={}};
+local kat_marks = {"skull", "x", "square", "moon", "triangle", "diamond", "circle", "star"};
+
 local healers = {};
 local interupters = {}; 
 local misc = {};
@@ -41,6 +43,8 @@ local current_mode = 1;
 
 --currented focus
 current_focus_mark = "";
+local current_menu_parent = nil;
+local current
 
 local kat_assignment_labels = nil;
 
@@ -106,7 +110,7 @@ function KAT_update_mark_text()
 		function()
 			local guiString = KAT:CreateFontString("text_label"..table.getn(kat_assignment_labels),"OVERLAY","GameFontNormal");
 			guiString:SetText("If you see this, something broke with text assignments");
-			guiString:SetPoint("TOP",  0,  -table.getn(kat_assignment_labels)*40-45);
+			guiString:SetPoint("TOP",  25,  -table.getn(kat_assignment_labels)*40-45);
 			return guiString;
 		end
 		
@@ -121,7 +125,7 @@ function KAT_update_mark_text()
 	then
 		--set text to selected tanks
 		local key = 1;
-		for mark, mark_list in pairs(kat_tanks)
+		for _, mark in ipairs(kat_marks)
 		do
 			local text = " ";
 			for index, tank in ipairs(kat_tanks[mark])
@@ -139,13 +143,19 @@ end
 function KAT_post()
 	--tanks
 	SendChatMessage(" -- Tank Assignments --", "RAID", nil);
-	for mark, mark_list in pairs(kat_tanks)
+	for _, mark in ipairs(kat_marks)
 	do
-		if table.getn(mark_list) > 0
+		if table.getn(kat_tanks[mark]) > 0
 		then
 			local tank_list = "";
 			for index, tank in ipairs(kat_tanks[mark])
 			do
+				--if there was color applied. shitty server doesn't allow colored text in chat
+				if strlen(tank) > 10
+				then
+					tank = strsub(tank, 11, strlen(tank));
+				end
+			
 				tank_list = tank_list .. tank .. " ";
 			end
 			
@@ -163,7 +173,17 @@ end
 --show submenu when mousing over current marks
 function KAT_show_tanks(parent, focus_mark)
 	current_focus_mark = focus_mark;
+	current_menu_parent = parent;
 	ToggleDropDownMenu(nil, 1, KAT_tank_list, parent, 0, 0);
+end
+
+function KAT_close_tank_menu()
+	if current_menu_parent == nil
+	then
+		return;
+	end
+
+	ToggleDropDownMenu(nil, 1, KAT_tank_list, current_menu_parent, 0, 0);
 end
 
 --show submenu when mousing over current interupters
@@ -206,13 +226,15 @@ end
 
 --function to setup tank list
 function KAT_init_tank_list(self)
+	UIDROPDOWNMENU_SHOW_TIME  = 0;
+
 	--create layer 2 information
 	local create_sub_info =  
-	function(name, i)
+	function(name, color)
 		local info = {};
 	   info.hasArrow = false; -- no submenus this time
-	   info.text = name;
-	   info.value = {UIDROPDOWNMENU_MENU_VALUE, i};
+	   info.text = color..name;
+	   info.value =  name;
 	   info.func = 
 	   function() 
 			--UIDropDownMenu_SetSelectedName(KAT_tank_list, info.text); 
@@ -334,37 +356,37 @@ function KAT_init_tank_list(self)
 		then
 			for i, name in ipairs(available_tanks.warrior)
 			do
-			   UIDropDownMenu_AddButton(create_sub_info(name,i), 2);
+			   UIDropDownMenu_AddButton(create_sub_info(name,"|cffC79C6E"), 2);
 			end
 		elseif UIDROPDOWNMENU_MENU_VALUE == 2 --druids
 		then
 			for i, name in ipairs(available_tanks.druid)
 			do
-				UIDropDownMenu_AddButton(create_sub_info(name,i), 2);
+				UIDropDownMenu_AddButton(create_sub_info(name,"|cffFF7D0A"), 2);
 			end
 		elseif UIDROPDOWNMENU_MENU_VALUE== 3 --paladins
 		then
 			for i, name in ipairs(available_tanks.paladin)
 			do
-				UIDropDownMenu_AddButton(create_sub_info(name,i), 2);
+				UIDropDownMenu_AddButton(create_sub_info(name, "|cffF58CBA"), 2);
 			end
 		elseif UIDROPDOWNMENU_MENU_VALUE == 4 --mage 
 		then
 			for i, name in ipairs(available_tanks.mage)
 			do
-				UIDropDownMenu_AddButton(create_sub_info(name,i), 2);
+				UIDropDownMenu_AddButton(create_sub_info(name, "|cff69CCF0"), 2);
 			end
 		elseif UIDROPDOWNMENU_MENU_VALUE == 5 --hunter
 		then
 			for i, name in ipairs(available_tanks.hunter)
 			do
-				UIDropDownMenu_AddButton(create_sub_info(name,i), 2);
+				UIDropDownMenu_AddButton(create_sub_info(name, "|cffABD473"), 2);
 			end
 		elseif UIDROPDOWNMENU_MENU_VALUE == 6 --lock
 		then
 			for i, name in ipairs(available_tanks.warlock)
 			do
-				UIDropDownMenu_AddButton(create_sub_info(name,i), 2);
+				UIDropDownMenu_AddButton(create_sub_info(name,"|cff9482C9"), 2);
 			end
 		end
 	end
