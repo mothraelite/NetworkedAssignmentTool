@@ -7,5 +7,6 @@
 ## LoadOnDemand: 0
 ## SavedVariablesPerCharacter: KatsAssignmentsTools_Settings
 
+KAT_tankmenu.lua
+KAT_controller.lua
 KAT.xml
-KAT.lua

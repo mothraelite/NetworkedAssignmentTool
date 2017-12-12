@@ -6,7 +6,7 @@
 			Description: Catches filthy casuals
 			
 	//-->
-	 <Script File="KAT.lua" />
+	 <Script File="KAT_controller.lua" />
 	 <Frame name="KAT" enableMouse="true" movable="true" frameStrata="LOW">
 			 <Size>
 			   <AbsDimension x="325" y="400" />
@@ -597,7 +597,7 @@
 					<Anchors></Anchors>
 				   <Scripts>
 					   <OnLoad>
-							UIDropDownMenu_Initialize(self, KAT_init_tank_list, "MENU", 2);
+							UIDropDownMenu_Initialize(self, KAT_available_tank_menu.init, "MENU", 2);
 					   </OnLoad>
 				   </Scripts>
 			   </Frame>
