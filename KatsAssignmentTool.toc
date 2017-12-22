@@ -7,6 +7,9 @@
 ## LoadOnDemand: 0
 ## SavedVariablesPerCharacter: KatsAssignmentsTools_Settings
 
+KAT_interruptmenu.lua
+KAT_miscmenu.lua
 KAT_tankmenu.lua
+KAT_healermenu.lua
 KAT_controller.lua
 KAT.xml

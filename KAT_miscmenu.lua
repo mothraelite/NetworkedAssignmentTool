@@ -1,4 +1,4 @@
-KAT_create_tank_menu_controller = 
+KAT_create_misc_menu_controller = 
 function()
 	local controller = {};
 
@@ -49,32 +49,8 @@ function()
 					then
 						--remove from list
 						table.remove(controller.assigned_tanks[controller.current_focus_mark], entry);
+						controller.notify_observers("remove_tank", {info.text});
 						controller.update_marks();
-						
-						--see if he is still assigned elsewhere
-						local tank_found = false;
-						for _,mark in pairs(controller.marks)
-						do
-							for i=1, table.getn(controller.assigned_tanks[mark]), 1
-							do
-								if controller.assigned_tanks[mark][i]== info.text
-								then
-									tank_found = true;
-									break;
-								end
-							end
-							
-							if tank_found == true
-							then
-								break;
-							end
-						end
-						
-						--tank not found, remove from assigned list for healers
-						if tank_found == false
-						then
-							controller.notify_observers("remove_tank", {info.text});
-						end
 						
 						return;
 					end
@@ -273,8 +249,8 @@ function()
 		--reset current list
 		controller.setup_classes(controller.available_tanks);
 
-		--setup available tanks
-		local i =1;
+		--lets see what we got in the raid
+		local i = 1;
 		for i=1, GetNumRaidMembers(), 1
 		do
 			local pname = UnitName("raid"..i);
@@ -307,37 +283,6 @@ function()
 			end
 			
 		end
-		
-		--see if any assigned tank is no longer available
-		for _,mark in pairs(controller.marks)
-		do
-			for i=1, table.getn(controller.assigned_tanks[mark]), 1
-			do
-				local tank = strsub(controller.assigned_tanks[mark][i], 11, strlen(controller.assigned_tanks[mark][i]));
-				
-				local tank_found = false;
-				for index, atank in ipairs(controller.available_tanks)
-				do
-					--tank found, they are avail 
-					if tank == atank
-					then
-						tank_found = true;
-						break;
-					end
-				end
-				
-				--tank not found, remove from assigned list
-				if tank_found == false
-				then
-					controller.notify_observers("remove_tank", {controller.assigned_tanks[mark][i]});
-					table.remove(controller.assigned_tanks[mark], i);
-					i = i -1;
-				end
-				
-			end
-		end
-		
-		controller.update_marks();
 	end
 
 	controller.update_marks =

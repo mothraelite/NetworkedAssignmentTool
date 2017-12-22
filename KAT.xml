@@ -18,12 +18,12 @@
 			<Scripts>
 				<OnLoad>
 					KAT_init();
+					KAT:Hide();
 				</OnLoad>
 				<OnUpdate>
 				</OnUpdate>
 				<OnDragStart>KAT:StartMoving();</OnDragStart>
 				<OnDragStop>KAT:StopMovingOrSizing();</OnDragStop>
-				<OnClick>KAT_close_tank_menu()</OnClick>
 			</Scripts>
 			
 			 <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background"
@@ -83,7 +83,7 @@
 					<Size><AbsDimension x="30" y="30"/></Size>
 					<Scripts>
 						<OnEnter>
-							KAT_show_tanks(self, "skull");
+							KAT_show_listmenu(self, "skull");
 						</OnEnter>
 					</Scripts>
 					<Anchors>
@@ -114,7 +114,7 @@
 					<!-- X //-->
 				<Frame name='mark2' enableMouse="true">
 					<Size><AbsDimension x="30" y="30"/></Size>
-					<Scripts><OnEnter>KAT_show_tanks(self, "x");</OnEnter></Scripts>
+					<Scripts><OnEnter>KAT_show_listmenu(self, "x");</OnEnter></Scripts>
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -143,7 +143,7 @@
 					<!-- [  ] //-->
 				<Frame name='mark3' enableMouse="true">
 					<Size><AbsDimension x="30" y="30"/></Size>
-					<Scripts><OnEnter>KAT_show_tanks(self, "square");</OnEnter></Scripts>
+					<Scripts><OnEnter>KAT_show_listmenu(self, "square");</OnEnter></Scripts>
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -172,7 +172,7 @@
 					<!-- moon //-->
 				<Frame name='mark4' enableMouse="true">
 					<Size><AbsDimension x="30" y="30"/></Size>
-					<Scripts><OnEnter>KAT_show_tanks(self, "moon");</OnEnter></Scripts>
+					<Scripts><OnEnter>KAT_show_listmenu(self, "moon");</OnEnter></Scripts>
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -201,7 +201,7 @@
 					<!-- triangle //-->
 				<Frame name='mark5' enableMouse="true">
 					<Size><AbsDimension x="30" y="30"/></Size>
-					<Scripts><OnEnter>KAT_show_tanks(self, "triangle");</OnEnter></Scripts>
+					<Scripts><OnEnter>KAT_show_listmenu(self, "triangle");</OnEnter></Scripts>
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -230,7 +230,7 @@
 					<!-- diamond //-->
 				<Frame name='mark6' enableMouse="true">
 					<Size><AbsDimension x="30" y="30"/></Size>
-					<Scripts><OnEnter>KAT_show_tanks(self, "diamond");</OnEnter></Scripts>
+					<Scripts><OnEnter>KAT_show_listmenu(self, "diamond");</OnEnter></Scripts>
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -259,7 +259,7 @@
 					<!-- circle //-->
 				<Frame name='mark7' enableMouse="true">
 					<Size><AbsDimension x="30" y="30"/></Size>
-					<Scripts><OnEnter>KAT_show_tanks(self, "circle");</OnEnter></Scripts>
+					<Scripts><OnEnter>KAT_show_listmenu(self, "circle");</OnEnter></Scripts>
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -288,7 +288,7 @@
 				<!-- star //-->
 				<Frame name='mark8' enableMouse="true">
 					<Size><AbsDimension x="30" y="30"/></Size>
-					<Scripts><OnEnter>KAT_show_tanks(self, "star");</OnEnter></Scripts>
+					<Scripts><OnEnter>KAT_show_listmenu(self, "star");</OnEnter></Scripts>
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -318,11 +318,7 @@
 				<!-- healer assignment marks //-->
 				<Frame name='tank1' enableMouse="true" hidden='true'>
 					<Size><AbsDimension x="80" y="30"/></Size>
-					<Script>
-						<OnEnter>
-							KAT_show_healers();
-						</OnEnter>
-					</Script>
+					<Scripts><OnEnter>KAT_show_listmenu(self, tank1_label:GetText());</OnEnter></Scripts>
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -350,11 +346,7 @@
 				
 				<Frame name='tank2' enableMouse="true" hidden='true'>
 					<Size><AbsDimension x="80" y="30"/></Size>
-					<Script>
-						<OnEnter>
-							KAT_show_healers();
-						</OnEnter>
-					</Script>
+					<Scripts><OnEnter>KAT_show_listmenu(self, tank2_label:GetText());</OnEnter></Scripts>
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -382,11 +374,7 @@
 				
 				<Frame name='tank3' enableMouse="true" hidden='true'>
 					<Size><AbsDimension x="80" y="30"/></Size>
-					<Script>
-						<OnEnter>
-							KAT_show_healers();
-						</OnEnter>
-					</Script>
+					<Scripts><OnEnter>KAT_show_listmenu(self, tank3_label:GetText());</OnEnter></Scripts>
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -414,11 +402,7 @@
 				
 				<Frame name='tank4' enableMouse="true" hidden='true'>
 					<Size><AbsDimension x="80" y="30"/></Size>
-					<Script>
-						<OnEnter>
-							KAT_show_healers();
-						</OnEnter>
-					</Script>
+					<Scripts><OnEnter>KAT_show_listmenu(self, tank4_label:GetText());</OnEnter></Scripts>
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -446,11 +430,7 @@
 				
 				<Frame name='tank5' enableMouse="true" hidden='true'>
 					<Size><AbsDimension x="80" y="30"/></Size>
-					<Script>
-						<OnEnter>
-							KAT_show_healers();
-						</OnEnter>
-					</Script>
+					<Scripts><OnEnter>KAT_show_listmenu(self, tank5_label:GetText());</OnEnter></Scripts>
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -478,11 +458,7 @@
 				
 				<Frame name='tank6' enableMouse="true" hidden='true'>
 					<Size><AbsDimension x="80" y="30"/></Size>
-					<Script>
-						<OnEnter>
-							KAT_show_healers();
-						</OnEnter>
-					</Script>
+					<Scripts><OnEnter>KAT_show_listmenu(self, tank6_label:GetText());</OnEnter></Scripts>
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -510,11 +486,7 @@
 				
 				<Frame name='tank7' enableMouse="true" hidden='true'>
 					<Size><AbsDimension x="80" y="30"/></Size>
-					<Script>
-						<OnEnter>
-							KAT_show_healers();
-						</OnEnter>
-					</Script>
+					<Scripts><OnEnter>KAT_show_listmenu(self, tank7_label:GetText());</OnEnter></Scripts>
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -542,11 +514,7 @@
 				
 				<Frame name='tank8' enableMouse="true" hidden='true'>
 					<Size><AbsDimension x="80" y="30"/></Size>
-					<Script>
-						<OnEnter>
-							KAT_show_healers();
-						</OnEnter>
-					</Script>
+					<Scripts><OnEnter>KAT_show_listmenu(self, tank8_label:GetText());</OnEnter></Scripts>
 					<Anchors>
 						<Anchor point="TOPLEFT">
 							<Offset>
@@ -593,15 +561,28 @@
 			   <!-- Choose between tank/healing/interupt/misc assignments //-->
 			   
 			   <!-- Tank list menu //-->
-			  <Frame name="KAT_tank_list" inherits="UIDropDownMenuTemplate" id='2'>
+			  <Frame name="KAT_tank_list" inherits="UIDropDownMenuTemplate">
 					<Anchors></Anchors>
-				   <Scripts>
-					   <OnLoad>
-							UIDropDownMenu_Initialize(self, KAT_available_tank_menu.init, "MENU", 2);
-					   </OnLoad>
-				   </Scripts>
 			   </Frame>
 			   <!-- Tank list menu //-->
+			   
+			    <!-- Healer list menu //-->
+			  <Frame name="KAT_heal_list" inherits="UIDropDownMenuTemplate">
+					<Anchors></Anchors>
+			   </Frame>
+			   <!-- Healer list menu //-->
+			   
+			    <!-- Interrupt list menu //-->
+			  <Frame name="KAT_interrupt_list" inherits="UIDropDownMenuTemplate">
+					<Anchors></Anchors>
+			   </Frame>
+			   <!-- Interrupt list menu //-->
+			   
+			    <!-- Misc list menu //-->
+			  <Frame name="KAT_misc_list" inherits="UIDropDownMenuTemplate">
+					<Anchors></Anchors>
+			   </Frame>
+			   <!-- Misc list menu //-->
 			   
 			    <Button inherits="OptionsButtonTemplate" name="KatPostButton" text="Post">
 					<Size><AbsDimension x="80" y="30"/></Size>
