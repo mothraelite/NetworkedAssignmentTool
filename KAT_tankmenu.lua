@@ -41,7 +41,15 @@ function()
 		   info.value =  name;
 		   info.func = 
 		   function() 
-				--UIDropDownMenu_SetSelectedName(KAT_tank_list, info.text); 
+				--check if i have permission to make changes
+				if not IsRaidLeader() and not IsRaidOfficer()
+				then
+					--no permission, exit
+					DEFAULT_CHAT_FRAME:AddMessage("KAT: You need to be the raid leader OR have assist to make changes", 0.6,1.0,0.6);
+					return;
+				end
+				
+				
 				--Am I in the list already? 
 				for entry, list_name in ipairs(controller.assigned_tanks[controller.current_focus_mark])
 				do
@@ -74,6 +82,7 @@ function()
 						if tank_found == false
 						then
 							controller.notify_observers("remove_tank", {info.text});
+							SendAddonMessage("KAT_remove_tank", controller.current_focus_mark.." "..info.text, "RAID")
 						end
 						
 						return;
@@ -83,6 +92,7 @@ function()
 				--add to list
 				table.insert(controller.assigned_tanks[controller.current_focus_mark], info.text);
 				controller.notify_observers("add_tank", {info.text});
+				SendAddonMessage("KAT_add_tank", controller.current_focus_mark.." "..info.text, "RAID")
 				controller.update_marks();
 			end
 			
@@ -275,6 +285,7 @@ function()
 
 		--setup available tanks
 		local i =1;
+		local temp_avail_tanks = {};
 		for i=1, GetNumRaidMembers(), 1
 		do
 			local pname = UnitName("raid"..i);
@@ -283,58 +294,84 @@ function()
 			if class == "Warrior"
 			then
 				table.insert(controller.available_tanks.warrior, pname);
+				table.insert(temp_avail_tanks, pname);
 			elseif class == "Rogue"
 			then
 				table.insert(controller.available_tanks.rogue, pname);
+				table.insert(temp_avail_tanks, pname);
 			elseif class == "Druid"
 			then
 				table.insert(controller.available_tanks.druid, pname);
+				table.insert(temp_avail_tanks, pname);
 			elseif class == "Priest"
 			then
 				table.insert(controller.available_tanks.priest,pname)
+				table.insert(temp_avail_tanks, pname);
 			elseif class == "Paladin"
 			then
 				table.insert(controller.available_tanks.paladin, pname);
+				table.insert(temp_avail_tanks, pname);
 			elseif class == "Hunter"
 			then
 				table.insert(controller.available_tanks.hunter, pname);
+				table.insert(temp_avail_tanks, pname);
 			elseif class == "Mage"
 			then
 				table.insert(controller.available_tanks.mage, pname);
+				table.insert(temp_avail_tanks, pname);
 			elseif class == "Warlock"
 			then
 				table.insert(controller.available_tanks.warlock, pname);
+				table.insert(temp_avail_tanks, pname);
 			end
 			
 		end
 		
 		--see if any assigned tank is no longer available
-		for _,mark in pairs(controller.marks)
+		local current_tanks = controller.get_current_unique_tanks();
+		local tanks_to_remove = {};
+		
+		--check current tanks vs available tanks
+		for _,current_tank in ipairs(current_tanks)
 		do
-			for i=1, table.getn(controller.assigned_tanks[mark]), 1
+			local tfound = false;
+			local unprefix_current_tank = strsub(current_tank, 11, strlen(current_tank));
+			for _,avail_tank in ipairs(temp_avail_tanks)
 			do
-				local tank = strsub(controller.assigned_tanks[mark][i], 11, strlen(controller.assigned_tanks[mark][i]));
-				
-				local tank_found = false;
-				for index, atank in ipairs(controller.available_tanks)
+				if avail_tank == unprefix_current_tank
+				then 
+					tfound = true;
+					break;
+				end
+			end 
+			
+			--not found, mark for removal
+			if tfound == false
+			then
+				table.insert(tanks_to_remove, current_tank);
+			end 
+			
+		end
+		
+		for _, tank_to_remove in ipairs(tanks_to_remove)
+		do
+			--remove all traces of tanks marked for removal from our controller's model list
+			local prefix_tank = "";
+			for _, mark in ipairs(controller.marks)
+			do
+				for i=1, table.getn(controller.assigned_tanks[mark]), 1
 				do
-					--tank found, they are avail 
-					if tank == atank
+					--attempting to find tank among assignments
+					if controller.assigned_tanks[mark][i] == tank_to_remove
 					then
-						tank_found = true;
+						table.remove(controller.assigned_tanks[mark], i); --remove tank from assignment
 						break;
 					end
-				end
-				
-				--tank not found, remove from assigned list
-				if tank_found == false
-				then
-					controller.notify_observers("remove_tank", {controller.assigned_tanks[mark][i]});
-					table.remove(controller.assigned_tanks[mark], i);
-					i = i -1;
-				end
-				
+				end 
 			end
+			
+			--inform observers that we removed a tank
+			controller.notify_observers("remove_tank", {tank_to_remove});
 		end
 		
 		controller.update_marks();

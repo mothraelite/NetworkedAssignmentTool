@@ -36,6 +36,14 @@ function()
 		   info.value =  name;
 		   info.func = 
 		   function() 
+				--check if i have permission to make changes
+				if not IsRaidLeader() and not IsRaidOfficer()
+				then
+					--no permission, exit
+					DEFAULT_CHAT_FRAME:AddMessage("KAT: You need to be the raid leader OR have assist to make changes", 0.6,1.0,0.6);
+					return;
+				end
+		   
 				--Am I in the list already? 
 				for entry, list_name in ipairs(controller.assigned_interrupts[controller.current_focus_mark])
 				do

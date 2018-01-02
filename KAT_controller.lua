@@ -16,7 +16,6 @@ local interrupt_controller = KAT_create_interrupt_menu_controller();
 	--1: tanks
 	--2: healers
 	--3: interupters
-	--4: misc
 local current_mode = 1; 
 local tank_mark_frames = nil; 
 local healer_mark_frames = nil; 
@@ -25,6 +24,7 @@ function KAT_init()
 	--setup reg functions
 	KAT:RegisterForDrag("LeftButton");
 	KAT:RegisterEvent("RAID_ROSTER_UPDATE");
+	KAT:RegisterEvent("CHAT_MSG_ADDON");
 	KAT:SetScript("OnEvent", KAT_handle_events);
 	
 	--setup references
@@ -49,6 +49,39 @@ function KAT_handle_events(self, event, ...)
 	if event == "RAID_ROSTER_UPDATE" 
 	then 
 		KAT_poll_for_players();
+	elseif event == "CHAT_MSG_ADDON"
+	then
+		if arg1 == "KAT_request_setup"
+		then
+			--Expected args: player name
+			--Expected return: 3 whispers with current tanks,heals, and interupts
+		
+			--retrieve current tanks 
+			--retrieve current healers
+			--retrieve current interrupters 
+			
+			--whisper user back with current setup
+		elseif event == "KAT_setup"
+		then
+		
+		elseif event == "KAT_add_tank"
+		then
+		
+		elseif event == "KAT_remove_tank"
+		then
+		
+		elseif event == "KAT_add_interrupt"
+		then
+		
+		elseif event == "KAT_remove_interrupt"
+		then
+		
+		elseif event == "KAT_add_healer"
+		then
+		
+		elseif event == "KAT_remove_healer"
+		then
+		end
 	end
 end
 
@@ -108,9 +141,6 @@ function KAT_mode_picker_clicked(index)
 		interrupt_controller.update_marks();
 		
 		current_mode = 3;
-	elseif index == 4 --misc
-	then 
-		current_mode = 4;
 	end 
 end
 
@@ -210,15 +240,9 @@ function KAT_init_mode_picker()
 	interupts.value = 3;
 	interupts.func = function() UIDropDownMenu_SetSelectedID(KAT_mode_chooser, 3); KAT_mode_picker_clicked(3); end;
 	
-	local misc = {};
-	misc.text = "Misc Assignments";
-	misc.value = 4;
-	misc.func = function() UIDropDownMenu_SetSelectedID(KAT_mode_chooser, 4); KAT_mode_picker_clicked(4); end;
-	
 	UIDropDownMenu_AddButton(tank);
 	UIDropDownMenu_AddButton(heal);
 	UIDropDownMenu_AddButton(interupts);
-	UIDropDownMenu_AddButton(misc);
 end
 
 function KAT_reset_visuals()
