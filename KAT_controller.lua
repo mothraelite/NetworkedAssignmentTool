@@ -11,6 +11,7 @@ local tank_controller = KAT_create_tank_menu_controller(); --tank drop down menu
 local healer_controller = KAT_create_healer_menu_controller(); --healer drop down menu controller
 table.insert(tank_controller.observers, healer_controller); --add healer controller to tank observer list
 local interrupt_controller = KAT_create_interrupt_menu_controller();
+--local network_controller = KAT_create_network_handler(tank_controller, healer_controller, interrupt_controller);
 
 --what selection mode im in
 	--1: tanks
@@ -42,7 +43,7 @@ function KAT_init()
 	SLASH_KATCOMMAND1 = "/kat";
 
 	--Init handler
-	DEFAULT_CHAT_FRAME:AddMessage("Initializing KAT version 0.1d.", 0.6,1.0,0.6);
+	DEFAULT_CHAT_FRAME:AddMessage("Initializing KAT version 0.6d.", 0.6,1.0,0.6);
 end
 
 function KAT_handle_events(self, event, ...)
@@ -61,26 +62,6 @@ function KAT_handle_events(self, event, ...)
 			--retrieve current interrupters 
 			
 			--whisper user back with current setup
-		elseif event == "KAT_setup"
-		then
-		
-		elseif event == "KAT_add_tank"
-		then
-		
-		elseif event == "KAT_remove_tank"
-		then
-		
-		elseif event == "KAT_add_interrupt"
-		then
-		
-		elseif event == "KAT_remove_interrupt"
-		then
-		
-		elseif event == "KAT_add_healer"
-		then
-		
-		elseif event == "KAT_remove_healer"
-		then
 		end
 	end
 end
@@ -130,7 +111,7 @@ function KAT_mode_picker_clicked(index)
 		healer_controller.update_marks();
 	
 		current_mode = 2;
-	elseif index == 3 --interupt
+	elseif index == 3 --interrupt
 	then
 		--show interrupt visuals
 		for i,marks in ipairs(tank_mark_frames)
@@ -195,13 +176,6 @@ function KAT_show_misc()
 end
 
 --HELPER FUNCTIONS---------------------------------------------------------------------------------------HF
-
-
---Function to fire when tank menu list item is clicked
-function KAT_tank_picker_clicked(index)
-
-end
-
 function KAT_poll_for_players()
 	--am I in raid?
 	if UnitInRaid("player") == nil
@@ -220,6 +194,17 @@ function KAT_poll_for_players()
 	--interupts
 	interrupt_controller.poll_for_interrupts();
 	UIDropDownMenu_Initialize(KAT_interrupt_list, interrupt_controller.init, "MENU", 2);
+	
+	if current_mode == 1
+	then
+		tank_controller.update_marks();
+	elseif current_mode == 2
+	then
+		healer_controller.update_marks();
+	elseif current_mode == 3
+	then
+		interrupt_controller.update_marks();
+	end
 end
 
 
@@ -236,7 +221,7 @@ function KAT_init_mode_picker()
 	heal.func = function() UIDropDownMenu_SetSelectedID(KAT_mode_chooser, 2); KAT_mode_picker_clicked(2); end;
 	
 	local interupts = {};
-	interupts.text = "Interupt Assignments";
+	interupts.text = "Interrupt Assignments";
 	interupts.value = 3;
 	interupts.func = function() UIDropDownMenu_SetSelectedID(KAT_mode_chooser, 3); KAT_mode_picker_clicked(3); end;
 	

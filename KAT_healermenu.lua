@@ -205,6 +205,33 @@ function()
 			end
 		end
 	end
+	
+	controller.retrieve_current_unique_players =
+	function()
+		local list = {};
+		for _,mark in ipairs(controller.assigned_tanks)
+		do
+			for index, healer in ipairs(controller.assigned_healers[mark])
+			do
+				local healer_exists = false;
+				for _, uhealer in ipairs(list)
+				do
+					if uhealer == healer 
+					then
+						tank_exists = true;
+						break;
+					end
+				end
+				
+				if healer_exists == false
+				then
+					table.insert(list, healers);
+				end
+			end
+		end
+		
+		return list;
+	end
 
 	controller.update_marks =
 	function()

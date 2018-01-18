@@ -192,6 +192,33 @@ function()
 			
 		end
 	end
+	
+	controller.retrieve_current_unique_players =
+	function()
+		local list = {};
+		for _,mark in ipairs(controller.marks)
+		do
+			for index, interrupt in ipairs(controller.assigned_interrupts[mark])
+			do
+				local interrupt_exists = false;
+				for _, uinterrupt in ipairs(list)
+				do
+					if uinterrupt == interrupt
+					then
+						interrupt_exists = true;
+						break;
+					end
+				end
+				
+				if interrupt_exists == false
+				then
+					table.insert(list, interrupt);
+				end
+			end
+		end
+		
+		return list;
+	end
 
 	controller.update_marks =
 	function()

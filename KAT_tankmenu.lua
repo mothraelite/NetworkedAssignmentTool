@@ -328,7 +328,7 @@ function()
 		end
 		
 		--see if any assigned tank is no longer available
-		local current_tanks = controller.get_current_unique_tanks();
+		local current_tanks = controller.get_current_unique_players();
 		local tanks_to_remove = {};
 		
 		--check current tanks vs available tanks
@@ -373,8 +373,6 @@ function()
 			--inform observers that we removed a tank
 			controller.notify_observers("remove_tank", {tank_to_remove});
 		end
-		
-		controller.update_marks();
 	end
 
 	controller.update_marks =
@@ -442,7 +440,7 @@ function()
 	end
 	
 	--get list of assigned tanks
-	controller.get_current_unique_tanks = 
+	controller.get_current_unique_players = 
 	function()
 		local list = {};
 		for _,mark in ipairs(controller.marks)
@@ -468,6 +466,37 @@ function()
 		
 		return list;
 	end
+	
+	--get list of assigned tanks and their marks
+	controller.get_current_assignments =
+	function()
+		local list = {};
+		for _, mark in ipairs(controller.marks)
+		do
+			local tobj = {};
+			tobj.mark = mark;
+			tobj.assignments = {};
+			for ind, tank in ipairs(controller.assigned_tanks[mark])
+			do
+				table.insert(tobj.assignments, strsub(tank, 11, strlen(tank)));
+			end
+			
+			table.insert(list, tobj);
+		end
+		
+		return list;
+	end 
+	
+	--[[controller.ingest_tanks = 
+	function(tanks)
+		for i, tank in ipairs(tanks)
+		do
+			table.insert(controller.assigned_tanks[controller.current_focus_mark], info.text);
+			controller.notify_observers("add_tank", {info.text});
+			SendAddonMessage("KAT_add_tank", controller.current_focus_mark.." "..info.text, "RAID")
+			controller.update_marks();
+		end 
+	end --]]
 	
 	controller.notify_observers = 
 	function(action, arglist)

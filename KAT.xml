@@ -3,7 +3,7 @@
 			@Author: Moth <milaninavid@gmail.com>
 			Title: KAT
 			Version: 1.0
-			Description: Catches filthy casuals
+			Description: Does relevant assignments for raids.
 			
 	//-->
 	 <Script File="KAT_controller.lua" />
@@ -329,7 +329,7 @@
 					 <Layers>
 						<Layer level="ARTWORK">
 							<!-- Setup label //-->
-							<FontString name='tank1_label' inherits="GameFontNormal" text="Tank1">
+							<FontString name='tank1_label' inherits="GameFontNormal" text="">
 								<Size><AbsDimension x="80" y="30"/></Size>
 								<Anchors>
 									<Anchor point="CENTER">
@@ -357,7 +357,7 @@
 					 <Layers>
 						<Layer level="ARTWORK">
 							<!-- Setup label //-->
-							<FontString name='tank2_label' inherits="GameFontNormal" text="Tank2">
+							<FontString name='tank2_label' inherits="GameFontNormal" text="">
 								<Size><AbsDimension x="80" y="30"/></Size>
 								<Anchors>
 									<Anchor point="CENTER">
@@ -385,7 +385,7 @@
 					 <Layers>
 						<Layer level="ARTWORK">
 							<!-- Setup label //-->
-							<FontString name='tank3_label' inherits="GameFontNormal" text="Tank3">
+							<FontString name='tank3_label' inherits="GameFontNormal" text="">
 								<Size><AbsDimension x="80" y="30"/></Size>
 								<Anchors>
 									<Anchor point="CENTER">
@@ -413,7 +413,7 @@
 					 <Layers>
 						<Layer level="ARTWORK">
 							<!-- Setup label //-->
-							<FontString name='tank4_label' inherits="GameFontNormal" text="Tank4">
+							<FontString name='tank4_label' inherits="GameFontNormal" text="">
 								<Size><AbsDimension x="80" y="30"/></Size>
 								<Anchors>
 									<Anchor point="CENTER">
@@ -441,7 +441,7 @@
 					 <Layers>
 						<Layer level="ARTWORK">
 							<!-- Setup label //-->
-							<FontString name='tank5_label' inherits="GameFontNormal" text="Tank5">
+							<FontString name='tank5_label' inherits="GameFontNormal" text="">
 								<Size><AbsDimension x="80" y="30"/></Size>
 								<Anchors>
 									<Anchor point="CENTER">
@@ -469,7 +469,7 @@
 					 <Layers>
 						<Layer level="ARTWORK">
 							<!-- Setup label //-->
-							<FontString name='tank6_label' inherits="GameFontNormal" text="Tank6">
+							<FontString name='tank6_label' inherits="GameFontNormal" text="">
 								<Size><AbsDimension x="80" y="30"/></Size>
 								<Anchors>
 									<Anchor point="CENTER">
@@ -497,7 +497,7 @@
 					 <Layers>
 						<Layer level="ARTWORK">
 							<!-- Setup label //-->
-							<FontString name='tank7_label' inherits="GameFontNormal" text="Tank7">
+							<FontString name='tank7_label' inherits="GameFontNormal" text="">
 								<Size><AbsDimension x="80" y="30"/></Size>
 								<Anchors>
 									<Anchor point="CENTER">
@@ -525,7 +525,7 @@
 					 <Layers>
 						<Layer level="ARTWORK">
 							<!-- Setup label //-->
-							<FontString name='tank8_label' inherits="GameFontNormal" text="Tank8">
+							<FontString name='tank8_label' inherits="GameFontNormal" text="">
 								<Size><AbsDimension x="80" y="30"/></Size>
 								<Anchors>
 									<Anchor point="CENTER">
