@@ -36,6 +36,13 @@ function()
 		   info.value =  name;
 		   info.func = 
 		   function() 
+				--check if addon is ready 
+				if not KAT_is_ready()
+				then 
+					DEFAULT_CHAT_FRAME:AddMessage("KAT: You are not setup yet. Wait for the go ahead or try to setup again. (Master might be offline)", 0.6,1.0,0.6);
+					return;
+				end
+		   
 				--check if i have permission to make changes
 				if not IsRaidLeader() and not IsRaidOfficer()
 				then
@@ -51,6 +58,7 @@ function()
 					then
 						--remove from list
 						table.remove(controller.assigned_interrupts[controller.current_focus_mark], entry);
+						SendAddonMessage("KAT", "toggle_interrupt-"..controller.current_focus_mark..":"..info.text.."-"..UnitName("player"), "RAID")
 						controller.update_marks();
 						
 						return;
@@ -59,6 +67,7 @@ function()
 				
 				--add to list
 				table.insert(controller.assigned_interrupts[controller.current_focus_mark], info.text);
+				SendAddonMessage("KAT", "toggle_interrupt-"..controller.current_focus_mark..":"..info.text.."-"..UnitName("player"), "RAID")
 				controller.update_marks();
 			end
 			
@@ -193,7 +202,8 @@ function()
 		end
 	end
 	
-	controller.retrieve_current_unique_players =
+	controller.retrieve_current_unique_players 
+	=
 	function()
 		local list = {};
 		for _,mark in ipairs(controller.marks)
@@ -219,8 +229,52 @@ function()
 		
 		return list;
 	end
+	
+	--get list of assigned interrupts and their marks
+	controller.get_current_assignments 
+	=
+	function()
+		local list = {};
+		for _, mark in ipairs(controller.marks)
+		do
+			list[mark] = {};
+			for ind, interrupter in ipairs(controller.assigned_interrupts[mark])
+			do
+				table.insert(list[mark], interrupter);
+			end
+		end
+		
+		return list;
+	end 
+	
+	controller.reset
+	=
+	function()
+		--reset current assignments 
+		for _, mark in ipairs(controller.marks)
+		do
+			controller.assigned_interrupts[mark] = {};
+		end
+	end 
+	
+	--consume list of  assigned tanks and populate views/list
+		--input: list of mark:interrupter
+	controller.ingest_players 
+	= 
+	function(interrupters)
+		--reset current assignments 
+		controller.reset();
+		
+		--consume assignments
+		for _, interrupter in ipairs(interrupters)
+		do
+			local tuple = KAT_split(healer, ":");
+			table.insert(controller.assigned_interrupts[tuple[1]], tuple[2]);
+		end 
+	end 
 
-	controller.update_marks =
+	controller.update_marks 
+	=
 	function()
 		--lazy instantiate labels (just in case user doesn't end up using addon rn)
 		if kat_assignment_labels == nil
@@ -255,7 +309,8 @@ function()
 		end
 	end 
 
-	controller.post = 
+	controller.post
+	= 
 	function()
 		SendChatMessage(" -- Interrupt Assignments --", "RAID", nil);
 		for _, mark in ipairs(controller.marks)
@@ -282,6 +337,38 @@ function()
 				SendChatMessage("{"..mark.."}: " ..interrupt_list, "RAID", nil);
 			end
 		end
+	end
+	
+	controller.notify_observers 
+	= 
+	function(action, arglist)
+		for _, obs in ipairs(controller.observers)
+		do
+			--see if observer can ingest notifications
+			if obs.interpret_notification ~= nil
+			then
+				obs.interpret_notification(action, arglist);
+			end 
+		end
+	end
+
+	controller.toggle_player
+	=
+	function(_mark, _player)
+		--Am I in the list already? 
+		for entry, list_name in ipairs(controller.assigned_interrupts[_mark])
+		do
+			if _player == list_name
+			then
+				--remove from list
+				table.remove(controller.assigned_interrupts[_mark], entry);
+
+				return;
+			end
+		end
+		
+		--add to list
+		table.insert(controller.assigned_interrupts[_mark], _player);
 	end
 	--FUNCTIONS-------------------------------------------------------------------------------------------------------F
 	

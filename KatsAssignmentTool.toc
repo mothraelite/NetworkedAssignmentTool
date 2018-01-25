@@ -1,12 +1,13 @@
 ## Interface: 20400
 ## Title: Kats Assignment Tool
 ## Author: Katcheese
-## Version: 2.0
+## Version: 1.0
 ## Notes: Assignment tools - by Katcheese
 ## DefaultState: Enabled
 ## LoadOnDemand: 0
 ## SavedVariablesPerCharacter: KatsAssignmentsTools_Settings
 
+KAT_util.lua
 KAT_interruptmenu.lua
 KAT_miscmenu.lua
 KAT_tankmenu.lua

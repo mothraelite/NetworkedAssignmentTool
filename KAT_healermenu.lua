@@ -13,12 +13,12 @@ function()
 	controller.assigned_tanks = {};
 	controller.available_healers = {}; controller.setup_classes (controller.available_healers);
 	controller.assigned_healers = {};
+	controller.observers = {};
 
 	--currented focus
 	controller.current_focus_mark = "";
 	controller.current_menu_parent = nil;
 	controller.kat_assignment_labels = nil;
-
 	--VARIABLES-------------------------------------------------------------------------------------------------------V
 
 	--FUNCTIONS-------------------------------------------------------------------------------------------------------F
@@ -36,6 +36,13 @@ function()
 		   info.value =  name;
 		   info.func = 
 		   function() 
+				--check if addon is ready 
+				if not KAT_is_ready()
+				then 
+					DEFAULT_CHAT_FRAME:AddMessage("KAT: You are not setup yet. Wait for the go ahead or try to setup again. (Master might be offline)", 0.6,1.0,0.6);
+					return;
+				end
+		   
 				--check if i have permission to make changes
 				if not IsRaidLeader() and not IsRaidOfficer()
 				then
@@ -62,16 +69,15 @@ function()
 					then
 						--remove from list
 						table.remove(controller.assigned_healers[controller.current_focus_mark], entry);
-						SendAddonMessage("KAT_remove_healer", controller.current_focus_mark.." "..info.text)
+						SendAddonMessage("KAT", "toggle_healer-"..controller.current_focus_mark..":"..info.text.."-"..UnitName("player"), "RAID")
 						controller.update_marks();
-						
 						return;
 					end
 				end
 				
 				--add to list
 				table.insert(controller.assigned_healers[controller.current_focus_mark], info.text);
-				SendAddonMessage("KAT_add_healer", controller.current_focus_mark.." "..info.text, "RAID")
+				SendAddonMessage("KAT", "toggle_healer-"..controller.current_focus_mark..":"..info.text.."-"..UnitName("player"), "RAID")
 				controller.update_marks();
 				
 			end
@@ -338,6 +344,47 @@ function()
 		end
 	end
 	
+	--get list of assigned tanks and their marks
+	controller.get_current_assignments =
+	function()
+		local list = {};
+		for _, mark in ipairs(controller.assigned_tanks)
+		do
+			list[mark] = {};
+			for ind, healer in ipairs(controller.assigned_healers[mark])
+			do
+				table.insert(list[mark], healer);
+			end
+		end
+		
+		return list;
+	end 
+	
+	controller.reset
+	=
+	function()
+		--reset current assignments 
+		for _, mark in ipairs(controller.assigned_tanks)
+		do
+			controller.assigned_healers[mark] = {};
+		end
+	end 
+	
+	--consume list of  assigned tanks and populate views/list
+		--input: list of mark:healer
+	controller.ingest_players = 
+	function(healers)
+		--reset current assignments 
+		controller.reset();
+		
+		--consume assignments
+		for _, healer in ipairs(healers)
+		do
+			local tuple = KAT_split(healer, ":");
+			table.insert(controller.assigned_healers[tuple[1]], tuple[2]);
+		end 
+	end 
+	
 	controller.update_assigned_tank_labels = 
 	function()
 		--setup label names
@@ -419,6 +466,35 @@ function()
 		
 			controller.remove_tank(_arglist[1]);
 		end
+	end
+	
+	controller.notify_observers = 
+	function(action, arglist)
+		for _, obs in ipairs(controller.observers)
+		do
+			--see if observer can ingest notifications
+			if obs.interpret_notification ~= nil
+			then
+				obs.interpret_notification(action, arglist);
+			end 
+		end
+	end
+	
+	controller.toggle_player =
+	function(_mark, _player)
+		--Am I in the list already? 
+		for entry, list_name in ipairs(controller.assigned_healers[_mark])
+		do
+			if _player == list_name
+			then
+				--remove from list
+				table.remove(controller.assigned_healers[_mark], entry);
+				return;
+			end
+		end
+		
+		--add to list
+		table.insert(controller.assigned_healers[_mark], _player);
 	end
 	--FUNCTIONS-------------------------------------------------------------------------------------------------------F
 	

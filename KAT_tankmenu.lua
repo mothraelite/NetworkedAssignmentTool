@@ -41,6 +41,13 @@ function()
 		   info.value =  name;
 		   info.func = 
 		   function() 
+				--check if addon is ready 
+				if not KAT_is_ready()
+				then 
+					DEFAULT_CHAT_FRAME:AddMessage("KAT: You are not setup yet. Wait for the go ahead or try to setup again. (Master might be offline)", 0.6,1.0,0.6);
+					return;
+				end
+		   
 				--check if i have permission to make changes
 				if not IsRaidLeader() and not IsRaidOfficer()
 				then
@@ -48,8 +55,7 @@ function()
 					DEFAULT_CHAT_FRAME:AddMessage("KAT: You need to be the raid leader OR have assist to make changes", 0.6,1.0,0.6);
 					return;
 				end
-				
-				
+
 				--Am I in the list already? 
 				for entry, list_name in ipairs(controller.assigned_tanks[controller.current_focus_mark])
 				do
@@ -82,7 +88,7 @@ function()
 						if tank_found == false
 						then
 							controller.notify_observers("remove_tank", {info.text});
-							SendAddonMessage("KAT_remove_tank", controller.current_focus_mark.." "..info.text, "RAID")
+							SendAddonMessage("KAT", "toggle_tank-"..controller.current_focus_mark..":"..info.text.."-"..UnitName("player"), "RAID")
 						end
 						
 						return;
@@ -92,7 +98,7 @@ function()
 				--add to list
 				table.insert(controller.assigned_tanks[controller.current_focus_mark], info.text);
 				controller.notify_observers("add_tank", {info.text});
-				SendAddonMessage("KAT_add_tank", controller.current_focus_mark.." "..info.text, "RAID")
+				SendAddonMessage("KAT", "toggle_tank-"..controller.current_focus_mark..":"..info.text.."-"..UnitName("player"), "RAID")
 				controller.update_marks();
 			end
 			
@@ -439,6 +445,16 @@ function()
 		end
 	end
 	
+	controller.reset
+	=
+	function()
+		--reset current assignments 
+		for _, mark in ipairs(controller.marks)
+		do
+			controller.assigned_tanks[mark] = {};
+		end
+	end 
+	
 	--get list of assigned tanks
 	controller.get_current_unique_players = 
 	function()
@@ -473,30 +489,31 @@ function()
 		local list = {};
 		for _, mark in ipairs(controller.marks)
 		do
-			local tobj = {};
-			tobj.mark = mark;
-			tobj.assignments = {};
+			list[mark] = {};
 			for ind, tank in ipairs(controller.assigned_tanks[mark])
 			do
-				table.insert(tobj.assignments, strsub(tank, 11, strlen(tank)));
+				table.insert(list[mark], tank);
 			end
-			
-			table.insert(list, tobj);
 		end
 		
 		return list;
 	end 
 	
-	--[[controller.ingest_tanks = 
+	--consume list of  assigned tanks and populate views/list
+		--input: list of mark:tank
+	controller.ingest_players = 
 	function(tanks)
-		for i, tank in ipairs(tanks)
+		--reset current assignments 
+		controller.reset();
+		
+		--consume assignments
+		for _, tank in ipairs(tanks)
 		do
-			table.insert(controller.assigned_tanks[controller.current_focus_mark], info.text);
-			controller.notify_observers("add_tank", {info.text});
-			SendAddonMessage("KAT_add_tank", controller.current_focus_mark.." "..info.text, "RAID")
-			controller.update_marks();
+			local tuple = KAT_split(tank, ":");
+			table.insert(controller.assigned_tanks[tuple[1]], tuple[2]);
+			controller.notify_observers("add_tank", {tuple[2]});
 		end 
-	end --]]
+	end 
 	
 	controller.notify_observers = 
 	function(action, arglist)
@@ -509,6 +526,52 @@ function()
 			end 
 		end
 	end
+	
+	controller.toggle_player 
+	=
+	function(_mark, _player)
+		--Am I in the list already? 
+		for entry, list_name in ipairs(controller.assigned_tanks[_mark])
+		do
+			if _player == list_name
+			then
+				--remove from list
+				table.remove(controller.assigned_tanks[_mark], entry);
+				
+				--see if he is still assigned elsewhere
+				local tank_found = false;
+				for _,mark in pairs(controller.marks)
+				do
+					for i=1, table.getn(controller.assigned_tanks[mark]), 1
+					do
+						if controller.assigned_tanks[mark][i]== _player
+						then
+							tank_found = true;
+							break;
+						end
+					end
+					
+					if tank_found == true
+					then
+						break;
+					end
+				end
+				
+				--tank not found, remove from assigned list for healers
+				if tank_found == false
+				then
+					controller.notify_observers("remove_tank", {_player});
+				end
+				
+				return;
+			end
+		end
+		
+		--add to list
+		table.insert(controller.assigned_tanks[_mark], _player);
+		controller.notify_observers("add_tank", {_player});
+	end
+	
 	--FUNCTIONS-------------------------------------------------------------------------------------------------------F
 	
 	return controller;

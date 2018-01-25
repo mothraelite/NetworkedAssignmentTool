@@ -11,12 +11,12 @@ local tank_controller = KAT_create_tank_menu_controller(); --tank drop down menu
 local healer_controller = KAT_create_healer_menu_controller(); --healer drop down menu controller
 table.insert(tank_controller.observers, healer_controller); --add healer controller to tank observer list
 local interrupt_controller = KAT_create_interrupt_menu_controller();
---local network_controller = KAT_create_network_handler(tank_controller, healer_controller, interrupt_controller);
+local network_controller = KAT_create_network_handler(tank_controller, healer_controller, interrupt_controller);
 
 --what selection mode im in
 	--1: tanks
 	--2: healers
-	--3: interupters
+	--3: interrupters
 local current_mode = 1; 
 local tank_mark_frames = nil; 
 local healer_mark_frames = nil; 
@@ -27,6 +27,7 @@ function KAT_init()
 	KAT:RegisterEvent("RAID_ROSTER_UPDATE");
 	KAT:RegisterEvent("CHAT_MSG_ADDON");
 	KAT:SetScript("OnEvent", KAT_handle_events);
+	--RegisterAddonMessagePrefix("KAT");
 	
 	--setup references
 	tank_mark_frames = {mark1,mark2,mark3,mark4,mark5,mark6,mark7,mark8};
@@ -36,34 +37,100 @@ function KAT_init()
 	KAT_poll_for_players();
 
 	--See if someone is in the raid that is running the addon
-		--take a copy of their assignments so far
+	network_controller.request_setup();
 		
 	-- Slash commands
 	SlashCmdList["KATCOMMAND"] = KAT_slashCommandHandler;
 	SLASH_KATCOMMAND1 = "/kat";
 
 	--Init handler
-	DEFAULT_CHAT_FRAME:AddMessage("Initializing KAT version 0.6d.", 0.6,1.0,0.6);
+	DEFAULT_CHAT_FRAME:AddMessage("Initializing KAT version 1.0", 0.6,1.0,0.6);
 end
 
 function KAT_handle_events(self, event, ...)
 	if event == "RAID_ROSTER_UPDATE" 
-	then 
+	then
+		--if im not setup yet, request a setup or become master
+		if network_controller.state == -1
+		then
+			network_controller.request_setup();
+		end
+		
+		--check if I left a raid
+		if UnitInRaid("player") == nil
+		then
+			DEFAULT_CHAT_FRAME:AddMessage("KAT: left raid. resetting.", 0.6,1.0,0.6);
+			KAT_reset_addon();
+		end
+	
 		KAT_poll_for_players();
 	elseif event == "CHAT_MSG_ADDON"
 	then
-		if arg1 == "KAT_request_setup"
+		if arg1 == "KAT"
 		then
-			--Expected args: player name
-			--Expected return: 3 whispers with current tanks,heals, and interupts
-		
-			--retrieve current tanks 
-			--retrieve current healers
-			--retrieve current interrupters 
+			local command, message, sender = network_controller.extract_command_and_message(arg2);
 			
-			--whisper user back with current setup
+			--ignore my own networked messages
+			if sender == UnitName("player")
+			then
+				return;
+			end
+		
+			if command == "request_setup"
+			then
+				network_controller.return_setup(message);
+			elseif command == "request_master"
+			then
+				network_controller.master = message;
+				KatMasterLabel:SetText("Master: "..message);
+			elseif command == "setup" --setup my own
+			then 
+				network_controller.setup_kat(message);
+				if current_mode == 1
+				then
+					tank_controller.update_marks();
+				elseif current_mode == 2
+				then
+					tank_controller.update_marks();
+				elseif current_mode == 3
+				then
+					tank_controller.update_marks();
+				end
+			elseif command == "toggle_tank"
+			then
+				network_controller.toggle_tank(message);
+			
+				if current_mode == 1
+				then
+					tank_controller.update_marks();
+				end
+			elseif command == "toggle_healer"
+			then
+				network_controller.toggle_healer(message);
+			
+				if current_mode == 2
+				then
+					healer_controller.update_marks();
+				end
+			elseif command == "toggle_interrupt"
+			then
+				network_controller.toggle_interrupter(message);
+			
+				if current_mode == 3
+				then
+					interrupt_controller.update_marks();
+				end
+			elseif command == "setup"
+			then
+				network_controller.setup_kat(message);
+			end
+			
 		end
 	end
+end
+
+function KAT_update()
+	KAT_update_alarms();
 end
 
 function KAT_slashCommandHandler(msg)
@@ -79,6 +146,9 @@ function KAT_slashCommandHandler(msg)
 	elseif strsub(msg, 1, 4) == "post"
 	then
 		KAT_post();
+	elseif strsub(msg,1,6) == "master"
+	then
+		network_controller.request_master();
 	else
 		DEFAULT_CHAT_FRAME:AddMessage("KAT: Error, could not understand input.\nValid commands:\n1)/kat show\n2)/kat hide\n3)/kat post\n4)/kat", 0.6,1.0,0.6);
 	end
@@ -99,7 +169,7 @@ function KAT_mode_picker_clicked(index)
 		end
 		
 		tank_controller.update_marks();
-	
+
 		current_mode = 1;
 	elseif index == 2 --heals
 	then
@@ -109,6 +179,7 @@ function KAT_mode_picker_clicked(index)
 		end
 		
 		healer_controller.update_marks();
+		
 	
 		current_mode = 2;
 	elseif index == 3 --interrupt
@@ -125,6 +196,9 @@ function KAT_mode_picker_clicked(index)
 	end 
 end
 
+function KAT_request_setup()
+	network_controller.request_setup();
+end
 
 function KAT_post()
 	
@@ -163,16 +237,6 @@ function KAT_show_listmenu(parent, focus_mark)
 		interrupt_controller.current_menu_parent = parent;
 		ToggleDropDownMenu(nil,1,KAT_interrupt_list,parent,0,25);
 	end
-end
-
---show submenu when mousing over current interupters
-function KAT_show_interupters()
-
-end
-
---show submenu for all
-function KAT_show_misc()
-
 end
 
 --HELPER FUNCTIONS---------------------------------------------------------------------------------------HF
@@ -253,4 +317,33 @@ function KAT_reset_visuals()
 	end
 	
 end
+
+function KAT_reset_addon()
+	--reset data
+	tank_controller.reset();
+	healer_controller.reset();
+	interrupt_controller.reset();
+	network_controller.state = -1;
+	
+	--reset visuals
+	if current_mode == 1
+	then
+		tank_controller.update_marks();
+	elseif current_mode == 2
+	then
+		tank_controller.update_marks();
+	elseif current_mode == 3
+	then
+		tank_controller.update_marks();
+	end
+end
 --HELPER FUNCTIONS---------------------------------------------------------------------------------------HF
+
+function KAT_is_ready()
+	if network_controller.state == 1
+	then
+		return true;
+	else 
+		return false;
+	end
+end

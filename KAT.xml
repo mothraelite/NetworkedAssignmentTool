@@ -21,6 +21,7 @@
 					KAT:Hide();
 				</OnLoad>
 				<OnUpdate>
+					KAT_update();
 				</OnUpdate>
 				<OnDragStart>KAT:StartMoving();</OnDragStart>
 				<OnDragStop>KAT:StopMovingOrSizing();</OnDragStop>
@@ -60,6 +61,16 @@
 							<Anchor point="TOP">
 								<Offset>
 									<AbsDimension x="0" y="-10" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+					</FontString>
+					
+					<FontString inherits="GameFontNormal" name="KatMasterLabel" text="Master: None">
+						<Anchors>
+							<Anchor point="BOTTOM">
+								<Offset>
+									<AbsDimension x="-100" y="10" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -541,13 +552,28 @@
 				</Frame>
 				<!-- healer assignment marks //-->
 			 
+				<Button inherits="OptionsButtonTemplate" name="KatRequestSetupButton" text="Setup">
+					<Size><AbsDimension x="80" y="30"/></Size>
+					<Anchors>
+						<Anchor relativeTo="KAT" point="BOTTOM">
+							<Offset>
+								<AbsDimension x="-100" y="18" />
+							</Offset>
+						</Anchor>
+						
+					</Anchors>
+					<Scripts>
+						<OnClick>KAT_request_setup();</OnClick>
+					</Scripts>
+				</Button>
+			 
 				<!-- Choose between tank/healing/interupt/misc assignments //-->
 			   <Button name="KAT_mode_chooser" inherits="UIDropDownMenuTemplate" id='1'>
 					<Size></Size>
 					<Anchors>
 							<Anchor point="BOTTOM">
 								<Offset>
-									<AbsDimension x="-70" y="15" />
+									<AbsDimension x="-58" y="18" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -589,7 +615,7 @@
 					<Anchors>
 						<Anchor relativeTo="KAT" point="BOTTOM">
 							<Offset>
-								<AbsDimension x="110" y="15" />
+								<AbsDimension x="110" y="18" />
 							</Offset>
 						</Anchor>
 						
