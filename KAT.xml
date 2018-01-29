@@ -20,9 +20,6 @@
 					KAT_init();
 					KAT:Hide();
 				</OnLoad>
-				<OnUpdate>
-					KAT_update();
-				</OnUpdate>
 				<OnDragStart>KAT:StartMoving();</OnDragStart>
 				<OnDragStop>KAT:StopMovingOrSizing();</OnDragStop>
 			</Scripts>

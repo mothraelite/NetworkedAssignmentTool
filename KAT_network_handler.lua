@@ -15,7 +15,8 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 	controller.tank_controller = _tankc;
 	controller.healer_controller = _healerc;
 	controller.interrupt_controller = _interruptc;
-	controller.state = -1;
+	controller.state = -1; -- -1: not setup 0: trying to setup 1: setup
+	controller.setup = {["tank"]=false,["healers"]=false,["interrupters"]=false,["master"]=false};
 	--VARIABLES---------------------------------------------------------------------V
 	
 	--FUNCTIONS---------------------------------------------------------------------F
@@ -39,7 +40,6 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 			SendAddonMessage("KAT", "request_master-"..UnitName("player").."-"..UnitName("player"), "RAID");
 			controller.master = UnitName("player");
 			KatMasterLabel:SetText("Master: " .. UnitName("player"));
-			DEFAULT_CHAT_FRAME:AddMessage("KAT: You are now the current master and setup", 0.6,1.0,0.6);
 		end
 	end
 
@@ -60,27 +60,75 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 		controller.state = 0; --waiting for setup
 		SendAddonMessage("KAT", "request_setup-"..UnitName("player").."-"..UnitName("player"), "RAID");
 		
-		--Set timed event to take request master if im not setup in 5 seconds
+		--Set timed event to check if i get a full response in 3 seconds. 
 		local func = 
 		function()
-			if controller.master == nil 
+			--did not get a full response or empty response.
+			if not controller.setup["healers"] or not controller.setup["tanks"] or not controller.setup["interrupters"] or not controller.setup["master"]
 			then
-				controller.state = 1;
-				controller.request_master();
-			end 
+				--did i get a partial reply?
+				if controller.setup["healers"] or controller.setup["tanks"] or controller.setup["interrupters"] or controller.setup["master"]
+				then--partial reply, might be lagging on either end
+					--wait 3 seconds and request again if needed
+					local partial_setup =
+					function()
+						--still not setup
+						if controller.state ~= 1
+						then 
+							--request again
+								--reset state
+							controller.reset_setup();
+								--request
+							controller.request_setup();
+						end 
+					end
+					KAT_set_alarm(3, partial_setup);
+				else  --no reply
+					--ask if master is offline
+					SendAddonMessage("KAT", "who_is_master-"..UnitName("player").."-"..UnitName("player"), "RAID");
+					
+					--fire function after 3 seconds if no response because no setup available in raid
+					local no_setup = 
+					function()
+						if controller.state == 0
+						then
+							controller.reset_setup();
+							
+							if  IsRaidOfficer()  or IsRaidLeader() 
+							then
+								controller.state = 1;
+								controller.request_master();
+							else
+								controller.state = -1;
+								SendAddonMessage("KAT", "reset- -"..UnitName("player"), "RAID");
+							end
+						end
+					end
+					KAT_set_alarm(3, no_setup);
+				end	
+			end
 		end
-		KAT_set_alarm(5, func);
+		KAT_set_alarm(3, func);
 	end
 		----------------------END OF REQUESTS-------------------------REQ
 		
 		------------------------------RETURNS--------------------------------RET
 	
-	
-		
-	controller.get_master
-	= 
-	function()
-		return controller.master;
+	controller.return_master
+	=
+	function(message)
+		if controller.master ~= nil and controller.state == 1
+		then	
+			--is current master offline?
+			local name, rank, sg, level, class, fileName, zone, online, isDead, role, isML = controller.get_raid_member_info(controller.master);
+			if online ~= nil
+			then
+				SendAddonMessage("KAT", "master_is-"..controller.master.."-"..UnitName('player'), "WHISPER", message);
+			else 
+				controller.request_master();
+				SendAddonMessage("KAT", "master_is-"..controller.master.."-"..UnitName('player'), "WHISPER", message);
+			end
+		end
 	end
 
 	controller.return_setup
@@ -90,7 +138,7 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 		if controller.master == UnitName("player") and UnitName("player") ~= message
 		then
 			--Expected args: player name
-				--Expected return:  whisper with current tanks,heals, and interrupts
+				--Expected return:  whisper with current master,tanks,heals, and interrupts
 		
 			--retrieve current tanks 
 			local current_tanks = controller.tank_controller.get_current_assignments();
@@ -101,45 +149,66 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 			
 			--encode data
 			--------------------------------------
-			-- space denotes new player or change of state
-			-- states are defined by the following keywords: master, tank, heal, interrupt. anything following these keywords other than other states will be players
-			-- players are defined by their mark:name.  IE: skull:Katcheese
-			-- 
-		
-			local data = "master " ..UnitName("player").. " tank";
-			for mark, list in pairs(current_tanks)
-			do
-				for _, tank in ipairs(list)
+			-- space denotes new player 
+
+			local tanks = "empty";
+			if table.getn(current_tanks) > 0
+			then
+				tanks = "";
+				for mark, list in pairs(current_tanks)
 				do
-					data = data .. " ".. mark ..":".. tank ;
+					for ind, tank in ipairs(list)
+					do
+						tanks = tanks.." ".. mark ..":".. tank;
+					end
 				end
+				tanks = string.sub(tanks, 2, strlen(tanks));
 			end
 			
-			data = data .. " heal";
-			for mark, list in pairs(current_healers)
-			do
-				for _, healer in ipairs(list)
+			local healers = "empty";
+			if table.getn(current_healers) > 0
+			then 
+				healers = "";
+				for mark, list in pairs(current_healers)
 				do
-					data = data .. " "..mark..":".. healer;
+					for ind, healer in ipairs(list)
+					do
+						healers = healers.." "..mark..":".. healer;
+					end
 				end
+				healers = string.sub(healers, 2, strlen(healers));
 			end
 			
-			data = data .. " interrupt";
-			for mark, list in pairs(current_interrupters)
-			do
-				for _, interrupt in ipairs(list)
+			local interrupters = "empty";
+			if table.getn(current_interrupters) > 0
+			then 
+				interrupters = "";
+				for mark, list in pairs(current_interrupters)
 				do
-					data = data .. " " .. mark..":"..interrupt;
+					for ind, interrupt in ipairs(list)
+					do
+						interrupters = interrupters.." "..mark..":"..interrupt;
+					end
 				end
+				interrupters = string.sub(interrupters, 2, strlen(interrupters));
 			end
-			
+
 			--send it out
-			SendAddonMessage("KAT",  "setup-"..data.."-"..UnitName("player"), "WHISPER", message);
+			SendAddonMessage("KAT", "setup_master-"..UnitName("player").."-"..UnitName("player"), "WHISPER", message);
+			SendAddonMessage("KAT", "setup_tanks-"..tanks.."-"..UnitName("player"), "WHISPER", message);
+			SendAddonMessage("KAT", "setup_healers-"..healers.."-"..UnitName("player"), "WHISPER", message);
+			SendAddonMessage("KAT", "setup_interrupters-"..interrupters.."-"..UnitName("player"), "WHISPER", message);
 		end
 	end
 		----------------------END OF RETURNS-------------------------RET
 	
 		--------------------RESPONSE HANDELING--------------------RH
+			--Toggle
+			-------------------------------
+			--
+			--expected arg: mark:tank
+			--return: nothing
+			--whats it do? when other users send info about what they are doing (an assignment), we need to interpret it so we send it to their respective controllers here.
 	controller.toggle_tank
 	=
 	function(message)
@@ -162,68 +231,92 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 		controller.interrupt_controller.toggle_player(args[1],args[2]);
 	end
 	
-	controller.setup_kat
+	controller.setup_master
 	=
 	function(message)
-		controller.state = 1;
+		controller.master = message;
+		KatMasterLabel:SetText("Master: " .. message);
+		controller.setup["master"] = true;
+		if controller.setup["healers"] and controller.setup["tanks"] and controller.setup["interrupters"] and controller.setup["master"]
+		then
+			controller.state = 1;
+			DEFAULT_CHAT_FRAME:AddMessage("KAT: You are now setup.", 0.6,1.0,0.6);
+		end
+	end
 	
-		--Expected args: whisper with current tanks,heals, and interrupt
-			--Expected return: none
+	controller.setup_tanks
+	=
+	function(message)
+		if message ~= "empty"
+		then
+			local split_message = KAT_split(message, " ");
+			local tanks = {};
 			
-			--decode message
-				--expected encoding
-				--------------------------------------
-				-- space denotes new player or change of state
-				-- states are defined by the following keywords: master, tank, heal, interrupt. anything following these keywords other than other states will be players
-				-- players are defined by their mark:name.  IE: skull:Katcheese
-				-- note: dont remove mark from player. let the other controllers handle that as its too specific to their logic to make sense to do it here
-		local split_message = KAT_split(message, " ");
-		local state = -1; 
-		local tanks = {};
-		local healers = {};
-		local interrupters = {};
-		for i, str in ipairs(split_message)
-		do
-			-- find role
-			if str == "master"
-			then
-				state = 0;
-			elseif str == "tank"
-			then
-				state = 1;
-			elseif str == "heal"
-			then
-				state = 2;
-			elseif str == "interrupt"
-			then
-				state = 3;
-			else
-				--define player
-				if state == 0 --master found
-				then
-					controller.master = str;
-					KatMasterLabel:SetText("Master: " .. str);
-				elseif state == 1 --this is a tank i've found 
-				then
-					table.insert(tanks, str);
-				elseif state == 2 --this is a healer i've found 
-				then
-					table.insert(healers, str);
-				elseif state == 3 --this is a interrupter i've found
-				then
-					table.insert(interrupters, str);
-				end 
-			end 
+			for i, str in ipairs(split_message)
+			do
+				table.insert(tanks,str);
+			end
+			
+			--send tanks to tank controller
+			controller.tank_controller.ingest_players(tanks);
+		end	
+		
+		controller.setup["tanks"] = true;
+		if controller.setup["healers"] and controller.setup["tanks"] and controller.setup["interrupters"] and controller.setup["master"]
+		then
+			controller.state = 1;
+			DEFAULT_CHAT_FRAME:AddMessage("KAT: You are now setup.", 0.6,1.0,0.6);
+		end
+	end
+	
+	controller.setup_healers
+	=
+	function(message)
+		if message ~= "empty"
+		then
+			local split_message = KAT_split(message, " ");
+			local healers = {};
+			
+			for i, str in ipairs(split_message)
+			do
+				table.insert(healers,str);
+			end
+		
+			--send tanks to heal controller
+			controller.healer_controller.ingest_players(healers);
+		end 
+		
+		controller.setup["healers"] = true;
+		if controller.setup["healers"] and controller.setup["tanks"] and controller.setup["interrupters"] and controller.setup["master"]
+		then
+			controller.state = 1;
+			DEFAULT_CHAT_FRAME:AddMessage("KAT: You are now setup.", 0.6,1.0,0.6);
+		end
+	end
+	
+	controller.setup_interrupters
+	=
+	function(message)
+		if message ~= "empty"
+		then 
+			local split_message = KAT_split(message, " ");
+			local interrupters = {};
+			
+			for i, str in ipairs(split_message)
+			do
+				table.insert(interrupters,str);
+			end
+		
+			--send tanks to interrupt controller
+			controller.interrupt_controller.ingest_players(interrupters);
 		end
 		
-		--send tanks to tank controller
-		controller.tank_controller.ingest_players(tanks);
-		--send healers to healer controller
-		controller.healer_controller.ingest_players(healers);
-		--send interrupters to interrupt controller 
-		controller.interrupt_controller.ingest_players(interrupters);
-		
-		DEFAULT_CHAT_FRAME:AddMessage("KAT: You are now setup.", 0.6,1.0,0.6);
+		controller.setup["interrupters"] = true;
+		if controller.setup["healers"] and controller.setup["tanks"] and controller.setup["interrupters"] and controller.setup["master"]
+		then
+			controller.state = 1;
+			DEFAULT_CHAT_FRAME:AddMessage("KAT: You are now setup.", 0.6,1.0,0.6);
+		end
 	end
 
 	controller.update
@@ -236,13 +329,41 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 	controller.extract_command_and_message
 	=
 	function(_message)
-		--I give all of 0 shits about client side performance as its a 10 year old game
 		local split = KAT_split(_message, "-");
 		local command = split[1];
 		local message = split[2];
 		local sender = split[3];
 		
 		return command, message, sender;
+	end
+	
+	controller.reset_setup
+	=
+	function()
+		controller.tank_controller.reset();
+		controller.tank_controller.reset();
+	
+		controller.state = -1;
+		controller.setup["healers"] = false;
+		controller.setup["tanks"] = false;
+		controller.setup["master"] = false;
+		controller.setup["interrupters"] = false;
+	end
+	
+	controller.get_raid_member_info
+	=
+	function(_name)
+		--Vanilla API does not have a way to get info by name so here we are
+		for i=1, GetNumRaidMembers(), 1
+		do
+			--player found. return shit
+			if UnitName("raid"..i) == controller.name
+			then
+				return GetRaidRosterInfo(i);
+			end
+		end
+		
+		return nil;
 	end
 		------------------------END OF HELPER-------------------------HEL
 	

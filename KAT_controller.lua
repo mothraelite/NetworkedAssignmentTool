@@ -27,6 +27,7 @@ function KAT_init()
 	KAT:RegisterEvent("RAID_ROSTER_UPDATE");
 	KAT:RegisterEvent("CHAT_MSG_ADDON");
 	KAT:SetScript("OnEvent", KAT_handle_events);
+	KAT:SetScript("OnUpdate", KAT_update);
 	--RegisterAddonMessagePrefix("KAT");
 	
 	--setup references
@@ -83,18 +84,32 @@ function KAT_handle_events(self, event, ...)
 			then
 				network_controller.master = message;
 				KatMasterLabel:SetText("Master: "..message);
-			elseif command == "setup" --setup my own
+			elseif command == "setup_master" --setup my own
 			then 
-				network_controller.setup_kat(message);
+				network_controller.setup_master(message);
+			elseif command == "setup_tanks"
+			then
+				network_controller.setup_tanks(message);
+				
 				if current_mode == 1
 				then
 					tank_controller.update_marks();
-				elseif current_mode == 2
+				end
+			elseif command == "setup_healers"
+			then
+				network_controller.setup_healers(message);
+				
+				if current_mode == 2
 				then
-					tank_controller.update_marks();
-				elseif current_mode == 3
+					healer_controller.update_marks();
+				end
+			elseif command == "setup_interrupters"
+			then
+				network_controller.setup_interrupters(message);
+				
+				if current_mode == 3
 				then
-					tank_controller.update_marks();
+					interrupt_controller.update_marks();
 				end
 			elseif command == "toggle_tank"
 			then
@@ -120,17 +135,36 @@ function KAT_handle_events(self, event, ...)
 				then
 					interrupt_controller.update_marks();
 				end
-			elseif command == "setup"
+			elseif command == "who_is_master"
 			then
-				network_controller.setup_kat(message);
+				network_controller.return_master(message);
+			elseif command == "master_is"
+			then
+				network_controller.request_setup();
+			elseif command == "reset"
+			then 
+				KAT_reset_addon();
+				DEFAULT_CHAT_FRAME:AddMessage("KAT: Reset by "..sender, 0.6,1.0,0.6);
 			end
 			
 		end
 	end
 end
 
-function KAT_update()
-	KAT_update_alarms();
+local time_since_last_update = 0;
+function KAT_update(self, elapsed)
+	--UPDATE PER CYCLE
+
+	--UPDATES VIA SECONDS
+		--time since last update cycle. note, this returns a float not an int in seconds thus the need to do this.
+	time_since_last_update = time_since_last_update + elapsed;
+	
+	local seconds = math.floor(time_since_last_update);
+	for i=1, seconds, 1
+	do
+		KAT_update_alarms();
+	end 
+	time_since_last_update = time_since_last_update - seconds; --we exhausted the updates needed per second
 end
 
 function KAT_slashCommandHandler(msg)

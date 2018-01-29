@@ -509,6 +509,7 @@ function()
 		--consume assignments
 		for _, tank in ipairs(tanks)
 		do
+			DEFAULT_CHAT_FRAME:AddMessage("Test "..tank.." Test", 0.6,1.0,0.6);
 			local tuple = KAT_split(tank, ":");
 			table.insert(controller.assigned_tanks[tuple[1]], tuple[2]);
 			controller.notify_observers("add_tank", {tuple[2]});

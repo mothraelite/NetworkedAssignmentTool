@@ -268,7 +268,7 @@ function()
 		--consume assignments
 		for _, interrupter in ipairs(interrupters)
 		do
-			local tuple = KAT_split(healer, ":");
+			local tuple = KAT_split(interrupter, ":");
 			table.insert(controller.assigned_interrupts[tuple[1]], tuple[2]);
 		end 
 	end 
