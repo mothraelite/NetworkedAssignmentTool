@@ -9,7 +9,7 @@
 	 <Script File="KAT_controller.lua" />
 	 <Frame name="KAT" enableMouse="true" movable="true" frameStrata="LOW">
 			 <Size>
-			   <AbsDimension x="325" y="400" />
+			   <AbsDimension x="500" y="450" />
 			 </Size>
 			 <Anchors>
 			   <Anchor point="CENTER" />
@@ -67,7 +67,7 @@
 						<Anchors>
 							<Anchor point="BOTTOM">
 								<Offset>
-									<AbsDimension x="-100" y="10" />
+									<AbsDimension x="10" y="55" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -549,7 +549,7 @@
 				</Frame>
 				<!-- healer assignment marks //-->
 			 
-				<Button inherits="OptionsButtonTemplate" name="KatRequestSetupButton" text="Setup">
+				<Button inherits="OptionsButtonTemplate" name="KatRequestOptionButton" text="Options">
 					<Size><AbsDimension x="80" y="30"/></Size>
 					<Anchors>
 						<Anchor relativeTo="KAT" point="BOTTOM">
@@ -560,7 +560,7 @@
 						
 					</Anchors>
 					<Scripts>
-						<OnClick>KAT_request_setup();</OnClick>
+						<OnClick>KAT_options();</OnClick>
 					</Scripts>
 				</Button>
 			 
@@ -570,7 +570,7 @@
 					<Anchors>
 							<Anchor point="BOTTOM">
 								<Offset>
-									<AbsDimension x="-58" y="18" />
+									<AbsDimension x="-58" y="15" />
 								</Offset>
 							</Anchor>
 						</Anchors>

@@ -18,9 +18,9 @@ function KAT_update_alarms()
 		alarm.time = alarm.time - 1;
 		if alarm.time <= 0
 		then
+			alarm.func();
 			table.remove(alarms, i);
 			i = i -1;
-			alarm.func();
 		end
 	end 
 end

@@ -132,11 +132,27 @@ function()
 				shamans.text = "|cff545454Shaman";
 			end
 			
+			local clear = {}
+			clear.text = "|cffFF0000Clear";
+			clear.value = 9;
+			clear.hasArrow = false;
+			clear.func = 
+			function() 
+				if not IsRaidLeader() and not IsRaidOfficer()
+				then
+					DEFAULT_CHAT_FRAME:AddMessage("KAT: Can not use clear function without being the raid leader or having assist.", 0.6,1.0,0.6);
+					return;
+				end
+			
+				controller.clear_mark(controller.current_focus_mark);
+			end
+			
 			UIDropDownMenu_AddButton(title,1);
 			UIDropDownMenu_AddButton(warriors, 1);
 			UIDropDownMenu_AddButton(mage, 1);
 			UIDropDownMenu_AddButton(rogue, 1);
 			UIDropDownMenu_AddButton(shamans, 1);
+			UIDropDownMenu_AddButton(clear, 1);
 		elseif UIDROPDOWNMENU_MENU_LEVEL == 2
 		then
 			local title = {};
@@ -235,17 +251,40 @@ function()
 	=
 	function()
 		local list = {};
+		local empty = true;
 		for _, mark in ipairs(controller.marks)
 		do
-			list[mark] = {};
-			for ind, interrupter in ipairs(controller.assigned_interrupts[mark])
-			do
-				table.insert(list[mark], interrupter);
+			if table.getn(controller.assigned_interrupts[mark]) > 0
+			then
+				empty = false;
+				list[mark] = {};
+				for ind, interrupter in ipairs(controller.assigned_interrupts[mark])
+				do
+					table.insert(list[mark], interrupter);
+				end
 			end
+		end
+		
+		if empty == true
+		then
+			return nil;
 		end
 		
 		return list;
 	end 
+	
+	controller.clear_mark
+	=
+	function(_mark)
+		while table.getn(controller.assigned_interrupts[_mark]) ~= 0
+		do
+			local interrupter = controller.assigned_interrupts[_mark][1];
+			controller.toggle_player(_mark, interrupter)
+			SendAddonMessage("KAT", "toggle_interrupt-".._mark..":"..interrupter.."-"..UnitName("player"), "RAID")
+		end
+		
+		controller.update_marks(); --update views
+	end
 	
 	controller.reset
 	=

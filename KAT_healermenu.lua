@@ -143,11 +143,21 @@ function()
 				shamans.text = "|cff545454Shaman";
 			end
 			
+			local clear = {}
+			clear.text = "|cffFF0000Clear";
+			clear.value = 9;
+			clear.hasArrow = false;
+			clear.func = 
+			function() 
+				controller.clear_mark(controller.current_focus_mark);
+			end
+			
 			UIDropDownMenu_AddButton(title, 1);
 			UIDropDownMenu_AddButton(druids, 1);
 			UIDropDownMenu_AddButton(paladins, 1);
 			UIDropDownMenu_AddButton(priests, 1);
 			UIDropDownMenu_AddButton(shamans, 1);
+			UIDropDownMenu_AddButton(clear, 1);
 		elseif UIDROPDOWNMENU_MENU_LEVEL == 2
 		then
 			local title = {};
@@ -348,17 +358,40 @@ function()
 	controller.get_current_assignments =
 	function()
 		local list = {};
+		local empty = true;
 		for _, mark in ipairs(controller.assigned_tanks)
 		do
-			list[mark] = {};
-			for ind, healer in ipairs(controller.assigned_healers[mark])
-			do
-				table.insert(list[mark], healer);
+			if table.getn(controller.assigned_healers[mark]) > 0
+			then
+				empty = false;
+				list[mark] = {};
+				for ind, healer in ipairs(controller.assigned_healers[mark])
+				do
+					table.insert(list[mark], healer);
+				end
 			end
+		end
+		
+		if empty == true 
+		then
+			return nil;
 		end
 		
 		return list;
 	end 
+	
+	controller.clear_mark
+	=
+	function(_mark)
+		while table.getn(controller.assigned_healers[_mark]) ~= 0
+		do
+			local healer = controller.assigned_healers[_mark][1]
+			controller.toggle_player(_mark, healer)
+			SendAddonMessage("KAT", "toggle_healer-".._mark..":"..healer.."-"..UnitName("player"), "RAID")
+		end
+		
+		controller.update_marks(); --update views
+	end
 	
 	controller.reset
 	=

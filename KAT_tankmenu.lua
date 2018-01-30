@@ -215,6 +215,21 @@ function()
 				rogue.text = "|cff545454Rogue";
 			end
 			
+			local clear = {}
+			clear.text = "|cffFF0000Clear";
+			clear.value = 9;
+			clear.hasArrow = false;
+			clear.func = 
+			function() 
+				if not IsRaidLeader() and not IsRaidOfficer()
+				then
+					DEFAULT_CHAT_FRAME:AddMessage("KAT: Can not use clear function without being the raid leader or having assist.", 0.6,1.0,0.6);
+					return;
+				end
+			
+				controller.clear_mark(controller.current_focus_mark);
+			end
+			
 			UIDropDownMenu_AddButton(title,1);
 			UIDropDownMenu_AddButton(warriors, 1);
 			UIDropDownMenu_AddButton(druids, 1);
@@ -224,6 +239,7 @@ function()
 			UIDropDownMenu_AddButton(warlock, 1);
 			UIDropDownMenu_AddButton(priest, 1);
 			UIDropDownMenu_AddButton(rogue, 1);
+			UIDropDownMenu_AddButton(clear, 1)
 		elseif UIDROPDOWNMENU_MENU_LEVEL == 2
 		then
 			local title = {};
@@ -380,7 +396,7 @@ function()
 			controller.notify_observers("remove_tank", {tank_to_remove});
 		end
 	end
-
+	
 	controller.update_marks =
 	function()
 		--lazy instantiate labels (just in case user doesn't end up using addon rn)
@@ -445,6 +461,19 @@ function()
 		end
 	end
 	
+	controller.clear_mark
+	=
+	function(_mark)
+		while table.getn(controller.assigned_tanks[_mark]) ~= 0
+		do
+			local tank = controller.assigned_tanks[_mark][1];
+			controller.toggle_player(_mark, tank)
+			SendAddonMessage("KAT", "toggle_tank-".._mark..":"..tank.."-"..UnitName("player"), "RAID")
+		end
+		
+		controller.update_marks(); --update views
+	end
+	
 	controller.reset
 	=
 	function()
@@ -487,13 +516,23 @@ function()
 	controller.get_current_assignments =
 	function()
 		local list = {};
+		local empty = true;
 		for _, mark in ipairs(controller.marks)
 		do
-			list[mark] = {};
-			for ind, tank in ipairs(controller.assigned_tanks[mark])
-			do
-				table.insert(list[mark], tank);
+			if table.getn(controller.assigned_tanks[mark]) > 0
+			then
+				empty = false;
+				list[mark] = {};
+				for ind, tank in ipairs(controller.assigned_tanks[mark])
+				do
+					table.insert(list[mark], tank);
+				end
 			end
+		end
+		
+		if empty == true
+		then
+			return nil;
 		end
 		
 		return list;
@@ -509,7 +548,6 @@ function()
 		--consume assignments
 		for _, tank in ipairs(tanks)
 		do
-			DEFAULT_CHAT_FRAME:AddMessage("Test "..tank.." Test", 0.6,1.0,0.6);
 			local tuple = KAT_split(tank, ":");
 			table.insert(controller.assigned_tanks[tuple[1]], tuple[2]);
 			controller.notify_observers("add_tank", {tuple[2]});

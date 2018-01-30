@@ -15,8 +15,9 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 	controller.tank_controller = _tankc;
 	controller.healer_controller = _healerc;
 	controller.interrupt_controller = _interruptc;
-	controller.state = -1; -- -1: not setup 0: trying to setup 1: setup
-	controller.setup = {["tank"]=false,["healers"]=false,["interrupters"]=false,["master"]=false};
+	controller.state = -1; -- -1: not setup 0: trying to setup 1: setup 
+	controller.response_state = 1; --0: network waiting for response 1: nothing going on || note: this is for non-setup related responses
+	controller.setup = {["tanks"]=false,["healers"]=false,["interrupters"]=false,["master"]=false};
 	--VARIABLES---------------------------------------------------------------------V
 	
 	--FUNCTIONS---------------------------------------------------------------------F
@@ -26,7 +27,6 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 	function()
 		if controller.state ~= 1
 		then
-			DEFAULT_CHAT_FRAME:AddMessage("KAT: Can't request for master without being setup first.", 0.6,1.0,0.6);
 			return;
 		end
 		
@@ -92,22 +92,48 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 					function()
 						if controller.state == 0
 						then
-							controller.reset_setup();
-							
-							if  IsRaidOfficer()  or IsRaidLeader() 
+							if IsRaidLeader() or IsRaidOfficer()
 							then
+								SendAddonMessage("KAT", "reset- -"..UnitName("player"), "RAID");
+								controller.reset_setup();
+							
+								controller.setup["healers"] = true;
+								controller.setup["tanks"] = true;
+								controller.setup["interrupters"] = true;
+								controller.setup["master"] = true;
 								controller.state = 1;
 								controller.request_master();
 							else
-								controller.state = -1;
-								SendAddonMessage("KAT", "reset- -"..UnitName("player"), "RAID");
+								controller.request_setup();
 							end
+							
 						end
 					end
 					KAT_set_alarm(3, no_setup);
 				end	
 			end
 		end
+		KAT_set_alarm(3, func);
+	end
+	
+	controller.request_new_master 
+	=
+	function()
+		--Ask for a new master from the raider.
+		SendAddonMessage("KAT", "request_new_master-t-"..UnitName("player"), "RAID");
+	
+		local func 
+		=
+		function()
+			--am I still master and I dont have pre-reqs?
+			if controller.master == UnitName("player") and not IsRaidLeader() and not IsRaidOfficer()
+			then
+				--retry for a new master
+				controller.request_new_master();
+			end
+		end
+		
+		--fire func after 3s
 		KAT_set_alarm(3, func);
 	end
 		----------------------END OF REQUESTS-------------------------REQ
@@ -135,7 +161,7 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 	=
 	function(message)
 		--let the master list holder deal with informing the person asking for info
-		if controller.master == UnitName("player") and UnitName("player") ~= message
+		if controller.master == UnitName("player")
 		then
 			--Expected args: player name
 				--Expected return:  whisper with current master,tanks,heals, and interrupts
@@ -150,9 +176,9 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 			--encode data
 			--------------------------------------
 			-- space denotes new player 
-
+			
 			local tanks = "empty";
-			if table.getn(current_tanks) > 0
+			if current_tanks ~= nil
 			then
 				tanks = "";
 				for mark, list in pairs(current_tanks)
@@ -166,7 +192,7 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 			end
 			
 			local healers = "empty";
-			if table.getn(current_healers) > 0
+			if current_healers ~= nil
 			then 
 				healers = "";
 				for mark, list in pairs(current_healers)
@@ -180,7 +206,7 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 			end
 			
 			local interrupters = "empty";
-			if table.getn(current_interrupters) > 0
+			if current_interrupters ~= nil
 			then 
 				interrupters = "";
 				for mark, list in pairs(current_interrupters)
@@ -264,7 +290,7 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 		controller.setup["tanks"] = true;
 		if controller.setup["healers"] and controller.setup["tanks"] and controller.setup["interrupters"] and controller.setup["master"]
 		then
-			controller.state = 1;
+			controller.state = 1; --controller.setup["healers"] and controller.setup["tanks"] and controller.setup["interrupters"] and controller.setup["master"]
 			DEFAULT_CHAT_FRAME:AddMessage("KAT: You are now setup.", 0.6,1.0,0.6);
 		end
 	end
@@ -318,13 +344,6 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 			DEFAULT_CHAT_FRAME:AddMessage("KAT: You are now setup.", 0.6,1.0,0.6);
 		end
 	end
-
-	controller.update
-	=
-	function()
-		
-	end
-	
 		-------------------------------HELPER-------------------------------HEL
 	controller.extract_command_and_message
 	=
@@ -341,9 +360,12 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 	=
 	function()
 		controller.tank_controller.reset();
-		controller.tank_controller.reset();
+		controller.healer_controller.reset();
+		controller.interrupt_controller.reset();
 	
 		controller.state = -1;
+		controller.master = nil;
+		KatMasterLabel:SetText("Master: None");
 		controller.setup["healers"] = false;
 		controller.setup["tanks"] = false;
 		controller.setup["master"] = false;
@@ -366,6 +388,13 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 		return nil;
 	end
 		------------------------END OF HELPER-------------------------HEL
+
+	--this update will happen every tick rather than when visible and every second.
+	controller.update
+	=
+	function()
+		
+	end
 	
 	--FUNCTIONS---------------------------------------------------------------------F
 	

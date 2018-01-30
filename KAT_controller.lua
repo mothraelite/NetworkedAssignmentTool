@@ -24,7 +24,8 @@ local healer_mark_frames = nil;
 function KAT_init()
 	--setup reg functions
 	KAT:RegisterForDrag("LeftButton");
-	KAT:RegisterEvent("RAID_ROSTER_UPDATE");
+	KAT:RegisterEvent("RAID_ROSTER_UPDATE"); --fires on personal promotion, personal demotion, anyone joining raid, anyone leaving raid
+	KAT:RegisterEvent("RAID_TARGET_UPDATE"); --unfortunately, no response that indicates what was changed. probably going to notify all assigned tanks that things have changed though.
 	KAT:RegisterEvent("CHAT_MSG_ADDON");
 	KAT:SetScript("OnEvent", KAT_handle_events);
 	KAT:SetScript("OnUpdate", KAT_update);
@@ -55,6 +56,13 @@ function KAT_handle_events(self, event, ...)
 		if network_controller.state == -1
 		then
 			network_controller.request_setup();
+		else
+		--I lost pre-req for master status so check if I am the master
+			if network_controller.master == UnitName("player") and not IsRaidOfficer() and not IsRaidLeader()
+			then
+				--I was master, relinquish title.
+				network_controller.request_new_master();
+			end 
 		end
 		
 		--check if I left a raid
@@ -62,6 +70,7 @@ function KAT_handle_events(self, event, ...)
 		then
 			DEFAULT_CHAT_FRAME:AddMessage("KAT: left raid. resetting.", 0.6,1.0,0.6);
 			KAT_reset_addon();
+			return;
 		end
 	
 		KAT_poll_for_players();
@@ -141,9 +150,13 @@ function KAT_handle_events(self, event, ...)
 			elseif command == "master_is"
 			then
 				network_controller.request_setup();
+			elseif command == "request_new_master"
+			then
+				network_controller.request_master();
 			elseif command == "reset"
 			then 
 				KAT_reset_addon();
+				network_controller.request_setup();
 				DEFAULT_CHAT_FRAME:AddMessage("KAT: Reset by "..sender, 0.6,1.0,0.6);
 			end
 			
@@ -154,7 +167,8 @@ end
 local time_since_last_update = 0;
 function KAT_update(self, elapsed)
 	--UPDATE PER CYCLE
-
+	network_controller.update();
+	
 	--UPDATES VIA SECONDS
 		--time since last update cycle. note, this returns a float not an int in seconds thus the need to do this.
 	time_since_last_update = time_since_last_update + elapsed;
@@ -170,7 +184,8 @@ end
 function KAT_slashCommandHandler(msg)
 	if msg == "" or msg == " "
 	then
-		KAT_post();
+		--KAT_post();
+
 	elseif msg == "show"
 	then
 		KAT:Show();
@@ -187,6 +202,8 @@ function KAT_slashCommandHandler(msg)
 		DEFAULT_CHAT_FRAME:AddMessage("KAT: Error, could not understand input.\nValid commands:\n1)/kat show\n2)/kat hide\n3)/kat post\n4)/kat", 0.6,1.0,0.6);
 	end
 end
+
+
 
 --Function to fire when a new mode is selected
 function KAT_mode_picker_clicked(index)
@@ -235,6 +252,11 @@ function KAT_request_setup()
 end
 
 function KAT_post()
+	if not IsRaidLeader() and not IsRaidOfficer()
+	then
+		DEFAULT_CHAT_FRAME:AddMessage("KAT: You need to be the raid leader or have assist to use this command", 0.6,1.0,0.6);
+		return;
+	end
 	
 	if current_mode == 1 --tanks
 	then 
@@ -309,17 +331,17 @@ end
 --Function to setup the mode picker selections
 function KAT_init_mode_picker()
 	local tank = {};
-	tank.text = "Tank Assignments";
+	tank.text = "Tanks";
 	tank.value = 1;
 	tank.func = function() UIDropDownMenu_SetSelectedID(KAT_mode_chooser, 1); KAT_mode_picker_clicked(1); end;
 	
 	local heal = {};
-	heal.text = "Healer Assignments";
+	heal.text = "Healers";
 	heal.value = 2;
 	heal.func = function() UIDropDownMenu_SetSelectedID(KAT_mode_chooser, 2); KAT_mode_picker_clicked(2); end;
 	
 	local interupts = {};
-	interupts.text = "Interrupt Assignments";
+	interupts.text = "Interrupts";
 	interupts.value = 3;
 	interupts.func = function() UIDropDownMenu_SetSelectedID(KAT_mode_chooser, 3); KAT_mode_picker_clicked(3); end;
 	
@@ -354,10 +376,7 @@ end
 
 function KAT_reset_addon()
 	--reset data
-	tank_controller.reset();
-	healer_controller.reset();
-	interrupt_controller.reset();
-	network_controller.state = -1;
+	network_controller.reset_setup();
 	
 	--reset visuals
 	if current_mode == 1
