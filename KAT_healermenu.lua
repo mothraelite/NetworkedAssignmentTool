@@ -10,9 +10,9 @@ function()
 		obj.priest = {};
 	end
 
-	controller.assigned_tanks = {};
+	controller.assigned_tanks = {[1]="Raid"};
 	controller.available_healers = {}; controller.setup_classes (controller.available_healers);
-	controller.assigned_healers = {};
+	controller.assigned_healers = {["Raid"]={}};
 	controller.observers = {};
 
 	--currented focus
@@ -235,14 +235,14 @@ function()
 				do
 					if uhealer == healer 
 					then
-						tank_exists = true;
+						healer_exists = true;
 						break;
 					end
 				end
 				
 				if healer_exists == false
 				then
-					table.insert(list, healers);
+					table.insert(list, healer);
 				end
 			end
 		end
@@ -433,7 +433,6 @@ function()
 		SendChatMessage(" -- Healing Assignments --", controller.post_location["channel"], nil, controller.post_location["option"]);
 		for _, mark in ipairs(controller.assigned_tanks)
 		do
-			SendChatMessage(mark..": none", controller.post_location["channel"], nil, controller.post_location["option"]);
 			if table.getn(controller.assigned_healers[mark]) > 0
 			then
 				local healer_list = "";
@@ -447,7 +446,7 @@ function()
 				
 					healer_list = healer_list .. healer .. " ";
 				end
-				
+
 				if strlen(mark) > 10
 				then
 					mark = strsub(mark, 11, strlen(mark)) ;
@@ -455,6 +454,10 @@ function()
 				
 				SendChatMessage(mark..": " ..healer_list, controller.post_location["channel"], nil, controller.post_location["option"]);
 			else
+				if strlen(mark) > 10
+				then
+					mark = strsub(mark, 11, strlen(mark)) ;
+				end
 				SendChatMessage(mark..": none", controller.post_location["channel"], nil, controller.post_location["option"]);
 			end
 		end
