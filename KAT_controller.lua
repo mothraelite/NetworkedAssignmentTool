@@ -18,8 +18,6 @@ local network_controller = KAT_create_network_handler(tank_controller, healer_co
 	--2: healers
 	--3: interrupters
 local current_mode = 1; 
-local tank_mark_frames = nil; 
-local healer_mark_frames = nil; 
 
 function KAT_init()
 	--setup reg functions
@@ -30,10 +28,6 @@ function KAT_init()
 	KAT:SetScript("OnEvent", KAT_handle_events);
 	KAT:SetScript("OnUpdate", KAT_update);
 	--RegisterAddonMessagePrefix("KAT");
-	
-	--setup references
-	tank_mark_frames = {mark1,mark2,mark3,mark4,mark5,mark6,mark7,mark8};
-	healer_mark_frames = {tank1,tank2,tank3,tank4,tank5,tank6,tank7,tank8};
 
 	--get initial list of raid mems
 	KAT_poll_for_players();
@@ -99,19 +93,9 @@ function KAT_handle_events(self, event, ...)
 			elseif command == "setup_tanks"
 			then
 				network_controller.setup_tanks(message);
-				
-				if current_mode == 1
-				then
-					tank_controller.update_marks();
-				end
 			elseif command == "setup_healers"
 			then
 				network_controller.setup_healers(message);
-				
-				if current_mode == 2
-				then
-					healer_controller.update_marks();
-				end
 			elseif command == "setup_interrupters"
 			then
 				network_controller.setup_interrupters(message);
@@ -123,19 +107,9 @@ function KAT_handle_events(self, event, ...)
 			elseif command == "toggle_tank"
 			then
 				network_controller.toggle_tank(message);
-			
-				if current_mode == 1
-				then
-					tank_controller.update_marks();
-				end
 			elseif command == "toggle_healer"
 			then
 				network_controller.toggle_healer(message);
-			
-				if current_mode == 2
-				then
-					healer_controller.update_marks();
-				end
 			elseif command == "toggle_interrupt"
 			then
 				network_controller.toggle_interrupter(message);
@@ -214,20 +188,14 @@ function KAT_mode_picker_clicked(index)
 	if index == 1 --tank
 	then
 		--show tank visuals
-		for i,marks in ipairs(tank_mark_frames)
-		do
-			marks:Show();
-		end
+		KAT_tank_body:Show();
 		
 		tank_controller.update_marks();
 
 		current_mode = 1;
 	elseif index == 2 --heals
 	then
-		for i,marks in ipairs(healer_mark_frames)
-		do
-			marks:Show();
-		end
+		KAT_healer_body:Show();
 		
 		healer_controller.update_marks();
 		
@@ -236,10 +204,7 @@ function KAT_mode_picker_clicked(index)
 	elseif index == 3 --interrupt
 	then
 		--show interrupt visuals
-		for i,marks in ipairs(tank_mark_frames)
-		do
-			marks:Show();
-		end
+		KAT_interrupt_body:Show();
 		
 		interrupt_controller.update_marks();
 		
@@ -264,7 +229,7 @@ function KAT_post()
 	elseif current_mode == 2 --healers
 	then
 		healer_controller.post();
-	elseif current_mode == 3 --interupts
+	elseif current_mode == 3 --interrupts
 	then
 		interrupt_controller.post();
 	end
@@ -294,6 +259,37 @@ function KAT_show_listmenu(parent, focus_mark)
 		ToggleDropDownMenu(nil,1,KAT_interrupt_list,parent,0,25);
 	end
 end
+
+--POST INPUT BOX FUNCTIONS---------------------------------------------------------------------------PI
+function KAT_on_post_enter(self)
+	GameTooltip:SetOwner(self);
+	GameTooltip:SetText("Set channel to announce current assignments");
+	GameTooltip:AddLine("Selections:");
+	GameTooltip:AddLine("-s: Say");
+	GameTooltip:AddLine("-p: Party");
+	GameTooltip:AddLine("-r: Raid");
+	GameTooltip:AddLine("-<number>: Channel number");
+	GameTooltip:Show();
+end
+
+function KAT_on_post_text_changed(self)
+	if current_mode == 1
+	then
+		tank_controller.set_post_location(self:GetText());
+	elseif current_mode == 2
+	then
+		healer_controller.set_post_location(self:GetText());
+	elseif current_mode == 3
+	then
+		interrupt_controller.set_post_location(self:GetText());
+	end
+	self:ClearFocus();
+end
+
+function KAT_on_post_exit(self)
+	GameTooltip:Hide();
+end
+--POST INPUT BOX FUNCTIONS---------------------------------------------------------------------------PI
 
 --HELPER FUNCTIONS---------------------------------------------------------------------------------------HF
 function KAT_poll_for_players()
@@ -351,30 +347,23 @@ function KAT_init_mode_picker()
 end
 
 function KAT_reset_visuals()
-	--assignment labels
-	if kat_assignment_labels ~= nil
-	then
-		for i,label in ipairs(kat_assignment_labels)
-		do
-			label:SetText("");
-		end
-	end
-	
-	--hide all tank marks 
-	for i,mark in ipairs(tank_mark_frames)
-	do
-		mark:Hide();
-	end
-	
-	--hide all tank marks 
-	for i,mark in ipairs(healer_mark_frames)
-	do
-		mark:Hide();
-	end
-	
+	KAT_tank_body:Hide();
+	KAT_healer_body:Hide();
+	KAT_interrupt_body:Hide();
 end
 
 function KAT_reset_addon()
+	--reset healer marks
+	tank1_label:SetText("");
+	tank2_label:SetText("");
+	tank3_label:SetText("");
+	tank4_label:SetText("");
+	tank5_label:SetText("");
+	tank6_label:SetText("");
+	tank7_label:SetText("");
+	tank8_label:SetText("");
+	tank9_label:SetText("");
+	
 	--reset data
 	network_controller.reset_setup();
 	

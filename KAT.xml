@@ -7,7 +7,7 @@
 			
 	//-->
 	 <Script File="KAT_controller.lua" />
-	 <Frame name="KAT" enableMouse="true" movable="true" frameStrata="LOW">
+	 <Frame name="KAT" enableMouse="true" movable="true" frameStrata="MEDIUM">
 			 <Size>
 			   <AbsDimension x="500" y="450" />
 			 </Size>
@@ -40,20 +40,20 @@
 
 			 <Layers>
 				<Layer level="ARTWORK">
-					 <Texture name="TPCFrameTitle" file="Interface\DialogFrame\UI-DialogBox-Header">
+					 <Texture name="TPCFrameTitle" file="Interface\AddOns\KatsAssignmentTool\resources\images\head.tga">
 						<Size>
-							<AbsDimension x="400" y="50" />
+							<AbsDimension x="480" y="20" />
 						</Size>
 						<Anchors>
 							<Anchor point="TOP">
 								<Offset>
-									<AbsDimension x="0" y="0" />
+									<AbsDimension x="0" y="-10" />
 								</Offset>
 							</Anchor>
 						</Anchors>
 					</Texture>
 					
-					<FontString inherits="GameFontNormal" text="Kat's Assignment Tool">
+					<FontString inherits="GameFontNormal" name="KatMasterLabel" text="Master: None">
 						<Anchors>
 							<Anchor point="TOP">
 								<Offset>
@@ -62,21 +62,10 @@
 							</Anchor>
 						</Anchors>
 					</FontString>
-					
-					<FontString inherits="GameFontNormal" name="KatMasterLabel" text="Master: None">
-						<Anchors>
-							<Anchor point="BOTTOM">
-								<Offset>
-									<AbsDimension x="10" y="55" />
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</FontString>
 				</Layer>
 				
 				<Layer level="OVERLAY">
 					
-
 				</Layer>
 				
 				<Layer>
@@ -85,27 +74,36 @@
 
 			<!-- BUTTONS N SHIT //-->
 			 <Frames>
-				<!--Tank assignment marks//-->
-					<!-- Skull //-->
-				<Frame name='mark1' enableMouse="true">
-					<Size><AbsDimension x="30" y="30"/></Size>
-					<Scripts>
-						<OnEnter>
-							KAT_show_listmenu(self, "skull");
-						</OnEnter>
-					</Scripts>
+				<!--KAT TANK VIEW//-->
+				<Frame name='KAT_tank_body' frameStrata="MEDIUM">
+					<Size><AbsDimension x="504" y="438"/></Size>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="15" y="-35"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="-2" y="-14"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					<Backdrop bgFile="Interface\AddOns\KatsAssignmentTool\resources\images\tank_bg.tga">
+					   <BackgroundInsets>
+							<AbsInset left="11" right="12" top="12" bottom="11"/>
+					   </BackgroundInsets>
+					</Backdrop>
 					 <Layers>
-						<Layer level="ARTWORK">
+						<Layer level="OVERLAY">
+							<FontString inherits="GameFontNormal" name="KatTankPostLabel" text=": raid">
+								<Anchors>
+									<Anchor point="BOTTOMRIGHT">
+										<Offset>
+											<AbsDimension x="-20" y="30" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</FontString>
+						
 							<!-- Setup texture //-->
-							<Texture name="skullTexture" file="Interface\TargetingFrame\UI-RaidTargetingIcons">
-								<Size><AbsDimension x="30" y="30"/></Size>
+							<Texture name="tank_shield_texture" file="Interface\AddOns\KatsAssignmentTool\resources\images\tank_art.tga">
+								<Size><AbsDimension x="256" y="256"/></Size>
 								<Anchors>
 									<Anchor point="CENTER">
 										<Offset>
@@ -113,28 +111,332 @@
 										</Offset>
 									</Anchor>
 								</Anchors>
-								<TexCoords left="0.75" right="1" top="0.25" bottom="0.5"/>
 							</Texture>
 						</Layer>
 					</Layers>
+					<Frames>
+						<!--Tank assignment marks//-->
+							<!-- Skull //-->
+						<Frame name='mark1' enableMouse="true" frameStrata="HIGH">
+							<Size><AbsDimension x="30" y="30"/></Size>
+							<Scripts>
+								<OnEnter>
+									KAT_show_listmenu(self, "skull");
+								</OnEnter>
+							</Scripts>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="15" y="-35"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							 <Layers>
+								<Layer level="ARTWORK">
+									<!-- Setup texture //-->
+									<Texture name="skullTexture" file="Interface\TargetingFrame\UI-RaidTargetingIcons">
+										<Size><AbsDimension x="30" y="30"/></Size>
+										<Anchors>
+											<Anchor point="CENTER">
+												<Offset>
+												<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<TexCoords left="0.75" right="1" top="0.25" bottom="0.5"/>
+									</Texture>
+								</Layer>
+							</Layers>
+						</Frame>
+						
+							<!-- X //-->
+						<Frame name='mark2' enableMouse="true" frameStrata="HIGH">
+							<Size><AbsDimension x="30" y="30"/></Size>
+							<Scripts><OnEnter>KAT_show_listmenu(self, "x");</OnEnter></Scripts>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="15" y="-75"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							 <Layers>
+								<Layer level="ARTWORK">
+									<!-- Setup texture //-->
+									<Texture name="skullTexture" file="Interface\TargetingFrame\UI-RaidTargetingIcons">
+										<Size><AbsDimension x="30" y="30"/></Size>
+										<Anchors>
+											<Anchor point="CENTER">
+												<Offset>
+												<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<TexCoords left="0.5" right="0.75" top="0.25" bottom="0.5"/>
+									</Texture>
+								</Layer>
+							</Layers>
+						</Frame>
+						
+							<!-- [  ] //-->
+						<Frame name='mark3' enableMouse="true" frameStrata="HIGH">
+							<Size><AbsDimension x="30" y="30"/></Size>
+							<Scripts><OnEnter>KAT_show_listmenu(self, "square");</OnEnter></Scripts>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="15" y="-115"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							 <Layers>
+								<Layer level="ARTWORK">
+									<!-- Setup texture //-->
+									<Texture name="skullTexture" file="Interface\TargetingFrame\UI-RaidTargetingIcons">
+										<Size><AbsDimension x="30" y="30"/></Size>
+										<Anchors>
+											<Anchor point="CENTER">
+												<Offset>
+												<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<TexCoords left="0.25" right="0.5" top="0.25" bottom="0.5"/>
+									</Texture>
+								</Layer>
+							</Layers>
+						</Frame>
+						
+							<!-- moon //-->
+						<Frame name='mark4' enableMouse="true" frameStrata="HIGH">
+							<Size><AbsDimension x="30" y="30"/></Size>
+							<Scripts><OnEnter>KAT_show_listmenu(self, "moon");</OnEnter></Scripts>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="15" y="-155"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							 <Layers>
+								<Layer level="ARTWORK">
+									<!-- Setup texture //-->
+									<Texture name="skullTexture" file="Interface\TargetingFrame\UI-RaidTargetingIcons">
+										<Size><AbsDimension x="30" y="30"/></Size>
+										<Anchors>
+											<Anchor point="CENTER">
+												<Offset>
+												<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<TexCoords left="0" right="0.25" top="0.25" bottom="0.5"/>
+									</Texture>
+								</Layer>
+							</Layers>
+						</Frame>
+						
+							<!-- triangle //-->
+						<Frame name='mark5' enableMouse="true" frameStrata="HIGH">
+							<Size><AbsDimension x="30" y="30"/></Size>
+							<Scripts><OnEnter>KAT_show_listmenu(self, "triangle");</OnEnter></Scripts>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="15" y="-195"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							 <Layers>
+								<Layer level="ARTWORK">
+									<!-- Setup texture //-->
+									<Texture name="skullTexture" file="Interface\TargetingFrame\UI-RaidTargetingIcons">
+										<Size><AbsDimension x="30" y="30"/></Size>
+										<Anchors>
+											<Anchor point="CENTER">
+												<Offset>
+												<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<TexCoords left="0.75" right="1" top="0" bottom="0.25"/>
+									</Texture>
+								</Layer>
+							</Layers>
+						</Frame>
+						
+							<!-- diamond //-->
+						<Frame name='mark6' enableMouse="true" frameStrata="HIGH">
+							<Size><AbsDimension x="30" y="30"/></Size>
+							<Scripts><OnEnter>KAT_show_listmenu(self, "diamond");</OnEnter></Scripts>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="15" y="-235"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							 <Layers>
+								<Layer level="ARTWORK">
+									<!-- Setup texture //-->
+									<Texture name="skullTexture" file="Interface\TargetingFrame\UI-RaidTargetingIcons">
+										<Size><AbsDimension x="30" y="30"/></Size>
+										<Anchors>
+											<Anchor point="CENTER">
+												<Offset>
+													<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<TexCoords left="0.5" right="0.75" top="0" bottom="0.25"/>
+									</Texture>
+								</Layer>
+							</Layers>
+						</Frame>
+						
+							<!-- circle //-->
+						<Frame name='mark7' enableMouse="true" frameStrata="HIGH">
+							<Size><AbsDimension x="30" y="30"/></Size>
+							<Scripts><OnEnter>KAT_show_listmenu(self, "circle");</OnEnter></Scripts>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="15" y="-275"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							 <Layers>
+								<Layer level="ARTWORK">
+									<!-- Setup texture //-->
+									<Texture name="skullTexture" file="Interface\TargetingFrame\UI-RaidTargetingIcons">
+										<Size><AbsDimension x="30" y="30"/></Size>
+										<Anchors>
+											<Anchor point="CENTER">
+												<Offset>
+												<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<TexCoords left="0.25" right="0.5" top="0" bottom="0.25"/>
+									</Texture>
+								</Layer>
+							</Layers>
+						</Frame>
+						
+						<!-- star //-->
+						<Frame name='mark8' enableMouse="true" frameStrata="HIGH">
+							<Size><AbsDimension x="30" y="30"/></Size>
+							<Scripts><OnEnter>KAT_show_listmenu(self, "star");</OnEnter></Scripts>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="15" y="-315"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							 <Layers>
+								<Layer level="ARTWORK">
+									<!-- Setup texture //-->
+									<Texture name="skullTexture" file="Interface\TargetingFrame\UI-RaidTargetingIcons">
+										<Size><AbsDimension x="30" y="30"/></Size>
+										<Anchors>
+											<Anchor point="CENTER">
+												<Offset>
+												<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+									</Texture>
+								</Layer>
+							</Layers>
+						</Frame>
+						
+						<!-- MT //-->
+						<Frame name='mark9' enableMouse="true" frameStrata="HIGH">
+							<Size><AbsDimension x="60" y="30"/></Size>
+							<Scripts><OnEnter>KAT_show_listmenu(self, mt_label:GetText());</OnEnter></Scripts>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-355"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							 <Layers>
+								<Layer level="ARTWORK">
+									<!-- Setup label //-->
+									<FontString name='mt_label' inherits="GameFontNormal" text="MT">
+										<Size><AbsDimension x="80" y="30"/></Size>
+										<FontHeight><AbsValue val="30" /></FontHeight>
+										<Anchors>
+											<Anchor point="CENTER">
+												<Offset>
+												<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+									</FontString>
+								</Layer>
+							</Layers>
+						</Frame>
+						<!--Tank assignment marks //-->
+						<!--TANK POST LOCATION //-->
+					<EditBox inherits="InputBoxTemplate" name="KatTankPostChannelEdit" frameStrata="HIGH">
+						<Size><AbsDimension x="18" y="28"/></Size>
+						<Anchors>
+							<Anchor relativeTo="KAT" point="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="-75" y="20" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self:SetText("r"); 
+								self:SetMaxLetters(1);
+								self:SetAutoFocus(false);
+							</OnLoad>
+							<OnEnter>KAT_on_post_enter(self);</OnEnter>
+							<OnTextChanged>KAT_on_post_text_changed(self);</OnTextChanged>
+							<OnLeave>KAT_on_post_exit(self);</OnLeave>
+						</Scripts>
+					</EditBox>
+					<!--TANK POST LOCATION //-->
+					</Frames>
 				</Frame>
 				
-					<!-- X //-->
-				<Frame name='mark2' enableMouse="true">
-					<Size><AbsDimension x="30" y="30"/></Size>
-					<Scripts><OnEnter>KAT_show_listmenu(self, "x");</OnEnter></Scripts>
+				<!--KAT HEALER VIEW//-->
+				<Frame name='KAT_healer_body' frameStrata="MEDIUM" hidden="true">
+					<Size><AbsDimension x="504" y="438"/></Size>
 					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="15" y="-75"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="-2" y="-14"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					<Backdrop bgFile="Interface\AddOns\KatsAssignmentTool\resources\images\healer_bg.tga">
+					   <BackgroundInsets>
+							<AbsInset left="11" right="12" top="12" bottom="11"/>
+					   </BackgroundInsets>
+					</Backdrop>
 					 <Layers>
-						<Layer level="ARTWORK">
+						<Layer level="OVERLAY">
+							<FontString inherits="GameFontNormal" name="KatHealPostLabel" text=": to raid">
+								<Anchors>
+									<Anchor point="BOTTOMRIGHT">
+										<Offset>
+											<AbsDimension x="-20" y="30" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</FontString>
+						
 							<!-- Setup texture //-->
-							<Texture name="skullTexture" file="Interface\TargetingFrame\UI-RaidTargetingIcons">
-								<Size><AbsDimension x="30" y="30"/></Size>
+							<Texture name="tank_shield_texture" file="Interface\AddOns\KatsAssignmentTool\resources\images\healer_art.tga">
+								<Size><AbsDimension x="256" y="256"/></Size>
 								<Anchors>
 									<Anchor point="CENTER">
 										<Offset>
@@ -142,414 +444,623 @@
 										</Offset>
 									</Anchor>
 								</Anchors>
-								<TexCoords left="0.5" right="0.75" top="0.25" bottom="0.5"/>
 							</Texture>
 						</Layer>
 					</Layers>
-				</Frame>
-				
-					<!-- [  ] //-->
-				<Frame name='mark3' enableMouse="true">
-					<Size><AbsDimension x="30" y="30"/></Size>
-					<Scripts><OnEnter>KAT_show_listmenu(self, "square");</OnEnter></Scripts>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="15" y="-115"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-					 <Layers>
-						<Layer level="ARTWORK">
-							<!-- Setup texture //-->
-							<Texture name="skullTexture" file="Interface\TargetingFrame\UI-RaidTargetingIcons">
-								<Size><AbsDimension x="30" y="30"/></Size>
-								<Anchors>
-									<Anchor point="CENTER">
-										<Offset>
-										<AbsDimension x="0" y="0"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<TexCoords left="0.25" right="0.5" top="0.25" bottom="0.5"/>
-							</Texture>
-						</Layer>
-					</Layers>
-				</Frame>
-				
-					<!-- moon //-->
-				<Frame name='mark4' enableMouse="true">
-					<Size><AbsDimension x="30" y="30"/></Size>
-					<Scripts><OnEnter>KAT_show_listmenu(self, "moon");</OnEnter></Scripts>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="15" y="-155"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-					 <Layers>
-						<Layer level="ARTWORK">
-							<!-- Setup texture //-->
-							<Texture name="skullTexture" file="Interface\TargetingFrame\UI-RaidTargetingIcons">
-								<Size><AbsDimension x="30" y="30"/></Size>
-								<Anchors>
-									<Anchor point="CENTER">
-										<Offset>
-										<AbsDimension x="0" y="0"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<TexCoords left="0" right="0.25" top="0.25" bottom="0.5"/>
-							</Texture>
-						</Layer>
-					</Layers>
-				</Frame>
-				
-					<!-- triangle //-->
-				<Frame name='mark5' enableMouse="true">
-					<Size><AbsDimension x="30" y="30"/></Size>
-					<Scripts><OnEnter>KAT_show_listmenu(self, "triangle");</OnEnter></Scripts>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="15" y="-195"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-					 <Layers>
-						<Layer level="ARTWORK">
-							<!-- Setup texture //-->
-							<Texture name="skullTexture" file="Interface\TargetingFrame\UI-RaidTargetingIcons">
-								<Size><AbsDimension x="30" y="30"/></Size>
-								<Anchors>
-									<Anchor point="CENTER">
-										<Offset>
-										<AbsDimension x="0" y="0"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<TexCoords left="0.75" right="1" top="0" bottom="0.25"/>
-							</Texture>
-						</Layer>
-					</Layers>
-				</Frame>
-				
-					<!-- diamond //-->
-				<Frame name='mark6' enableMouse="true">
-					<Size><AbsDimension x="30" y="30"/></Size>
-					<Scripts><OnEnter>KAT_show_listmenu(self, "diamond");</OnEnter></Scripts>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="15" y="-235"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-					 <Layers>
-						<Layer level="ARTWORK">
-							<!-- Setup texture //-->
-							<Texture name="skullTexture" file="Interface\TargetingFrame\UI-RaidTargetingIcons">
-								<Size><AbsDimension x="30" y="30"/></Size>
-								<Anchors>
-									<Anchor point="CENTER">
-										<Offset>
+					<Frames>
+					<!-- healer assignment marks //-->
+					<Frame name='tank1' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>KAT_show_listmenu(self, tank1_label:GetText());</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-35"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='tank1_label' inherits="GameFontNormal" text="">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
 											<AbsDimension x="0" y="0"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<TexCoords left="0.5" right="0.75" top="0" bottom="0.25"/>
-							</Texture>
-						</Layer>
-					</Layers>
-				</Frame>
-				
-					<!-- circle //-->
-				<Frame name='mark7' enableMouse="true">
-					<Size><AbsDimension x="30" y="30"/></Size>
-					<Scripts><OnEnter>KAT_show_listmenu(self, "circle");</OnEnter></Scripts>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="15" y="-275"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-					 <Layers>
-						<Layer level="ARTWORK">
-							<!-- Setup texture //-->
-							<Texture name="skullTexture" file="Interface\TargetingFrame\UI-RaidTargetingIcons">
-								<Size><AbsDimension x="30" y="30"/></Size>
-								<Anchors>
-									<Anchor point="CENTER">
-										<Offset>
-										<AbsDimension x="0" y="0"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<TexCoords left="0.25" right="0.5" top="0" bottom="0.25"/>
-							</Texture>
-						</Layer>
-					</Layers>
-				</Frame>
-				
-				<!-- star //-->
-				<Frame name='mark8' enableMouse="true">
-					<Size><AbsDimension x="30" y="30"/></Size>
-					<Scripts><OnEnter>KAT_show_listmenu(self, "star");</OnEnter></Scripts>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="15" y="-315"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-					 <Layers>
-						<Layer level="ARTWORK">
-							<!-- Setup texture //-->
-							<Texture name="skullTexture" file="Interface\TargetingFrame\UI-RaidTargetingIcons">
-								<Size><AbsDimension x="30" y="30"/></Size>
-								<Anchors>
-									<Anchor point="CENTER">
-										<Offset>
-										<AbsDimension x="0" y="0"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
-							</Texture>
-						</Layer>
-					</Layers>
-				</Frame>
-				<!--Tank assignment marks //-->
-				
-				<!-- healer assignment marks //-->
-				<Frame name='tank1' enableMouse="true" hidden='true'>
-					<Size><AbsDimension x="80" y="30"/></Size>
-					<Scripts><OnEnter>KAT_show_listmenu(self, tank1_label:GetText());</OnEnter></Scripts>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="15" y="-35"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-					 <Layers>
-						<Layer level="ARTWORK">
-							<!-- Setup label //-->
-							<FontString name='tank1_label' inherits="GameFontNormal" text="">
-								<Size><AbsDimension x="80" y="30"/></Size>
-								<Anchors>
-									<Anchor point="CENTER">
-										<Offset>
-										<AbsDimension x="0" y="0"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
-							</FontString>
-						</Layer>
-					</Layers>
-				</Frame>
-				
-				<Frame name='tank2' enableMouse="true" hidden='true'>
-					<Size><AbsDimension x="80" y="30"/></Size>
-					<Scripts><OnEnter>KAT_show_listmenu(self, tank2_label:GetText());</OnEnter></Scripts>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="15" y="-75"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-					 <Layers>
-						<Layer level="ARTWORK">
-							<!-- Setup label //-->
-							<FontString name='tank2_label' inherits="GameFontNormal" text="">
-								<Size><AbsDimension x="80" y="30"/></Size>
-								<Anchors>
-									<Anchor point="CENTER">
-										<Offset>
-										<AbsDimension x="0" y="0"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
-							</FontString>
-						</Layer>
-					</Layers>
-				</Frame>
-				
-				<Frame name='tank3' enableMouse="true" hidden='true'>
-					<Size><AbsDimension x="80" y="30"/></Size>
-					<Scripts><OnEnter>KAT_show_listmenu(self, tank3_label:GetText());</OnEnter></Scripts>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="15" y="-115"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-					 <Layers>
-						<Layer level="ARTWORK">
-							<!-- Setup label //-->
-							<FontString name='tank3_label' inherits="GameFontNormal" text="">
-								<Size><AbsDimension x="80" y="30"/></Size>
-								<Anchors>
-									<Anchor point="CENTER">
-										<Offset>
-										<AbsDimension x="0" y="0"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
-							</FontString>
-						</Layer>
-					</Layers>
-				</Frame>
-				
-				<Frame name='tank4' enableMouse="true" hidden='true'>
-					<Size><AbsDimension x="80" y="30"/></Size>
-					<Scripts><OnEnter>KAT_show_listmenu(self, tank4_label:GetText());</OnEnter></Scripts>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="15" y="-155"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-					 <Layers>
-						<Layer level="ARTWORK">
-							<!-- Setup label //-->
-							<FontString name='tank4_label' inherits="GameFontNormal" text="">
-								<Size><AbsDimension x="80" y="30"/></Size>
-								<Anchors>
-									<Anchor point="CENTER">
-										<Offset>
-										<AbsDimension x="0" y="0"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
-							</FontString>
-						</Layer>
-					</Layers>
-				</Frame>
-				
-				<Frame name='tank5' enableMouse="true" hidden='true'>
-					<Size><AbsDimension x="80" y="30"/></Size>
-					<Scripts><OnEnter>KAT_show_listmenu(self, tank5_label:GetText());</OnEnter></Scripts>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="15" y="-195"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-					 <Layers>
-						<Layer level="ARTWORK">
-							<!-- Setup label //-->
-							<FontString name='tank5_label' inherits="GameFontNormal" text="">
-								<Size><AbsDimension x="80" y="30"/></Size>
-								<Anchors>
-									<Anchor point="CENTER">
-										<Offset>
-										<AbsDimension x="0" y="0"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
-							</FontString>
-						</Layer>
-					</Layers>
-				</Frame>
-				
-				<Frame name='tank6' enableMouse="true" hidden='true'>
-					<Size><AbsDimension x="80" y="30"/></Size>
-					<Scripts><OnEnter>KAT_show_listmenu(self, tank6_label:GetText());</OnEnter></Scripts>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="15" y="-235"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-					 <Layers>
-						<Layer level="ARTWORK">
-							<!-- Setup label //-->
-							<FontString name='tank6_label' inherits="GameFontNormal" text="">
-								<Size><AbsDimension x="80" y="30"/></Size>
-								<Anchors>
-									<Anchor point="CENTER">
-										<Offset>
-										<AbsDimension x="0" y="0"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
-							</FontString>
-						</Layer>
-					</Layers>
-				</Frame>
-				
-				<Frame name='tank7' enableMouse="true" hidden='true'>
-					<Size><AbsDimension x="80" y="30"/></Size>
-					<Scripts><OnEnter>KAT_show_listmenu(self, tank7_label:GetText());</OnEnter></Scripts>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="15" y="-275"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-					 <Layers>
-						<Layer level="ARTWORK">
-							<!-- Setup label //-->
-							<FontString name='tank7_label' inherits="GameFontNormal" text="">
-								<Size><AbsDimension x="80" y="30"/></Size>
-								<Anchors>
-									<Anchor point="CENTER">
-										<Offset>
-										<AbsDimension x="0" y="0"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
-							</FontString>
-						</Layer>
-					</Layers>
-				</Frame>
-				
-				<Frame name='tank8' enableMouse="true" hidden='true'>
-					<Size><AbsDimension x="80" y="30"/></Size>
-					<Scripts><OnEnter>KAT_show_listmenu(self, tank8_label:GetText());</OnEnter></Scripts>
-					<Anchors>
-						<Anchor point="TOPLEFT">
-							<Offset>
-								<AbsDimension x="15" y="-315"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-					 <Layers>
-						<Layer level="ARTWORK">
-							<!-- Setup label //-->
-							<FontString name='tank8_label' inherits="GameFontNormal" text="">
-								<Size><AbsDimension x="80" y="30"/></Size>
-								<Anchors>
-									<Anchor point="CENTER">
-										<Offset>
-										<AbsDimension x="0" y="0"/>
-										</Offset>
-									</Anchor>
-								</Anchors>
-								<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
-							</FontString>
-						</Layer>
-					</Layers>
-				</Frame>
-				<!-- healer assignment marks //-->
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<Frame name='tank2' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>KAT_show_listmenu(self, tank2_label:GetText());</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-75"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='tank2_label' inherits="GameFontNormal" text="">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<Frame name='tank3' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>KAT_show_listmenu(self, tank3_label:GetText());</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-115"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='tank3_label' inherits="GameFontNormal" text="">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<Frame name='tank4' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>KAT_show_listmenu(self, tank4_label:GetText());</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-155"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='tank4_label' inherits="GameFontNormal" text="">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<Frame name='tank5' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>KAT_show_listmenu(self, tank5_label:GetText());</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-195"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='tank5_label' inherits="GameFontNormal" text="">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<Frame name='tank6' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>KAT_show_listmenu(self, tank6_label:GetText());</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-235"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='tank6_label' inherits="GameFontNormal" text="">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<Frame name='tank7' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>KAT_show_listmenu(self, tank7_label:GetText());</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-275"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='tank7_label' inherits="GameFontNormal" text="">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<Frame name='tank8' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>KAT_show_listmenu(self, tank8_label:GetText());</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-315"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='tank8_label' inherits="GameFontNormal" text="">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<Frame name='tank9' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>KAT_show_listmenu(self, tank9_label:GetText());</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-355"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='tank9_label' inherits="GameFontNormal" text="">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					<!-- healer assignment marks //-->
+					
+							<!--HEAL POST LOCATION //-->
+					<EditBox inherits="InputBoxTemplate" name="KatHealerPostChannelEdit" frameStrata="HIGH">
+						<Size><AbsDimension x="18" y="28"/></Size>
+						<Anchors>
+							<Anchor relativeTo="KAT" point="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="-75" y="20" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self:SetText("r"); 
+								self:SetMaxLetters(1);
+								self:SetAutoFocus(false);
+							</OnLoad>
+							<OnEnter>KAT_on_post_enter(self);</OnEnter>
+							<OnTextChanged>KAT_on_post_text_changed(self);</OnTextChanged>
+							<OnLeave>KAT_on_post_exit(self);</OnLeave>
+						</Scripts>
+					</EditBox>
+					<!--HEAL POST LOCATION //-->
+				</Frames>
+			</Frame>
 			 
-				<Button inherits="OptionsButtonTemplate" name="KatRequestOptionButton" text="Options">
+				<!--KAT INTERRUPT VIEW//-->
+				<Frame name='KAT_interrupt_body' frameStrata="MEDIUM" hidden="true">
+					<Size><AbsDimension x="504" y="438"/></Size>
+					<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="-2" y="-14"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+					<Backdrop bgFile="Interface\AddOns\KatsAssignmentTool\resources\images\interrupt_bg.tga">
+					   <BackgroundInsets>
+							<AbsInset left="11" right="12" top="12" bottom="11"/>
+					   </BackgroundInsets>
+					</Backdrop>
+					 <Layers>
+						<Layer level="OVERLAY">
+							<FontString inherits="GameFontNormal" name="KatInterruptPostLabel" text=": to raid">
+								<Anchors>
+									<Anchor point="BOTTOMRIGHT">
+										<Offset>
+											<AbsDimension x="-20" y="30" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</FontString>
+						
+							<!-- Setup texture //-->
+							<Texture  file="Interface\AddOns\KatsAssignmentTool\resources\images\interrupt_art.tga">
+								<Size><AbsDimension x="256" y="256"/></Size>
+								<Anchors>
+									<Anchor point="CENTER">
+										<Offset>
+										<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Texture>
+						</Layer>
+					</Layers>
+					<Frames>
+						<!--Tank assignment marks//-->
+							<!-- Skull //-->
+						<Frame name='imark1' enableMouse="true" frameStrata="HIGH">
+							<Size><AbsDimension x="30" y="30"/></Size>
+							<Scripts>
+								<OnEnter>
+									KAT_show_listmenu(self, "skull");
+								</OnEnter>
+							</Scripts>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="15" y="-35"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							 <Layers>
+								<Layer level="ARTWORK">
+									<!-- Setup texture //-->
+									<Texture name="skullTexture" file="Interface\TargetingFrame\UI-RaidTargetingIcons">
+										<Size><AbsDimension x="30" y="30"/></Size>
+										<Anchors>
+											<Anchor point="CENTER">
+												<Offset>
+												<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<TexCoords left="0.75" right="1" top="0.25" bottom="0.5"/>
+									</Texture>
+								</Layer>
+							</Layers>
+						</Frame>
+						
+							<!-- X //-->
+						<Frame name='imark2' enableMouse="true" frameStrata="HIGH">
+							<Size><AbsDimension x="30" y="30"/></Size>
+							<Scripts><OnEnter>KAT_show_listmenu(self, "x");</OnEnter></Scripts>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="15" y="-75"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							 <Layers>
+								<Layer level="ARTWORK">
+									<!-- Setup texture //-->
+									<Texture name="skullTexture" file="Interface\TargetingFrame\UI-RaidTargetingIcons">
+										<Size><AbsDimension x="30" y="30"/></Size>
+										<Anchors>
+											<Anchor point="CENTER">
+												<Offset>
+												<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<TexCoords left="0.5" right="0.75" top="0.25" bottom="0.5"/>
+									</Texture>
+								</Layer>
+							</Layers>
+						</Frame>
+						
+							<!-- [  ] //-->
+						<Frame name='imark3' enableMouse="true" frameStrata="HIGH">
+							<Size><AbsDimension x="30" y="30"/></Size>
+							<Scripts><OnEnter>KAT_show_listmenu(self, "square");</OnEnter></Scripts>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="15" y="-115"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							 <Layers>
+								<Layer level="ARTWORK">
+									<!-- Setup texture //-->
+									<Texture name="skullTexture" file="Interface\TargetingFrame\UI-RaidTargetingIcons">
+										<Size><AbsDimension x="30" y="30"/></Size>
+										<Anchors>
+											<Anchor point="CENTER">
+												<Offset>
+												<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<TexCoords left="0.25" right="0.5" top="0.25" bottom="0.5"/>
+									</Texture>
+								</Layer>
+							</Layers>
+						</Frame>
+						
+							<!-- moon //-->
+						<Frame name='imark4' enableMouse="true" frameStrata="HIGH">
+							<Size><AbsDimension x="30" y="30"/></Size>
+							<Scripts><OnEnter>KAT_show_listmenu(self, "moon");</OnEnter></Scripts>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="15" y="-155"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							 <Layers>
+								<Layer level="ARTWORK">
+									<!-- Setup texture //-->
+									<Texture name="skullTexture" file="Interface\TargetingFrame\UI-RaidTargetingIcons">
+										<Size><AbsDimension x="30" y="30"/></Size>
+										<Anchors>
+											<Anchor point="CENTER">
+												<Offset>
+												<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<TexCoords left="0" right="0.25" top="0.25" bottom="0.5"/>
+									</Texture>
+								</Layer>
+							</Layers>
+						</Frame>
+						
+							<!-- triangle //-->
+						<Frame name='imark5' enableMouse="true" frameStrata="HIGH">
+							<Size><AbsDimension x="30" y="30"/></Size>
+							<Scripts><OnEnter>KAT_show_listmenu(self, "triangle");</OnEnter></Scripts>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="15" y="-195"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							 <Layers>
+								<Layer level="ARTWORK">
+									<!-- Setup texture //-->
+									<Texture name="skullTexture" file="Interface\TargetingFrame\UI-RaidTargetingIcons">
+										<Size><AbsDimension x="30" y="30"/></Size>
+										<Anchors>
+											<Anchor point="CENTER">
+												<Offset>
+												<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<TexCoords left="0.75" right="1" top="0" bottom="0.25"/>
+									</Texture>
+								</Layer>
+							</Layers>
+						</Frame>
+						
+							<!-- diamond //-->
+						<Frame name='imark6' enableMouse="true" frameStrata="HIGH">
+							<Size><AbsDimension x="30" y="30"/></Size>
+							<Scripts><OnEnter>KAT_show_listmenu(self, "diamond");</OnEnter></Scripts>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="15" y="-235"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							 <Layers>
+								<Layer level="ARTWORK">
+									<!-- Setup texture //-->
+									<Texture name="skullTexture" file="Interface\TargetingFrame\UI-RaidTargetingIcons">
+										<Size><AbsDimension x="30" y="30"/></Size>
+										<Anchors>
+											<Anchor point="CENTER">
+												<Offset>
+													<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<TexCoords left="0.5" right="0.75" top="0" bottom="0.25"/>
+									</Texture>
+								</Layer>
+							</Layers>
+						</Frame>
+						
+							<!-- circle //-->
+						<Frame name='imark7' enableMouse="true" frameStrata="HIGH">
+							<Size><AbsDimension x="30" y="30"/></Size>
+							<Scripts><OnEnter>KAT_show_listmenu(self, "circle");</OnEnter></Scripts>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="15" y="-275"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							 <Layers>
+								<Layer level="ARTWORK">
+									<!-- Setup texture //-->
+									<Texture name="skullTexture" file="Interface\TargetingFrame\UI-RaidTargetingIcons">
+										<Size><AbsDimension x="30" y="30"/></Size>
+										<Anchors>
+											<Anchor point="CENTER">
+												<Offset>
+												<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<TexCoords left="0.25" right="0.5" top="0" bottom="0.25"/>
+									</Texture>
+								</Layer>
+							</Layers>
+						</Frame>
+						
+						<!-- star //-->
+						<Frame name='imark8' enableMouse="true" frameStrata="HIGH">
+							<Size><AbsDimension x="30" y="30"/></Size>
+							<Scripts><OnEnter>KAT_show_listmenu(self, "star");</OnEnter></Scripts>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="15" y="-315"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							 <Layers>
+								<Layer level="ARTWORK">
+									<!-- Setup texture //-->
+									<Texture name="skullTexture" file="Interface\TargetingFrame\UI-RaidTargetingIcons">
+										<Size><AbsDimension x="30" y="30"/></Size>
+										<Anchors>
+											<Anchor point="CENTER">
+												<Offset>
+												<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+									</Texture>
+								</Layer>
+							</Layers>
+						</Frame>
+						
+						<!-- MT //-->
+						<Frame name='imark9' enableMouse="true" frameStrata="HIGH">
+							<Size><AbsDimension x="60" y="30"/></Size>
+							<Scripts><OnEnter>KAT_show_listmenu(self, mt_label:GetText());</OnEnter></Scripts>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-355"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							 <Layers>
+								<Layer level="ARTWORK">
+									<!-- Setup label //-->
+									<FontString name='mt_label' inherits="GameFontNormal" text="MT">
+										<Size><AbsDimension x="80" y="30"/></Size>
+										<FontHeight><AbsValue val="30" /></FontHeight>
+										<Anchors>
+											<Anchor point="CENTER">
+												<Offset>
+												<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+									</FontString>
+								</Layer>
+							</Layers>
+						</Frame>
+						<!--Tank assignment marks //-->
+						<!--TANK POST LOCATION //-->
+					<EditBox inherits="InputBoxTemplate" name="KatInterruptPostChannelEdit" frameStrata="HIGH">
+						<Size><AbsDimension x="18" y="28"/></Size>
+						<Anchors>
+							<Anchor relativeTo="KAT" point="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="-75" y="20" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								self:SetText("r"); 
+								self:SetMaxLetters(1);
+								self:SetAutoFocus(false);
+							</OnLoad>
+							<OnEnter>KAT_on_post_enter(self);</OnEnter>
+							<OnTextChanged>KAT_on_post_text_changed(self);</OnTextChanged>
+							<OnLeave>KAT_on_post_exit(self);</OnLeave>
+						</Scripts>
+					</EditBox>
+					<!--TANK POST LOCATION //-->
+					</Frames>
+				</Frame>
+			 
+				<Button inherits="OptionsButtonTemplate" name="KatRequestOptionButton" text="Options" disabled="true">
 					<Size><AbsDimension x="80" y="30"/></Size>
 					<Anchors>
 						<Anchor relativeTo="KAT" point="BOTTOM">
@@ -584,25 +1095,25 @@
 			   <!-- Choose between tank/healing/interupt/misc assignments //-->
 			   
 			   <!-- Tank list menu //-->
-			  <Frame name="KAT_tank_list" inherits="UIDropDownMenuTemplate">
+			  <Frame name="KAT_tank_list" inherits="UIDropDownMenuTemplate" frameStrata="HIGH">
 					<Anchors></Anchors>
 			   </Frame>
 			   <!-- Tank list menu //-->
 			   
 			    <!-- Healer list menu //-->
-			  <Frame name="KAT_heal_list" inherits="UIDropDownMenuTemplate">
+			  <Frame name="KAT_heal_list" inherits="UIDropDownMenuTemplate" frameStrata="HIGH">
 					<Anchors></Anchors>
 			   </Frame>
 			   <!-- Healer list menu //-->
 			   
 			    <!-- Interrupt list menu //-->
-			  <Frame name="KAT_interrupt_list" inherits="UIDropDownMenuTemplate">
+			  <Frame name="KAT_interrupt_list" inherits="UIDropDownMenuTemplate" frameStrata="HIGH">
 					<Anchors></Anchors>
 			   </Frame>
 			   <!-- Interrupt list menu //-->
 			   
 			    <!-- Misc list menu //-->
-			  <Frame name="KAT_misc_list" inherits="UIDropDownMenuTemplate">
+			  <Frame name="KAT_misc_list" inherits="UIDropDownMenuTemplate" frameStrata="HIGH">
 					<Anchors></Anchors>
 			   </Frame>
 			   <!-- Misc list menu //-->
@@ -623,12 +1134,12 @@
 				</Button>
 			   
 			   <!-- Close button //-->
-			    <Button inherits="OptionsButtonTemplate" name="KatCloseButton" text="X">
+			    <Button inherits="OptionsButtonTemplate" name="KatCloseButton" text="X" frameStrata="HIGH">
 					<Size><AbsDimension x="14" y="14"/></Size>
 					<Anchors>
 						<Anchor relativeTo="KAT" point="TOPRIGHT">
 							<Offset>
-								<AbsDimension x="-8" y="-10" />
+								<AbsDimension x="-10" y="-12" />
 							</Offset>
 						</Anchor>
 						

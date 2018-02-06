@@ -60,7 +60,7 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 		controller.state = 0; --waiting for setup
 		SendAddonMessage("KAT", "request_setup-"..UnitName("player").."-"..UnitName("player"), "RAID");
 		
-		--Set timed event to check if i get a full response in 3 seconds. 
+		--Set timed event to check if i get a full response in 2 seconds. 
 		local func = 
 		function()
 			--did not get a full response or empty response.
@@ -87,7 +87,7 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 					--ask if master is offline
 					SendAddonMessage("KAT", "who_is_master-"..UnitName("player").."-"..UnitName("player"), "RAID");
 					
-					--fire function after 3 seconds if no response because no setup available in raid
+					--fire function after 2 seconds if no response because no setup available in raid
 					local no_setup = 
 					function()
 						if controller.state == 0
@@ -109,11 +109,11 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 							
 						end
 					end
-					KAT_set_alarm(3, no_setup);
+					KAT_set_alarm(2, no_setup);
 				end	
 			end
 		end
-		KAT_set_alarm(3, func);
+		KAT_set_alarm(2, func);
 	end
 	
 	controller.request_new_master 
@@ -239,7 +239,6 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 	=
 	function(message)
 		local args = KAT_split(message, ":"); --split mark and player
-		
 		controller.tank_controller.toggle_player(args[1], args[2]);
 	end
 	

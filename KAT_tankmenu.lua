@@ -14,16 +14,17 @@ function()
 		obj.priest = {};
 		obj.rogue = {};
 	end
-
-	controller.assigned_tanks = {["skull"]={}, ["x"]={}, ["square"]={},["moon"]={},["triangle"]={},["diamond"]={},["circle"]={},["star"]={}};
-	controller.marks = {"skull", "x", "square", "moon", "triangle", "diamond", "circle", "star"};
+	
+	controller.assigned_tanks = {["skull"]={}, ["x"]={}, ["square"]={},["moon"]={},["triangle"]={},["diamond"]={},["circle"]={},["star"]={},["MT"]={}};
+	controller.marks = {"skull", "x", "square", "moon", "triangle", "diamond", "circle", "star", "MT"};
 	controller.available_tanks = {}; controller.setup_classes (controller.available_tanks);
 	controller.observers = {};
 
 	--currented focus
 	controller.current_focus_mark = "";
 	controller.current_menu_parent = nil;
-
+	controller.kat_assignment_frames = {["skull"]={}, ["x"]={}, ["square"]={},["moon"]={},["triangle"]={},["diamond"]={},["circle"]={},["star"]={},["MT"]={}};
+	controller.post_location = {["channel"]="RAID", ["option"]=nil, ["char"]="r"};
 	--VARIABLES-------------------------------------------------------------------------------------------------------V
 
 	--FUNCTIONS-------------------------------------------------------------------------------------------------------F
@@ -89,6 +90,7 @@ function()
 						then
 							controller.notify_observers("remove_tank", {info.text});
 							SendAddonMessage("KAT", "toggle_tank-"..controller.current_focus_mark..":"..info.text.."-"..UnitName("player"), "RAID")
+							controller.update_marks();
 						end
 						
 						return;
@@ -399,42 +401,125 @@ function()
 	
 	controller.update_marks =
 	function()
-		--lazy instantiate labels (just in case user doesn't end up using addon rn)
-		if kat_assignment_labels == nil
-		then
-			kat_assignment_labels = {};
-			local create_label =
-			function()
-				local guiString = KAT:CreateFontString("text_label"..table.getn(kat_assignment_labels),"OVERLAY","GameFontNormal");
-				guiString:SetText("If you see this, something broke with text assignments");
-				guiString:SetPoint("TOP",  25,  -table.getn(kat_assignment_labels)*40-45);
-				return guiString;
-			end
-			
-			for i=1, 8, 1
-			do
-				table.insert(kat_assignment_labels, create_label());
-			end 
-		end
-
 		--set text to selected tanks
-		local key = 1;
-		for _, mark in ipairs(controller.marks)
+		for mark_pos, mark in ipairs(controller.marks)
 		do
-			local text = " ";
 			for index, tank in ipairs(controller.assigned_tanks[mark])
 			do
-				text = text .. tank .. "  ";
+				--do I have enough free frames at this mark?
+				if 	index > table.getn(controller.kat_assignment_frames[mark])
+				then
+					-- I don't, add a frame to view
+					local frame = KAT_create_player_frame("tank_player_frame_"..mark.."_"..index, KAT_tank_body, tank);
+					frame.mark = mark;
+					frame.colored_name = tank;
+					frame:SetScript("OnClick", 
+					function(self, button, down)
+						if not IsRaidLeader() and not IsRaidOfficer() 
+						then 
+							DEFAULT_CHAT_FRAME:AddMessage("KAT: You need to be the raid leader OR have assist to make changes", 0.6,1.0,0.6);
+							return;
+						end
+						if button == "RightButton" 
+						then 
+							SendAddonMessage("KAT", "toggle_tank-"..self.mark..":"..self.colored_name.."-"..UnitName("player"), "RAID");
+							controller.toggle_player(self.mark, self.colored_name);  
+						end 
+					end);
+					
+					if index > 3
+					then
+						frame:SetPoint("TOPLEFT", -40+index%3*133, 10-(mark_pos*40)-19);
+						frame:SetHeight(19);
+						frame.highlight:SetHeight(19);
+						frame.name:SetPoint("CENTER",0,0);
+						frame.model:Hide();
+					else	
+						frame:SetPoint("TOPLEFT", -40+index*133, 10-(mark_pos*40) );
+					end
+				
+					
+					frame:Show();
+					table.insert(controller.kat_assignment_frames[mark],frame);
+				else
+					--I do, adjust content in that frame
+					local uncolored_name = string.sub(tank,  11, strlen(tank));
+					local r,g,b = KAT_hex2rgb(string.sub(tank, 5,11));
+					
+					local frame = controller.kat_assignment_frames[mark][index];
+					frame.mark = mark;
+					frame.colored_name = tank;
+					frame.name:SetText(uncolored_name);
+					frame.model:SetUnit(KAT_retrieve_unitid_from_name(uncolored_name));
+					frame.model:SetCamera(0)
+					frame.bg:SetTexture(r/255,g/255,b/255,0.75);
+					frame.bg:SetAllPoints(true);
+					
+					frame:Show();
+				end
+				
 			end
 
-			kat_assignment_labels[key]:SetText(text);
-			key = key + 1;
+			--do I need to adjust frames pos/size at this mark?
+			if table.getn(controller.assigned_tanks[mark])/3 > 1
+			then
+				--check if already smooshed
+				if controller.kat_assignment_frames[mark][1]:GetHeight() > 19
+				then --not smooshed yet
+					for i=1, 3, 1
+					do
+						local tank_frame = controller.kat_assignment_frames[mark][i];
+						
+						--smoosh 
+						tank_frame:SetHeight(19);
+						tank_frame.highlight:SetHeight(19);
+						tank_frame.name:SetPoint("CENTER",0, 0)
+						
+						--disable model view
+						tank_frame.model:Hide();
+					end
+					
+				end
+			else
+				--check if already enlarged and in charge
+				if table.getn(controller.kat_assignment_frames[mark]) > 0
+				then
+					if controller.kat_assignment_frames[mark][1]:GetHeight() < 38
+					then --not enlarged yet nor incharge
+						for i=1, table.getn(controller.assigned_tanks[mark]), 1
+						do
+							local tank_frame = controller.kat_assignment_frames[mark][i];
+							
+							--enlarge
+							tank_frame:SetHeight(38);
+							tank_frame.highlight:SetHeight(38);
+							tank_frame.name:SetPoint("CENTER",10, 0)
+							
+							--enable model view
+							tank_frame.model:Show();
+						end
+					end
+				end
+			end
+			
+			--Do I have extra frames?
+			local  i = table.getn(controller.kat_assignment_frames[mark]);
+			while i > table.getn(controller.assigned_tanks[mark])
+			do
+				--I do, hide them and make them inactive
+				local frame = controller.kat_assignment_frames[mark][i];
+				frame.name:SetText("");
+				frame.model:ClearModel();
+				frame:Hide();
+				
+				i = i - 1;
+			end
 		end
 	end 
 
 	controller.post = 
 	function()
-		SendChatMessage(" -- Tank Assignments --", "RAID", nil);
+		SendChatMessage(" -- Tank Assignments --", controller.post_location["channel"], nil, controller.post_location["option"]);
 		for _, mark in ipairs(controller.marks)
 		do
 			if table.getn(controller.assigned_tanks[mark]) > 0
@@ -456,7 +541,67 @@ function()
 					mark = "Cross";
 				end
 				
-				SendChatMessage("{"..mark.."}: " ..tank_list, "RAID", nil);
+				SendChatMessage("{"..mark.."}: " ..tank_list, controller.post_location["channel"], nil, controller.post_location["option"]);
+			end
+		end
+	end
+	
+	controller.set_post_location
+	=
+	function(_chara)
+		chara = strlower(_chara);
+		
+		--check if its a number
+		local asci_val = string.byte(_chara);
+		if asci_val >48 and asci_val < 58
+		then
+			local id, name = GetChannelName(_chara);
+			
+			if name ~= nil
+			then
+				controller.post_location["channel"] = "CHANNEL";
+				controller.post_location["option"] = _chara;
+				controller.post_location["char"] = _chara;
+				KatTankPostLabel:SetText(": "..name);
+			else
+				KatTankPostChannelEdit:SetText(controller.post_location["char"]);
+				DEFAULT_CHAT_FRAME:AddMessage("KAT: post location " .. chara .. " is not an acceptable post location", 0.6,1.0,0.6);
+			end
+		else
+			--check if I have an acceptable char
+			if _chara == "r"
+			then
+				controller.post_location["channel"] = "RAID";
+				controller.post_location["option"] = nil;
+				KatTankPostLabel:SetText(": raid");
+				controller.post_location["char"] = _chara;
+			elseif _chara == "p"
+			then
+				controller.post_location["channel"] = "PARTY";
+				controller.post_location["option"] = nil;
+				KatTankPostLabel:SetText(": party");
+				controller.post_location["char"] = _chara;
+			elseif _chara == "o"
+			then
+				controller.post_location["channel"] = "OFFICER";
+				controller.post_location["option"] = nil;
+				KatTankPostLabel:SetText(": officer");
+				controller.post_location["char"] = _chara;
+			elseif _chara == "g"
+			then
+				controller.post_location["channel"] = "GUILD";
+				controller.post_location["option"] = nil;
+				KatTankPostLabel:SetText(": guild");
+				controller.post_location["char"] = _chara;
+			elseif c_hara == "s"
+			then
+				controller.post_location["channel"] = "SAY";
+				controller.post_location["option"] = nil;
+				KatTankPostLabel:SetText(": say");
+				controller.post_location["char"] = _chara;
+			else
+				KatTankPostChannelEdit:SetText(controller.post_location["char"]);
+				DEFAULT_CHAT_FRAME:AddMessage("KAT: post location " .. chara .. " is not an acceptable post location", 0.6,1.0,0.6);
 			end
 		end
 	end
@@ -552,6 +697,8 @@ function()
 			table.insert(controller.assigned_tanks[tuple[1]], tuple[2]);
 			controller.notify_observers("add_tank", {tuple[2]});
 		end 
+		
+		controller.update_marks();
 	end 
 	
 	controller.notify_observers = 
@@ -576,6 +723,7 @@ function()
 			then
 				--remove from list
 				table.remove(controller.assigned_tanks[_mark], entry);
+				controller.update_marks();
 				
 				--see if he is still assigned elsewhere
 				local tank_found = false;
@@ -605,11 +753,16 @@ function()
 				return;
 			end
 		end
-		
+
 		--add to list
 		table.insert(controller.assigned_tanks[_mark], _player);
 		controller.notify_observers("add_tank", {_player});
+		
+		controller.update_marks();
 	end
+		--HELPER FUNCS-----------------------------------------------------HF
+
+		--HELPER FUNCS-----------------------------------------------------HF
 	
 	--FUNCTIONS-------------------------------------------------------------------------------------------------------F
 	

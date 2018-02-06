@@ -18,11 +18,12 @@ function()
 	--currented focus
 	controller.current_focus_mark = "";
 	controller.current_menu_parent = nil;
-
+	controller.kat_assignment_frames = {["skull"]={}, ["x"]={}, ["square"]={},["moon"]={},["triangle"]={},["diamond"]={},["circle"]={},["star"]={},["MT"]={}};
+	controller.post_location = {["channel"]="RAID", ["option"]=nil, ["char"]="r"};
 	--VARIABLES-------------------------------------------------------------------------------------------------------V
 
 	--FUNCTIONS-------------------------------------------------------------------------------------------------------F
-	--function to setup tank list
+	--function to setup interrupt list
 	controller.init =
 	function(self)
 		UIDROPDOWNMENU_SHOW_TIME  = 0;
@@ -310,48 +311,193 @@ function()
 			local tuple = KAT_split(interrupter, ":");
 			table.insert(controller.assigned_interrupts[tuple[1]], tuple[2]);
 		end 
+		
+		controller.update_marks();
 	end 
 
 	controller.update_marks 
 	=
 	function()
-		--lazy instantiate labels (just in case user doesn't end up using addon rn)
-		if kat_assignment_labels == nil
-		then
-			kat_assignment_labels = {};
-			local create_label =
-			function()
-				local guiString = KAT:CreateFontString("text_label"..table.getn(kat_assignment_labels),"OVERLAY","GameFontNormal");
-				guiString:SetText("If you see this, something broke with text assignments");
-				guiString:SetPoint("TOP",  25,  -table.getn(kat_assignment_labels)*40-45);
-				return guiString;
+		--set text to selected tanks
+		for mark_pos, mark in ipairs(controller.marks)
+		do
+			for index, interrupt in ipairs(controller.assigned_interrupts[mark])
+			do
+				--do I have enough free frames at this mark?
+				if 	index > table.getn(controller.kat_assignment_frames[mark])
+				then
+					-- I don't, add a frame to view
+					local frame = KAT_create_player_frame("tank_player_frame_"..mark.."_"..index, KAT_interrupt_body, interrupt);
+					frame.mark = mark;
+					frame.colored_name = interrupt;
+					frame:SetScript("OnClick", 
+					function(self, button, down)
+						if not IsRaidLeader() and not IsRaidOfficer() 
+						then 
+							DEFAULT_CHAT_FRAME:AddMessage("KAT: You need to be the raid leader OR have assist to make changes", 0.6,1.0,0.6);
+							return;
+						end
+						if button == "RightButton" 
+						then 
+							SendAddonMessage("KAT", "toggle_interrupt-"..self.mark..":"..self.colored_name.."-"..UnitName("player"), "RAID");
+							controller.toggle_player(self.mark, self.colored_name);  
+						end 
+					end);
+					
+					if index > 3
+					then
+						frame:SetPoint("TOPLEFT", -40+index%3*133, 10-(mark_pos*40)-19);
+						frame:SetHeight(19);
+						frame.highlight:SetHeight(19);
+						frame.name:SetPoint("CENTER",0,0);
+						frame.model:Hide();
+					else	
+						frame:SetPoint("TOPLEFT", -40+index*133, 10-(mark_pos*40) );
+					end
+				
+					
+					frame:Show();
+					table.insert(controller.kat_assignment_frames[mark],frame);
+				else
+					--I do, adjust content in that frame
+					local uncolored_name = string.sub(interrupt,  11, strlen(interrupt));
+					local r,g,b = KAT_hex2rgb(string.sub(interrupt, 5,11));
+					
+					local frame = controller.kat_assignment_frames[mark][index];
+					frame.mark = mark;
+					frame.colored_name = interrupt;
+					frame.name:SetText(uncolored_name);
+					frame.model:SetUnit(KAT_retrieve_unitid_from_name(uncolored_name));
+					frame.model:SetCamera(0)
+					frame.bg:SetTexture(r/255,g/255,b/255,0.75);
+					frame.bg:SetAllPoints(true);
+					
+					frame:Show();
+				end
+				
+			end
+
+			--do I need to adjust frames pos/size at this mark?
+			if table.getn(controller.assigned_interrupts[mark])/3 > 1
+			then
+				--check if already smooshed
+				if controller.kat_assignment_frames[mark][1]:GetHeight() > 19
+				then --not smooshed yet
+					for i=1, 3, 1
+					do
+						local interrupt_frame = controller.kat_assignment_frames[mark][i];
+						
+						--smoosh 
+						interrupt_frame:SetHeight(19);
+						interrupt_frame.highlight:SetHeight(19);
+						interrupt_frame.name:SetPoint("CENTER",0, 0)
+						
+						--disable model view
+						interrupt_frame.model:Hide();
+					end
+					
+				end
+			else
+				--check if already enlarged and in charge
+				if table.getn(controller.kat_assignment_frames[mark]) > 0
+				then
+					if controller.kat_assignment_frames[mark][1]:GetHeight() < 38
+					then --not enlarged yet nor incharge
+						for i=1, table.getn(controller.assigned_interrupts[mark]), 1
+						do
+							local interrupt_frame = controller.kat_assignment_frames[mark][i];
+							
+							--enlarge
+							interrupt_frame:SetHeight(38);
+							interrupt_frame.highlight:SetHeight(38);
+							interrupt_frame.name:SetPoint("CENTER",10, 0)
+							
+							--enable model view
+							interrupt_frame.model:Show();
+						end
+					end
+				end
 			end
 			
-			for i=1, 8, 1
+			--Do I have extra frames?
+			local  i = table.getn(controller.kat_assignment_frames[mark]);
+			while i > table.getn(controller.assigned_interrupts[mark])
 			do
-				table.insert(kat_assignment_labels, create_label());
-			end 
-		end
-
-		--set text to selected interrupts
-		local key = 1;
-		for _, mark in ipairs(controller.marks)
-		do
-			local text = " ";
-			for index, tank in ipairs(controller.assigned_interrupts[mark])
-			do
-				text = text .. tank .. "  ";
+				--I do, hide them and make them inactive
+				local frame = controller.kat_assignment_frames[mark][i];
+				frame.name:SetText("");
+				frame.model:ClearModel();
+				frame:Hide();
+				
+				i = i - 1;
 			end
-
-			kat_assignment_labels[key]:SetText(text);
-			key = key + 1;
 		end
 	end 
 
+	controller.set_post_location
+	=
+	function(_chara)
+		chara = strlower(_chara);
+		
+		--check if its a number
+		local asci_val = string.byte(_chara);
+		if asci_val >48 and asci_val < 58
+		then
+			local id, name = GetChannelName(_chara);
+			
+			if name ~= nil
+			then
+				controller.post_location["channel"] = "CHANNEL";
+				controller.post_location["option"] = _chara;
+				controller.post_location["char"] = _chara;
+				KatInterruptPostLabel:SetText(": "..name);
+			else
+				KatInterruptPostChannelEdit:SetText(controller.post_location["char"]);
+				DEFAULT_CHAT_FRAME:AddMessage("KAT: post location " .. chara .. " is not an acceptable post location", 0.6,1.0,0.6);
+			end
+		else
+			--check if I have an acceptable char
+			if _chara == "r"
+			then
+				controller.post_location["channel"] = "RAID";
+				controller.post_location["option"] = nil;
+				KatInterruptPostLabel:SetText(": raid");
+				controller.post_location["char"] = _chara;
+			elseif _chara == "p"
+			then
+				controller.post_location["channel"] = "PARTY";
+				controller.post_location["option"] = nil;
+				KatInterruptPostLabel:SetText(": party");
+				controller.post_location["char"] = _chara;
+			elseif _chara == "o"
+			then
+				controller.post_location["channel"] = "OFFICER";
+				controller.post_location["option"] = nil;
+				KatInterruptPostLabel:SetText(": officer");
+				controller.post_location["char"] = _chara;
+			elseif _chara == "g"
+			then
+				controller.post_location["channel"] = "GUILD";
+				controller.post_location["option"] = nil;
+				KatInterruptPostLabel:SetText(": guild");
+				controller.post_location["char"] = _chara;
+			elseif c_hara == "s"
+			then
+				controller.post_location["channel"] = "SAY";
+				controller.post_location["option"] = nil;
+				KatInterruptPostLabel:SetText(": say");
+				controller.post_location["char"] = _chara;
+			else
+				KatInterruptPostChannelEdit:SetText(controller.post_location["char"]);
+				DEFAULT_CHAT_FRAME:AddMessage("KAT: post location " .. chara .. " is not an acceptable post location", 0.6,1.0,0.6);
+			end
+		end
+	end
+	
 	controller.post
 	= 
 	function()
-		SendChatMessage(" -- Interrupt Assignments --", "RAID", nil);
+		SendChatMessage(" -- Interrupt Assignments --", controller.post_location["channel"], nil, controller.post_location["option"]);
 		for _, mark in ipairs(controller.marks)
 		do
 			if table.getn(controller.assigned_interrupts[mark]) > 0
@@ -373,20 +519,20 @@ function()
 					mark = "Cross";
 				end
 				
-				SendChatMessage("{"..mark.."}: " ..interrupt_list, "RAID", nil);
+				SendChatMessage("{"..mark.."}: " ..interrupt_list, controller.post_location["channel"], nil, controller.post_location["option"]);
 			end
 		end
 	end
 	
 	controller.notify_observers 
 	= 
-	function(action, arglist)
+	function(_action, _arglist)
 		for _, obs in ipairs(controller.observers)
 		do
 			--see if observer can ingest notifications
 			if obs.interpret_notification ~= nil
 			then
-				obs.interpret_notification(action, arglist);
+				obs.interpret_notification(_action, _arglist);
 			end 
 		end
 	end
@@ -401,13 +547,14 @@ function()
 			then
 				--remove from list
 				table.remove(controller.assigned_interrupts[_mark], entry);
-
+				controller.update_marks();
 				return;
 			end
 		end
 		
 		--add to list
 		table.insert(controller.assigned_interrupts[_mark], _player);
+		controller.update_marks();
 	end
 	--FUNCTIONS-------------------------------------------------------------------------------------------------------F
 	
