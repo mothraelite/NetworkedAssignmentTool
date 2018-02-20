@@ -121,7 +121,7 @@
 							<Size><AbsDimension x="30" y="30"/></Size>
 							<Scripts>
 								<OnEnter>
-									KAT_show_listmenu(self, "skull");
+									KAT_show_listmenu(this, "skull");
 								</OnEnter>
 							</Scripts>
 							<Anchors>
@@ -152,7 +152,7 @@
 							<!-- X //-->
 						<Frame name='mark2' enableMouse="true" frameStrata="HIGH">
 							<Size><AbsDimension x="30" y="30"/></Size>
-							<Scripts><OnEnter>KAT_show_listmenu(self, "x");</OnEnter></Scripts>
+							<Scripts><OnEnter>KAT_show_listmenu(this, "x");</OnEnter></Scripts>
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset>
@@ -181,7 +181,7 @@
 							<!-- [  ] //-->
 						<Frame name='mark3' enableMouse="true" frameStrata="HIGH">
 							<Size><AbsDimension x="30" y="30"/></Size>
-							<Scripts><OnEnter>KAT_show_listmenu(self, "square");</OnEnter></Scripts>
+							<Scripts><OnEnter>KAT_show_listmenu(this, "square");</OnEnter></Scripts>
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset>
@@ -210,7 +210,7 @@
 							<!-- moon //-->
 						<Frame name='mark4' enableMouse="true" frameStrata="HIGH">
 							<Size><AbsDimension x="30" y="30"/></Size>
-							<Scripts><OnEnter>KAT_show_listmenu(self, "moon");</OnEnter></Scripts>
+							<Scripts><OnEnter>KAT_show_listmenu(this, "moon");</OnEnter></Scripts>
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset>
@@ -239,7 +239,7 @@
 							<!-- triangle //-->
 						<Frame name='mark5' enableMouse="true" frameStrata="HIGH">
 							<Size><AbsDimension x="30" y="30"/></Size>
-							<Scripts><OnEnter>KAT_show_listmenu(self, "triangle");</OnEnter></Scripts>
+							<Scripts><OnEnter>KAT_show_listmenu(this, "triangle");</OnEnter></Scripts>
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset>
@@ -268,7 +268,7 @@
 							<!-- diamond //-->
 						<Frame name='mark6' enableMouse="true" frameStrata="HIGH">
 							<Size><AbsDimension x="30" y="30"/></Size>
-							<Scripts><OnEnter>KAT_show_listmenu(self, "diamond");</OnEnter></Scripts>
+							<Scripts><OnEnter>KAT_show_listmenu(this, "diamond");</OnEnter></Scripts>
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset>
@@ -297,7 +297,7 @@
 							<!-- circle //-->
 						<Frame name='mark7' enableMouse="true" frameStrata="HIGH">
 							<Size><AbsDimension x="30" y="30"/></Size>
-							<Scripts><OnEnter>KAT_show_listmenu(self, "circle");</OnEnter></Scripts>
+							<Scripts><OnEnter>KAT_show_listmenu(this, "circle");</OnEnter></Scripts>
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset>
@@ -326,7 +326,7 @@
 						<!-- star //-->
 						<Frame name='mark8' enableMouse="true" frameStrata="HIGH">
 							<Size><AbsDimension x="30" y="30"/></Size>
-							<Scripts><OnEnter>KAT_show_listmenu(self, "star");</OnEnter></Scripts>
+							<Scripts><OnEnter>KAT_show_listmenu(this, "star");</OnEnter></Scripts>
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset>
@@ -355,7 +355,7 @@
 						<!-- MT //-->
 						<Frame name='mark9' enableMouse="true" frameStrata="HIGH">
 							<Size><AbsDimension x="60" y="30"/></Size>
-							<Scripts><OnEnter>KAT_show_listmenu(self, mt_label:GetText());</OnEnter></Scripts>
+							<Scripts><OnEnter>KAT_show_listmenu(this, mt_label:GetText());</OnEnter></Scripts>
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset>
@@ -394,13 +394,13 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								self:SetText("r"); 
-								self:SetMaxLetters(1);
-								self:SetAutoFocus(false);
+								this:SetText("r"); 
+								this:SetMaxLetters(1);
+								this:SetAutoFocus(false);
 							</OnLoad>
-							<OnEnter>KAT_on_post_enter(self);</OnEnter>
-							<OnTextChanged>KAT_on_post_text_changed(self);</OnTextChanged>
-							<OnLeave>KAT_on_post_exit(self);</OnLeave>
+							<OnEnter>KAT_on_post_enter(this);</OnEnter>
+							<OnTextChanged>KAT_on_post_text_changed(this);</OnTextChanged>
+							<OnLeave>KAT_on_post_exit(this);</OnLeave>
 						</Scripts>
 					</EditBox>
 					<!--TANK POST LOCATION //-->
@@ -451,7 +451,7 @@
 					<!-- healer assignment marks //-->
 					<Frame name='tank1' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>KAT_show_listmenu(self, tank1_label:GetText());</OnEnter></Scripts>
+						<Scripts><OnEnter>KAT_show_listmenu(this, tank1_label:GetText());</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -479,7 +479,7 @@
 					
 					<Frame name='tank2' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>KAT_show_listmenu(self, tank2_label:GetText());</OnEnter></Scripts>
+						<Scripts><OnEnter>KAT_show_listmenu(this, tank2_label:GetText());</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -507,7 +507,7 @@
 					
 					<Frame name='tank3' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>KAT_show_listmenu(self, tank3_label:GetText());</OnEnter></Scripts>
+						<Scripts><OnEnter>KAT_show_listmenu(this, tank3_label:GetText());</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -535,7 +535,7 @@
 					
 					<Frame name='tank4' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>KAT_show_listmenu(self, tank4_label:GetText());</OnEnter></Scripts>
+						<Scripts><OnEnter>KAT_show_listmenu(this, tank4_label:GetText());</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -563,7 +563,7 @@
 					
 					<Frame name='tank5' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>KAT_show_listmenu(self, tank5_label:GetText());</OnEnter></Scripts>
+						<Scripts><OnEnter>KAT_show_listmenu(this, tank5_label:GetText());</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -591,7 +591,7 @@
 					
 					<Frame name='tank6' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>KAT_show_listmenu(self, tank6_label:GetText());</OnEnter></Scripts>
+						<Scripts><OnEnter>KAT_show_listmenu(this, tank6_label:GetText());</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -619,7 +619,7 @@
 					
 					<Frame name='tank7' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>KAT_show_listmenu(self, tank7_label:GetText());</OnEnter></Scripts>
+						<Scripts><OnEnter>KAT_show_listmenu(this, tank7_label:GetText());</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -647,7 +647,7 @@
 					
 					<Frame name='tank8' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>KAT_show_listmenu(self, tank8_label:GetText());</OnEnter></Scripts>
+						<Scripts><OnEnter>KAT_show_listmenu(this, tank8_label:GetText());</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -675,7 +675,7 @@
 					
 					<Frame name='tank9' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>KAT_show_listmenu(self, tank9_label:GetText());</OnEnter></Scripts>
+						<Scripts><OnEnter>KAT_show_listmenu(this, tank9_label:GetText());</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -714,13 +714,13 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								self:SetText("r"); 
-								self:SetMaxLetters(1);
-								self:SetAutoFocus(false);
+								this:SetText("r"); 
+								this:SetMaxLetters(1);
+								this:SetAutoFocus(false);
 							</OnLoad>
-							<OnEnter>KAT_on_post_enter(self);</OnEnter>
-							<OnTextChanged>KAT_on_post_text_changed(self);</OnTextChanged>
-							<OnLeave>KAT_on_post_exit(self);</OnLeave>
+							<OnEnter>KAT_on_post_enter(this);</OnEnter>
+							<OnTextChanged>KAT_on_post_text_changed(this);</OnTextChanged>
+							<OnLeave>KAT_on_post_exit(this);</OnLeave>
 						</Scripts>
 					</EditBox>
 					<!--HEAL POST LOCATION //-->
@@ -774,7 +774,7 @@
 							<Size><AbsDimension x="30" y="30"/></Size>
 							<Scripts>
 								<OnEnter>
-									KAT_show_listmenu(self, "skull");
+									KAT_show_listmenu(this, "skull");
 								</OnEnter>
 							</Scripts>
 							<Anchors>
@@ -805,7 +805,7 @@
 							<!-- X //-->
 						<Frame name='imark2' enableMouse="true" frameStrata="HIGH">
 							<Size><AbsDimension x="30" y="30"/></Size>
-							<Scripts><OnEnter>KAT_show_listmenu(self, "x");</OnEnter></Scripts>
+							<Scripts><OnEnter>KAT_show_listmenu(this, "x");</OnEnter></Scripts>
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset>
@@ -834,7 +834,7 @@
 							<!-- [  ] //-->
 						<Frame name='imark3' enableMouse="true" frameStrata="HIGH">
 							<Size><AbsDimension x="30" y="30"/></Size>
-							<Scripts><OnEnter>KAT_show_listmenu(self, "square");</OnEnter></Scripts>
+							<Scripts><OnEnter>KAT_show_listmenu(this, "square");</OnEnter></Scripts>
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset>
@@ -863,7 +863,7 @@
 							<!-- moon //-->
 						<Frame name='imark4' enableMouse="true" frameStrata="HIGH">
 							<Size><AbsDimension x="30" y="30"/></Size>
-							<Scripts><OnEnter>KAT_show_listmenu(self, "moon");</OnEnter></Scripts>
+							<Scripts><OnEnter>KAT_show_listmenu(this, "moon");</OnEnter></Scripts>
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset>
@@ -892,7 +892,7 @@
 							<!-- triangle //-->
 						<Frame name='imark5' enableMouse="true" frameStrata="HIGH">
 							<Size><AbsDimension x="30" y="30"/></Size>
-							<Scripts><OnEnter>KAT_show_listmenu(self, "triangle");</OnEnter></Scripts>
+							<Scripts><OnEnter>KAT_show_listmenu(this, "triangle");</OnEnter></Scripts>
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset>
@@ -921,7 +921,7 @@
 							<!-- diamond //-->
 						<Frame name='imark6' enableMouse="true" frameStrata="HIGH">
 							<Size><AbsDimension x="30" y="30"/></Size>
-							<Scripts><OnEnter>KAT_show_listmenu(self, "diamond");</OnEnter></Scripts>
+							<Scripts><OnEnter>KAT_show_listmenu(this, "diamond");</OnEnter></Scripts>
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset>
@@ -950,7 +950,7 @@
 							<!-- circle //-->
 						<Frame name='imark7' enableMouse="true" frameStrata="HIGH">
 							<Size><AbsDimension x="30" y="30"/></Size>
-							<Scripts><OnEnter>KAT_show_listmenu(self, "circle");</OnEnter></Scripts>
+							<Scripts><OnEnter>KAT_show_listmenu(this, "circle");</OnEnter></Scripts>
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset>
@@ -979,7 +979,7 @@
 						<!-- star //-->
 						<Frame name='imark8' enableMouse="true" frameStrata="HIGH">
 							<Size><AbsDimension x="30" y="30"/></Size>
-							<Scripts><OnEnter>KAT_show_listmenu(self, "star");</OnEnter></Scripts>
+							<Scripts><OnEnter>KAT_show_listmenu(this, "star");</OnEnter></Scripts>
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset>
@@ -1008,7 +1008,7 @@
 						<!-- MT //-->
 						<Frame name='imark9' enableMouse="true" frameStrata="HIGH">
 							<Size><AbsDimension x="60" y="30"/></Size>
-							<Scripts><OnEnter>KAT_show_listmenu(self, mt_label:GetText());</OnEnter></Scripts>
+							<Scripts><OnEnter>KAT_show_listmenu(this, mt_label:GetText());</OnEnter></Scripts>
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset>
@@ -1047,13 +1047,13 @@
 						</Anchors>
 						<Scripts>
 							<OnLoad>
-								self:SetText("r"); 
-								self:SetMaxLetters(1);
-								self:SetAutoFocus(false);
+								this:SetText("r"); 
+								this:SetMaxLetters(1);
+								this:SetAutoFocus(false);
 							</OnLoad>
-							<OnEnter>KAT_on_post_enter(self);</OnEnter>
-							<OnTextChanged>KAT_on_post_text_changed(self);</OnTextChanged>
-							<OnLeave>KAT_on_post_exit(self);</OnLeave>
+							<OnEnter>KAT_on_post_enter(this);</OnEnter>
+							<OnTextChanged>KAT_on_post_text_changed(this);</OnTextChanged>
+							<OnLeave>KAT_on_post_exit(this);</OnLeave>
 						</Scripts>
 					</EditBox>
 					<!--TANK POST LOCATION //-->
@@ -1087,8 +1087,8 @@
 						</Anchors>
 				   <Scripts>
 					   <OnLoad>
-							UIDropDownMenu_Initialize(self, KAT_init_mode_picker);
-							UIDropDownMenu_SetSelectedID(self, 1);
+							UIDropDownMenu_Initialize(this, KAT_init_mode_picker);
+							UIDropDownMenu_SetSelectedID(this, 1);
 					   </OnLoad>
 				   </Scripts>
 			   </Button>

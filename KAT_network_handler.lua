@@ -37,7 +37,7 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 	
 		if  IsRaidOfficer()  or IsRaidLeader() 
 		then
-			SendAddonMessage("KAT", "request_master-"..UnitName("player").."-"..UnitName("player"), "RAID");
+			KAT_network_message("KAT", "request_master-"..UnitName("player").."-"..UnitName("player"), "RAID");
 			controller.master = UnitName("player");
 			KatMasterLabel:SetText("Master: " .. UnitName("player"));
 		end
@@ -58,7 +58,7 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 		end
 		
 		controller.state = 0; --waiting for setup
-		SendAddonMessage("KAT", "request_setup-"..UnitName("player").."-"..UnitName("player"), "RAID");
+		KAT_network_message("KAT", "request_setup-"..UnitName("player").."-"..UnitName("player"), "RAID");
 		
 		--Set timed event to check if i get a full response in 2 seconds. 
 		local func = 
@@ -69,7 +69,7 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 				--did i get a partial reply?
 				if controller.setup["healers"] or controller.setup["tanks"] or controller.setup["interrupters"] or controller.setup["master"]
 				then--partial reply, might be lagging on either end
-					--wait 3 seconds and request again if needed
+					--wait 90f and request again if needed
 					local partial_setup =
 					function()
 						--still not setup
@@ -82,19 +82,19 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 							controller.request_setup();
 						end 
 					end
-					KAT_set_alarm(3, partial_setup);
+					KAT_set_alarm(90, partial_setup);
 				else  --no reply
 					--ask if master is offline
-					SendAddonMessage("KAT", "who_is_master-"..UnitName("player").."-"..UnitName("player"), "RAID");
+					KAT_network_message("KAT", "who_is_master-"..UnitName("player").."-"..UnitName("player"), "RAID");
 					
-					--fire function after 2 seconds if no response because no setup available in raid
+					--fire function after 30f if no response because no setup available in raid
 					local no_setup = 
 					function()
 						if controller.state == 0
 						then
 							if IsRaidLeader() or IsRaidOfficer()
 							then
-								SendAddonMessage("KAT", "reset- -"..UnitName("player"), "RAID");
+								KAT_network_message("KAT", "reset- -"..UnitName("player"), "RAID");
 								controller.reset_setup();
 							
 								controller.setup["healers"] = true;
@@ -109,18 +109,18 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 							
 						end
 					end
-					KAT_set_alarm(2, no_setup);
+					KAT_set_alarm(30, no_setup);
 				end	
 			end
 		end
-		KAT_set_alarm(2, func);
+		KAT_set_alarm(30, func);
 	end
 	
 	controller.request_new_master 
 	=
 	function()
 		--Ask for a new master from the raider.
-		SendAddonMessage("KAT", "request_new_master-t-"..UnitName("player"), "RAID");
+		KAT_network_message("KAT", "request_new_master-t-"..UnitName("player"), "RAID");
 	
 		local func 
 		=
@@ -133,8 +133,8 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 			end
 		end
 		
-		--fire func after 3s
-		KAT_set_alarm(3, func);
+		--fire func after 60f
+		KAT_set_alarm(60, func);
 	end
 		----------------------END OF REQUESTS-------------------------REQ
 		
@@ -149,10 +149,10 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 			local name, rank, sg, level, class, fileName, zone, online, isDead, role, isML = controller.get_raid_member_info(controller.master);
 			if online ~= nil
 			then
-				SendAddonMessage("KAT", "master_is-"..controller.master.."-"..UnitName('player'), "WHISPER", message);
+				KAT_network_message("KAT", "master_is-"..controller.master.."-"..UnitName('player'), "WHISPER", message);
 			else 
 				controller.request_master();
-				SendAddonMessage("KAT", "master_is-"..controller.master.."-"..UnitName('player'), "WHISPER", message);
+				KAT_network_message("KAT", "master_is-"..controller.master.."-"..UnitName('player'), "WHISPER", message);
 			end
 		end
 	end
@@ -220,10 +220,10 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 			end
 
 			--send it out
-			SendAddonMessage("KAT", "setup_master-"..UnitName("player").."-"..UnitName("player"), "WHISPER", message);
-			SendAddonMessage("KAT", "setup_tanks-"..tanks.."-"..UnitName("player"), "WHISPER", message);
-			SendAddonMessage("KAT", "setup_healers-"..healers.."-"..UnitName("player"), "WHISPER", message);
-			SendAddonMessage("KAT", "setup_interrupters-"..interrupters.."-"..UnitName("player"), "WHISPER", message);
+			KAT_network_message("KAT", "setup_master-"..UnitName("player").."-"..UnitName("player"), "WHISPER", message);
+			KAT_network_message("KAT", "setup_tanks-"..tanks.."-"..UnitName("player"), "WHISPER", message);
+			KAT_network_message("KAT", "setup_healers-"..healers.."-"..UnitName("player"), "WHISPER", message);
+			KAT_network_message("KAT", "setup_interrupters-"..interrupters.."-"..UnitName("player"), "WHISPER", message);
 		end
 	end
 		----------------------END OF RETURNS-------------------------RET

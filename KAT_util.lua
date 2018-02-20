@@ -15,12 +15,17 @@ function KAT_update_alarms()
 	for i=1, table.getn(alarms), 1
 	do
 		local alarm = alarms[i];
-		alarm.time = alarm.time - 1;
-		if alarm.time <= 0
+		if alarm ~= nil
 		then
-			alarm.func();
+			alarm.time = alarm.time - 1;
+			if alarm.time <= 0
+			then
+				alarm.func();
+				table.remove(alarms, i);
+				i = i -1;
+			end
+		else
 			table.remove(alarms, i);
-			i = i -1;
 		end
 	end 
 end
@@ -29,10 +34,12 @@ function KAT_split(_string,_seperator)
    local t, ll
    t={}
    ll=0
-   if(#_string == 1) then
+   if string.len(_string) == 1 
+   then
       return {_string}
    end
-   while true do
+   while true 
+   do
       l = string.find(_string, _seperator, ll, true) -- find the next _seperator in the string
       if l ~= nil then -- if "not not" found then..
          table.insert(t, string.sub(_string,ll,l-1)) -- Save it in our array.
@@ -45,8 +52,20 @@ function KAT_split(_string,_seperator)
    return t
 end
 
+local hexvals = {
+["0"]=0,["1"] =1,
+ ["2"]=2,["3"]=3,
+ ["4"]=4,["5"]=5,
+ ["6"]=6,["7"]=7,
+ ["8"]=8,["9"]=9,
+ ["A"]=10,["B"]=11, 
+ ["C"]=12, ["D"]=13, 
+ ["E"]=14, ["F"]=15};
 function KAT_hex2rgb(_hex)
-    return tonumber("0x".._hex:sub(1,2)), tonumber("0x".._hex:sub(3,4)), tonumber("0x".._hex:sub(5,6))
+	local r = hexvals[string.sub(_hex,1,1)]*16+hexvals[string.sub(_hex,2,2)];
+	local g = hexvals[string.sub(_hex,3,3)]*16+hexvals[string.sub(_hex,4,4)];
+	local b = hexvals[string.sub(_hex,5,5)]*16+hexvals[string.sub(_hex,6,6)];
+    return r,g,b;
 end
 
 function KAT_create_player_frame(_button_name, _parent_frame, _player_name)
@@ -69,7 +88,7 @@ function KAT_create_player_frame(_button_name, _parent_frame, _player_name)
 	
 	local frame = CreateFrame("Button", _button_name, _parent_frame);
 	frame:EnableMouse();
-	frame:RegisterForClicks("AnyUp");
+	--frame:RegisterForClicks("RightButton");
 	frame:SetWidth(130)
 	frame:SetHeight(38)	
 	frame:SetBackdrop(backdrop);
@@ -149,3 +168,10 @@ function KAT_retrieve_unitid_from_name(_name)
 	
 	return nil;
 end
+
+function KAT_mod(a, b)
+	return a-math.floor(a/b)*b;
+end
+
+--SERIOUSLY FUCK ACE LIB
+KAT_network_message = SendAddonMessage;

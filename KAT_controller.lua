@@ -43,7 +43,7 @@ function KAT_init()
 	DEFAULT_CHAT_FRAME:AddMessage("Initializing KAT version 1.0", 0.6,1.0,0.6);
 end
 
-function KAT_handle_events(self, event, ...)
+function KAT_handle_events()
 	if event == "RAID_ROSTER_UPDATE" 
 	then
 		--if im not setup yet, request a setup or become master
@@ -99,11 +99,6 @@ function KAT_handle_events(self, event, ...)
 			elseif command == "setup_interrupters"
 			then
 				network_controller.setup_interrupters(message);
-				
-				if current_mode == 3
-				then
-					interrupt_controller.update_marks();
-				end
 			elseif command == "toggle_tank"
 			then
 				network_controller.toggle_tank(message);
@@ -113,11 +108,6 @@ function KAT_handle_events(self, event, ...)
 			elseif command == "toggle_interrupt"
 			then
 				network_controller.toggle_interrupter(message);
-			
-				if current_mode == 3
-				then
-					interrupt_controller.update_marks();
-				end
 			elseif command == "who_is_master"
 			then
 				network_controller.return_master(message);
@@ -138,21 +128,10 @@ function KAT_handle_events(self, event, ...)
 	end
 end
 
-local time_since_last_update = 0;
-function KAT_update(self, elapsed)
+function KAT_update()
 	--UPDATE PER CYCLE
+	KAT_update_alarms();
 	network_controller.update();
-	
-	--UPDATES VIA SECONDS
-		--time since last update cycle. note, this returns a float not an int in seconds thus the need to do this.
-	time_since_last_update = time_since_last_update + elapsed;
-	
-	local seconds = math.floor(time_since_last_update);
-	for i=1, seconds, 1
-	do
-		KAT_update_alarms();
-	end 
-	time_since_last_update = time_since_last_update - seconds; --we exhausted the updates needed per second
 end
 
 function KAT_slashCommandHandler(msg)
@@ -241,7 +220,7 @@ function KAT_show_listmenu(parent, focus_mark)
 	then
 		tank_controller.current_focus_mark = focus_mark;
 		tank_controller.current_menu_parent = parent;
-		ToggleDropDownMenu(nil, 1, KAT_tank_list, parent, 0, 25);
+		ToggleDropDownMenu(nil, 1, KAT_tank_list, parent:GetName(), 0, 25);
 	elseif current_mode == 2
 	then
 		if focus_mark == "" or focus_mark == nil
@@ -251,12 +230,12 @@ function KAT_show_listmenu(parent, focus_mark)
 	
 		healer_controller.current_focus_mark = focus_mark;
 		healer_controller.current_menu_parent = parent;
-		ToggleDropDownMenu(nil,1,KAT_heal_list, parent, 0, 25);
+		ToggleDropDownMenu(nil,1,KAT_heal_list, parent:GetName(), 0, 25);
 	elseif current_mode == 3
 	then
 		interrupt_controller.current_focus_mark = focus_mark;
 		interrupt_controller.current_menu_parent = parent;
-		ToggleDropDownMenu(nil,1,KAT_interrupt_list,parent,0,25);
+		ToggleDropDownMenu(nil,1,KAT_interrupt_list,parent:GetName(),0,25);
 	end
 end
 

@@ -70,7 +70,7 @@ function()
 					then
 						--remove from list
 						table.remove(controller.assigned_healers[controller.current_focus_mark], entry);
-						SendAddonMessage("KAT", "toggle_healer-"..controller.current_focus_mark..":"..info.text.."-"..UnitName("player"), "RAID")
+						KAT_network_message("KAT", "toggle_healer-"..controller.current_focus_mark..":"..info.text.."-"..UnitName("player"), "RAID")
 						controller.update_marks();
 						return;
 					end
@@ -78,7 +78,7 @@ function()
 				
 				--add to list
 				table.insert(controller.assigned_healers[controller.current_focus_mark], info.text);
-				SendAddonMessage("KAT", "toggle_healer-"..controller.current_focus_mark..":"..info.text.."-"..UnitName("player"), "RAID")
+				KAT_network_message("KAT", "toggle_healer-"..controller.current_focus_mark..":"..info.text.."-"..UnitName("player"), "RAID")
 				controller.update_marks();
 				
 			end
@@ -265,22 +265,19 @@ function()
 					frame.mark = mark;
 					frame.colored_name = healer;
 					frame:SetScript("OnClick", 
-					function(self, button, down)
+					function()
 						if not IsRaidLeader() and not IsRaidOfficer() 
 						then 
 							DEFAULT_CHAT_FRAME:AddMessage("KAT: You need to be the raid leader OR have assist to make changes", 0.6,1.0,0.6);
 							return;
 						end
-						if button == "RightButton" 
-						then 
-							SendAddonMessage("KAT", "toggle_healer-"..self.mark..":"..self.colored_name.."-"..UnitName("player"), "RAID");
-							controller.toggle_player(self.mark, self.colored_name);  
-						end 
+						KAT_network_message("KAT", "toggle_healer-"..frame.mark..":"..frame.colored_name.."-"..UnitName("player"), "RAID");
+						controller.toggle_player(frame.mark, frame.colored_name);  
 					end);
 					
 					if index > 3
 					then
-						frame:SetPoint("TOPLEFT", -40+index%3*133, 10-(mark_pos*40)-19);
+						frame:SetPoint("TOPLEFT", -40+KAT_mod(index,3)*133, 10-(mark_pos*40)-19);
 						frame:SetHeight(19);
 						frame.highlight:SetHeight(19);
 						frame.name:SetPoint("CENTER",0,0);
@@ -535,7 +532,7 @@ function()
 		do
 			local healer = controller.assigned_healers[_mark][1]
 			controller.toggle_player(_mark, healer)
-			SendAddonMessage("KAT", "toggle_healer-".._mark..":"..healer.."-"..UnitName("player"), "RAID")
+			KAT_network_message("KAT", "toggle_healer-".._mark..":"..healer.."-"..UnitName("player"), "RAID")
 		end
 		
 		controller.update_marks(); --update views

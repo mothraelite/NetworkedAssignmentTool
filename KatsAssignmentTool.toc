@@ -1,8 +1,8 @@
-## Interface: 20400
+## Interface: 11200
 ## Title: Kats Assignment Tool
-## Author: Katcheese
+## Author: Katjes
 ## Version: 1.0
-## Notes: Assignment tools - by Katcheese
+## Notes: Networked assignment tool
 ## DefaultState: Enabled
 ## LoadOnDemand: 0
 ## SavedVariablesPerCharacter: KatsAssignmentsTools_Settings
