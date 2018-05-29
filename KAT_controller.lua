@@ -40,7 +40,17 @@ function KAT_init()
 	SLASH_KATCOMMAND1 = "/kat";
 
 	--Init handler
-	DEFAULT_CHAT_FRAME:AddMessage("Initializing KAT version 1.0", 0.6,1.0,0.6);
+	DEFAULT_CHAT_FRAME:AddMessage("KAT: Initializing KAT version 1.02", 0.6,1.0,0.6);
+end
+
+function KAT_request_master()
+	if not IsRaidLeader() and not IsRaidOfficer()
+	then
+		DEFAULT_CHAT_FRAME:AddMessage("KAT: You need to be the raid leader or have assist to request master status.", 0.6,1.0,0.6);
+		return;
+	end
+
+	network_controller.request_master();
 end
 
 function KAT_handle_events(self, event, ...)
@@ -89,6 +99,7 @@ function KAT_handle_events(self, event, ...)
 				KatMasterLabel:SetText("Master: "..message);
 			elseif command == "setup_master" --setup my own
 			then 
+				
 				network_controller.setup_master(message);
 			elseif command == "setup_tanks"
 			then
@@ -118,15 +129,6 @@ function KAT_handle_events(self, event, ...)
 				then
 					interrupt_controller.update_marks();
 				end
-			elseif command == "who_is_master"
-			then
-				network_controller.return_master(message);
-			elseif command == "master_is"
-			then
-				network_controller.request_setup();
-			elseif command == "request_new_master"
-			then
-				network_controller.request_master();
 			elseif command == "reset"
 			then 
 				KAT_reset_addon();
@@ -169,6 +171,10 @@ function KAT_slashCommandHandler(msg)
 	elseif strsub(msg, 1, 4) == "post"
 	then
 		KAT_post();
+	elseif strsub(msg, 1, 5) == "reset"
+	then
+		KAT_reset_addon();
+		network_controller.request_setup();
 	elseif strsub(msg,1,6) == "master"
 	then
 		network_controller.request_master();
@@ -176,8 +182,6 @@ function KAT_slashCommandHandler(msg)
 		DEFAULT_CHAT_FRAME:AddMessage("KAT: Error, could not understand input.\nValid commands:\n1)/kat show\n2)/kat hide\n3)/kat post\n4)/kat", 0.6,1.0,0.6);
 	end
 end
-
-
 
 --Function to fire when a new mode is selected
 function KAT_mode_picker_clicked(index)
@@ -189,25 +193,18 @@ function KAT_mode_picker_clicked(index)
 	then
 		--show tank visuals
 		KAT_tank_body:Show();
-		
 		tank_controller.update_marks();
-
 		current_mode = 1;
 	elseif index == 2 --heals
 	then
 		KAT_healer_body:Show();
-		
 		healer_controller.update_marks();
-		
-	
 		current_mode = 2;
 	elseif index == 3 --interrupt
 	then
 		--show interrupt visuals
 		KAT_interrupt_body:Show();
-		
 		interrupt_controller.update_marks();
-		
 		current_mode = 3;
 	end 
 end

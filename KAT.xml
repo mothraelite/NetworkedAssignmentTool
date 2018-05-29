@@ -2,7 +2,7 @@
 	<!-- 
 			@Author: Moth <milaninavid@gmail.com>
 			Title: KAT
-			Version: 1.0
+			Version: 1.02
 			Description: Does relevant assignments for raids.
 			
 	//-->
@@ -462,7 +462,7 @@
 						 <Layers>
 							<Layer level="ARTWORK">
 								<!-- Setup label //-->
-								<FontString name='tank1_label' inherits="GameFontNormal" text="">
+								<FontString name='tank1_label' inherits="GameFontNormal" text="Raid">
 									<Size><AbsDimension x="80" y="30"/></Size>
 									<Anchors>
 										<Anchor point="CENTER">
@@ -1060,7 +1060,7 @@
 					</Frames>
 				</Frame>
 			 
-				<Button inherits="OptionsButtonTemplate" name="KatRequestOptionButton" text="Options" disabled="true">
+				<Button inherits="OptionsButtonTemplate" name="KatRequestMasterButton" text="Request Master">
 					<Size><AbsDimension x="80" y="30"/></Size>
 					<Anchors>
 						<Anchor relativeTo="KAT" point="BOTTOM">
@@ -1071,7 +1071,7 @@
 						
 					</Anchors>
 					<Scripts>
-						<OnClick>KAT_options();</OnClick>
+						<OnClick>KAT_request_master();</OnClick>
 					</Scripts>
 				</Button>
 			 

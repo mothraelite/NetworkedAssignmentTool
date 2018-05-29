@@ -84,9 +84,6 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 					end
 					KAT_set_alarm(3, partial_setup);
 				else  --no reply
-					--ask if master is offline
-					SendAddonMessage("KAT", "who_is_master-"..UnitName("player").."-"..UnitName("player"), "RAID");
-					
 					--fire function after 2 seconds if no response because no setup available in raid
 					local no_setup = 
 					function()
@@ -115,27 +112,6 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 		end
 		KAT_set_alarm(2, func);
 	end
-	
-	controller.request_new_master 
-	=
-	function()
-		--Ask for a new master from the raider.
-		SendAddonMessage("KAT", "request_new_master-t-"..UnitName("player"), "RAID");
-	
-		local func 
-		=
-		function()
-			--am I still master and I dont have pre-reqs?
-			if controller.master == UnitName("player") and not IsRaidLeader() and not IsRaidOfficer()
-			then
-				--retry for a new master
-				controller.request_new_master();
-			end
-		end
-		
-		--fire func after 3s
-		KAT_set_alarm(3, func);
-	end
 		----------------------END OF REQUESTS-------------------------REQ
 		
 		------------------------------RETURNS--------------------------------RET
@@ -160,6 +136,16 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 	controller.return_setup
 	=
 	function(message)
+		if controller.master ~= nil and controller.state == 1 and (IsRaidOfficer()  or IsRaidLeader())
+		then	
+			--is current master offline?
+			local name, rank, sg, level, class, fileName, zone, online, isDead, role, isML = controller.get_raid_member_info(controller.master);
+			if online == nil
+			then
+				controller.request_master();
+			end
+		end
+	
 		--let the master list holder deal with informing the person asking for info
 		if controller.master == UnitName("player")
 		then
@@ -285,7 +271,7 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 			--send tanks to tank controller
 			controller.tank_controller.ingest_players(tanks);
 		end	
-		
+
 		controller.setup["tanks"] = true;
 		if controller.setup["healers"] and controller.setup["tanks"] and controller.setup["interrupters"] and controller.setup["master"]
 		then
@@ -310,7 +296,6 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 			--send tanks to heal controller
 			controller.healer_controller.ingest_players(healers);
 		end 
-		
 		controller.setup["healers"] = true;
 		if controller.setup["healers"] and controller.setup["tanks"] and controller.setup["interrupters"] and controller.setup["master"]
 		then
@@ -335,7 +320,6 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 			--send tanks to interrupt controller
 			controller.interrupt_controller.ingest_players(interrupters);
 		end
-		
 		controller.setup["interrupters"] = true;
 		if controller.setup["healers"] and controller.setup["tanks"] and controller.setup["interrupters"] and controller.setup["master"]
 		then
@@ -392,7 +376,7 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 	controller.update
 	=
 	function()
-		
+
 	end
 	
 	--FUNCTIONS---------------------------------------------------------------------F

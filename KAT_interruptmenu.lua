@@ -197,6 +197,7 @@ function()
 
 		--lets see what we got in the raid
 		local i = 1;
+		local temp_avail_int = {};
 		for i=1, GetNumRaidMembers(), 1
 		do
 			local pname = UnitName("raid"..i);
@@ -205,17 +206,68 @@ function()
 			if class == "Warrior"
 			then
 				table.insert(controller.available_interrupts.warrior, pname);
+				table.insert(temp_avail_int, pname);
 			elseif class == "Rogue"
 			then
 				table.insert(controller.available_interrupts.rogue, pname);
+				table.insert(temp_avail_int, pname);
 			elseif class == "Shaman"
 			then
 				table.insert(controller.available_interrupts.shaman, pname);
+				table.insert(temp_avail_int, pname);
 			elseif class == "Mage"
 			then
 				table.insert(controller.available_interrupts.mage, pname);
+				table.insert(temp_avail_int, pname);
 			end
 			
+		end
+		
+		--see if any assigned interrupt is no longer available
+		local current_interrupters = controller.retrieve_current_unique_players();
+		local int_to_remove = {};
+		
+		--check current tanks vs available tanks
+		for _,current_int in ipairs(current_interrupters)
+		do
+			local tfound = false;
+			local unprefix_int_tank = strsub(current_int, 11, strlen(current_int));
+			for _,avail_int in ipairs(temp_avail_int)
+			do
+				if avail_int == unprefix_current_int
+				then 
+					tfound = true;
+					break;
+				end
+			end 
+			
+			--not found, mark for removal
+			if tfound == false
+			then
+				table.insert(int_to_remove, current_int);
+			end 
+			
+		end
+		
+		for _, to_remove in ipairs(int_to_remove)
+		do
+			--remove all traces of tanks marked for removal from our controller's model list
+			local prefix_int = "";
+			for _, mark in ipairs(controller.marks)
+			do
+				for i=1, table.getn(controller.assigned_interrupts[mark]), 1
+				do
+					--attempting to find tank among assignments
+					if controller.assigned_interrupts[mark][i] == to_remove
+					then
+						table.remove(controller.assigned_interrupts[mark], i); --remove tank from assignment
+						break;
+					end
+				end 
+			end
+			
+			--inform observers that we removed a tank
+			controller.notify_observers("remove_interrupter", {to_remove});
 		end
 	end
 	

@@ -202,6 +202,7 @@ function()
 
 		--lets see what we got in the raid
 		local i = 1;
+		local temp_avail_healers = {};
 		for i=1, GetNumRaidMembers(), 1
 		do
 			local pname = UnitName("raid"..i);
@@ -210,16 +211,67 @@ function()
 			if class == "Druid"
 			then
 				table.insert(controller.available_healers.druid, pname);
+				table.insert(temp_avail_healers, pname);
 			elseif class == "Priest"
 			then
 				table.insert(controller.available_healers.priest, pname)
+				table.insert(temp_avail_healers, pname);
 			elseif class == "Paladin"
 			then
 				table.insert(controller.available_healers.paladin, pname);
+				table.insert(temp_avail_healers, pname);
 			elseif class == "Shaman"
 			then
 				table.insert(controller.available_healers.shaman, pname);
+				table.insert(temp_avail_healers, pname);
 			end
+		end
+		
+		--see if any assigned tank is no longer available
+		local current_healers = controller.retrieve_current_unique_players();
+		local healers_to_remove = {};
+		
+		--check current tanks vs available tanks
+		for _,current_healer in ipairs(current_healers)
+		do
+			local tfound = false;
+			local unprefix_current_healer = strsub(current_healer, 11, strlen(current_healer));
+			for _,avail_healer in ipairs(temp_avail_healers)
+			do
+				if avail_healer == unprefix_current_healer
+				then 
+					tfound = true;
+					break;
+				end
+			end 
+			
+			--not found, mark for removal
+			if tfound == false
+			then
+				table.insert(healers_to_remove, current_healer);
+			end 
+			
+		end
+		
+		for _, healer_to_remove in ipairs(healers_to_remove)
+		do
+			--remove all traces of tanks marked for removal from our controller's model list
+			local prefix_healer = "";
+			for _, mark in ipairs(controller.assigned_tanks)
+			do
+				for i=1, table.getn(controller.assigned_healers[mark]), 1
+				do
+					--attempting to find tank among assignments
+					if controller.assigned_healers[mark][i] == healer_to_remove
+					then
+						table.remove(controller.assigned_healers[mark], i); --remove tank from assignment
+						break;
+					end
+				end 
+			end
+			
+			--inform observers that we removed a tank
+			controller.notify_observers("remove_healer", {healer_to_remove});
 		end
 	end
 	
@@ -415,7 +467,7 @@ function()
 				controller.post_location["option"] = nil;
 				KatHealPostLabel:SetText(": guild");
 				controller.post_location["char"] = _chara;
-			elseif c_hara == "s"
+			elseif _chara == "s"
 			then
 				controller.post_location["channel"] = "SAY";
 				controller.post_location["option"] = nil;

@@ -1,7 +1,7 @@
 ## Interface: 20400
 ## Title: Kats Assignment Tool
 ## Author: Katcheese
-## Version: 1.0
+## Version: 1.02
 ## Notes: Assignment tools - by Katcheese
 ## DefaultState: Enabled
 ## LoadOnDemand: 0
