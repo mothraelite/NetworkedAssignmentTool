@@ -3,11 +3,11 @@
 				Title: Network handler
 				Description: Handles most of the networking logic between clients
 				Definitions:
-					-Message prefix: KAT
-					-Data is sent via Command-message-sender with the prefix KAT
+					-Message prefix: NAT
+					-Data is sent via Command-message-sender with the prefix NAT
 	--]]
 
-function KAT_create_network_handler(_tankc, _healerc, _interruptc)
+function NAT_create_network_handler(_tankc, _healerc, _interruptc)
 	local controller = {};
 	
 	--VARIABLES---------------------------------------------------------------------V
@@ -37,9 +37,9 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 	
 		if  IsRaidOfficer()  or IsRaidLeader() 
 		then
-			KAT_network_message("KAT", "request_master-"..UnitName("player").."-"..UnitName("player"), "RAID");
+			SendAddonMessage("NAT", "request_master-"..UnitName("player").."-"..UnitName("player"), "RAID");
 			controller.master = UnitName("player");
-			KatMasterLabel:SetText("Master: " .. UnitName("player"));
+			NATMasterLabel:SetText("Master: " .. UnitName("player"));
 		end
 	end
 
@@ -48,7 +48,7 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 	function()
 		if controller.state == 1
 		then
-			DEFAULT_CHAT_FRAME:AddMessage("KAT: Already setup.", 0.6,1.0,0.6);
+			DEFAULT_CHAT_FRAME:AddMessage("NAT: Already setup.", 0.6,1.0,0.6);
 			return;
 		end
 		
@@ -58,7 +58,7 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 		end
 		
 		controller.state = 0; --waiting for setup
-		KAT_network_message("KAT", "request_setup-"..UnitName("player").."-"..UnitName("player"), "RAID");
+		SendAddonMessage("NAT", "request_setup-"..UnitName("player").."-"..UnitName("player"), "RAID");
 		
 		--Set timed event to check if i get a full response in 2 seconds. 
 		local func = 
@@ -69,7 +69,7 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 				--did i get a partial reply?
 				if controller.setup["healers"] or controller.setup["tanks"] or controller.setup["interrupters"] or controller.setup["master"]
 				then--partial reply, might be lagging on either end
-					--wait 90f and request again if needed
+					--wait 3 seconds and request again if needed
 					local partial_setup =
 					function()
 						--still not setup
@@ -82,19 +82,16 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 							controller.request_setup();
 						end 
 					end
-					KAT_set_alarm(90, partial_setup);
+					NAT_set_alarm(3, partial_setup);
 				else  --no reply
-					--ask if master is offline
-					KAT_network_message("KAT", "who_is_master-"..UnitName("player").."-"..UnitName("player"), "RAID");
-					
-					--fire function after 30f if no response because no setup available in raid
+					--fire function after 2 seconds if no response because no setup available in raid
 					local no_setup = 
 					function()
 						if controller.state == 0
 						then
 							if IsRaidLeader() or IsRaidOfficer()
 							then
-								KAT_network_message("KAT", "reset- -"..UnitName("player"), "RAID");
+								SendAddonMessage("NAT", "reset- -"..UnitName("player"), "RAID");
 								controller.reset_setup();
 							
 								controller.setup["healers"] = true;
@@ -109,32 +106,11 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 							
 						end
 					end
-					KAT_set_alarm(30, no_setup);
+					NAT_set_alarm(2, no_setup);
 				end	
 			end
 		end
-		KAT_set_alarm(30, func);
-	end
-	
-	controller.request_new_master 
-	=
-	function()
-		--Ask for a new master from the raider.
-		KAT_network_message("KAT", "request_new_master-t-"..UnitName("player"), "RAID");
-	
-		local func 
-		=
-		function()
-			--am I still master and I dont have pre-reqs?
-			if controller.master == UnitName("player") and not IsRaidLeader() and not IsRaidOfficer()
-			then
-				--retry for a new master
-				controller.request_new_master();
-			end
-		end
-		
-		--fire func after 60f
-		KAT_set_alarm(60, func);
+		NAT_set_alarm(2, func);
 	end
 		----------------------END OF REQUESTS-------------------------REQ
 		
@@ -149,10 +125,10 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 			local name, rank, sg, level, class, fileName, zone, online, isDead, role, isML = controller.get_raid_member_info(controller.master);
 			if online ~= nil
 			then
-				KAT_network_message("KAT", "master_is-"..controller.master.."-"..UnitName('player'), "WHISPER", message);
+				SendAddonMessage("NAT", "master_is-"..controller.master.."-"..UnitName('player'), "RAID");
 			else 
 				controller.request_master();
-				KAT_network_message("KAT", "master_is-"..controller.master.."-"..UnitName('player'), "WHISPER", message);
+				SendAddonMessage("NAT", "master_is-"..controller.master.."-"..UnitName('player'), "RAID");
 			end
 		end
 	end
@@ -160,6 +136,16 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 	controller.return_setup
 	=
 	function(message)
+		if controller.master ~= nil and controller.state == 1 and (IsRaidOfficer()  or IsRaidLeader())
+		then	
+			--is current master offline?
+			local name, rank, sg, level, class, fileName, zone, online, isDead, role, isML = controller.get_raid_member_info(controller.master);
+			if online == nil
+			then
+				controller.request_master();
+			end
+		end
+	
 		--let the master list holder deal with informing the person asking for info
 		if controller.master == UnitName("player")
 		then
@@ -185,6 +171,7 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 				do
 					for ind, tank in ipairs(list)
 					do
+						tank = string.sub(tank, 11, strlen(tank));
 						tanks = tanks.." ".. mark ..":".. tank;
 					end
 				end
@@ -199,7 +186,14 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 				do
 					for ind, healer in ipairs(list)
 					do
-						healers = healers.." "..mark..":".. healer;
+						local tmark = mark;
+						if tmark ~= "Raid"
+						then
+							tmark = string.sub(tmark, 11, strlen(tmark));
+						end 
+					
+						healer = string.sub(healer, 11, strlen(healer));
+						healers = healers.." "..tmark..":".. healer;
 					end
 				end
 				healers = string.sub(healers, 2, strlen(healers));
@@ -213,6 +207,7 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 				do
 					for ind, interrupt in ipairs(list)
 					do
+						interrupt = string.sub(interrupt, 11, strlen(interrupt));
 						interrupters = interrupters.." "..mark..":"..interrupt;
 					end
 				end
@@ -220,10 +215,10 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 			end
 
 			--send it out
-			KAT_network_message("KAT", "setup_master-"..UnitName("player").."-"..UnitName("player"), "WHISPER", message);
-			KAT_network_message("KAT", "setup_tanks-"..tanks.."-"..UnitName("player"), "WHISPER", message);
-			KAT_network_message("KAT", "setup_healers-"..healers.."-"..UnitName("player"), "WHISPER", message);
-			KAT_network_message("KAT", "setup_interrupters-"..interrupters.."-"..UnitName("player"), "WHISPER", message);
+			SendAddonMessage("NAT", "setup_master-"..UnitName("player").."-"..UnitName("player"), "RAID");
+			SendAddonMessage("NAT", "setup_tanks-"..tanks.."-"..UnitName("player"), "RAID");
+			SendAddonMessage("NAT", "setup_healers-"..healers.."-"..UnitName("player"), "RAID");
+			SendAddonMessage("NAT", "setup_interrupters-"..interrupters.."-"..UnitName("player"), "RAID");
 		end
 	end
 		----------------------END OF RETURNS-------------------------RET
@@ -238,43 +233,63 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 	controller.toggle_tank
 	=
 	function(message)
-		local args = KAT_split(message, ":"); --split mark and player
+		local args = NAT_split(message, ":"); --split mark and player
+		args[2] = NAT_retrieve_class_color(NAT_retrieve_player_class(args[2])) .. args[2];
 		controller.tank_controller.toggle_player(args[1], args[2]);
 	end
 	
 	controller.toggle_healer
 	=
 	function(message)
-		local args = KAT_split(message, ":"); -- split mark and player 
+		local args = NAT_split(message, ":"); -- split mark and player 
+		if args[1] ~= "Raid"
+		then 
+			args[1] = NAT_retrieve_class_color(NAT_retrieve_player_class(args[1])) .. args[1];
+		end
+		
+		args[2] = NAT_retrieve_class_color(NAT_retrieve_player_class(args[2])) .. args[2];
 		controller.healer_controller.toggle_player(args[1],args[2]);
 	end
 	
 	controller.toggle_interrupter
 	=
 	function(message)
-		local args = KAT_split(message, ":"); -- split mark and player 
+		local args = NAT_split(message, ":"); -- split mark and player 
+		args[2] = NAT_retrieve_class_color(NAT_retrieve_player_class(args[2])) .. args[2];
 		controller.interrupt_controller.toggle_player(args[1],args[2]);
 	end
 	
 	controller.setup_master
 	=
 	function(message)
+		--unless im looking for a setup, dont do it
+		if controller.state ~= 0
+		then 
+			return;
+		end
+	
 		controller.master = message;
-		KatMasterLabel:SetText("Master: " .. message);
+		NATMasterLabel:SetText("Master: " .. message);
 		controller.setup["master"] = true;
 		if controller.setup["healers"] and controller.setup["tanks"] and controller.setup["interrupters"] and controller.setup["master"]
 		then
 			controller.state = 1;
-			DEFAULT_CHAT_FRAME:AddMessage("KAT: You are now setup.", 0.6,1.0,0.6);
+			DEFAULT_CHAT_FRAME:AddMessage("NAT: You are now setup.", 0.6,1.0,0.6);
 		end
 	end
 	
 	controller.setup_tanks
 	=
 	function(message)
+		--unless im looking for a setup, dont do it
+		if controller.state ~= 0
+		then 
+			return;
+		end
+	
 		if message ~= "empty"
 		then
-			local split_message = KAT_split(message, " ");
+			local split_message = NAT_split(message, " ");
 			local tanks = {};
 			
 			for i, str in ipairs(split_message)
@@ -285,21 +300,27 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 			--send tanks to tank controller
 			controller.tank_controller.ingest_players(tanks);
 		end	
-		
+
 		controller.setup["tanks"] = true;
 		if controller.setup["healers"] and controller.setup["tanks"] and controller.setup["interrupters"] and controller.setup["master"]
 		then
 			controller.state = 1; --controller.setup["healers"] and controller.setup["tanks"] and controller.setup["interrupters"] and controller.setup["master"]
-			DEFAULT_CHAT_FRAME:AddMessage("KAT: You are now setup.", 0.6,1.0,0.6);
+			DEFAULT_CHAT_FRAME:AddMessage("NAT: You are now setup.", 0.6,1.0,0.6);
 		end
 	end
 	
 	controller.setup_healers
 	=
 	function(message)
+		--unless im looking for a setup, dont do it
+		if controller.state ~= 0
+		then 
+			return;
+		end
+	
 		if message ~= "empty"
 		then
-			local split_message = KAT_split(message, " ");
+			local split_message = NAT_split(message, " ");
 			local healers = {};
 			
 			for i, str in ipairs(split_message)
@@ -310,21 +331,26 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 			--send tanks to heal controller
 			controller.healer_controller.ingest_players(healers);
 		end 
-		
 		controller.setup["healers"] = true;
 		if controller.setup["healers"] and controller.setup["tanks"] and controller.setup["interrupters"] and controller.setup["master"]
 		then
 			controller.state = 1;
-			DEFAULT_CHAT_FRAME:AddMessage("KAT: You are now setup.", 0.6,1.0,0.6);
+			DEFAULT_CHAT_FRAME:AddMessage("NAT: You are now setup.", 0.6,1.0,0.6);
 		end
 	end
 	
 	controller.setup_interrupters
 	=
 	function(message)
+		--unless im looking for a setup, dont do it
+		if controller.state ~= 0
+		then 
+			return;
+		end
+	
 		if message ~= "empty"
 		then 
-			local split_message = KAT_split(message, " ");
+			local split_message = NAT_split(message, " ");
 			local interrupters = {};
 			
 			for i, str in ipairs(split_message)
@@ -335,23 +361,21 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 			--send tanks to interrupt controller
 			controller.interrupt_controller.ingest_players(interrupters);
 		end
-		
 		controller.setup["interrupters"] = true;
 		if controller.setup["healers"] and controller.setup["tanks"] and controller.setup["interrupters"] and controller.setup["master"]
 		then
 			controller.state = 1;
-			DEFAULT_CHAT_FRAME:AddMessage("KAT: You are now setup.", 0.6,1.0,0.6);
+			DEFAULT_CHAT_FRAME:AddMessage("NAT: You are now setup.", 0.6,1.0,0.6);
 		end
 	end
 		-------------------------------HELPER-------------------------------HEL
 	controller.extract_command_and_message
 	=
 	function(_message)
-		local split = KAT_split(_message, "-");
+		local split = NAT_split(_message, "-");
 		local command = split[1];
 		local message = split[2];
 		local sender = split[3];
-		
 		return command, message, sender;
 	end
 	
@@ -364,7 +388,7 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 	
 		controller.state = -1;
 		controller.master = nil;
-		KatMasterLabel:SetText("Master: None");
+		NATMasterLabel:SetText("Master: None");
 		controller.setup["healers"] = false;
 		controller.setup["tanks"] = false;
 		controller.setup["master"] = false;
@@ -392,7 +416,7 @@ function KAT_create_network_handler(_tankc, _healerc, _interruptc)
 	controller.update
 	=
 	function()
-		
+
 	end
 	
 	--FUNCTIONS---------------------------------------------------------------------F

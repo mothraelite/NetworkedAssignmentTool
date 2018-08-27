@@ -1,4 +1,4 @@
-KAT_create_tank_menu_controller = 
+NAT_create_tank_menu_controller = 
 function()
 	local controller = {};
 
@@ -23,7 +23,7 @@ function()
 	--currented focus
 	controller.current_focus_mark = "";
 	controller.current_menu_parent = nil;
-	controller.kat_assignment_frames = {["skull"]={}, ["x"]={}, ["square"]={},["moon"]={},["triangle"]={},["diamond"]={},["circle"]={},["star"]={},["MT"]={}};
+	controller.NAT_assignment_frames = {["skull"]={}, ["x"]={}, ["square"]={},["moon"]={},["triangle"]={},["diamond"]={},["circle"]={},["star"]={},["MT"]={}};
 	controller.post_location = {["channel"]="RAID", ["option"]=nil, ["char"]="r"};
 	--VARIABLES-------------------------------------------------------------------------------------------------------V
 
@@ -43,9 +43,9 @@ function()
 		   info.func = 
 		   function() 
 				--check if addon is ready 
-				if not KAT_is_ready()
+				if not NAT_is_ready()
 				then 
-					DEFAULT_CHAT_FRAME:AddMessage("KAT: You are not setup yet. Wait for the go ahead or try to setup again. (Master might be offline)", 0.6,1.0,0.6);
+					DEFAULT_CHAT_FRAME:AddMessage("NAT: You are not setup yet. Wait for the go ahead or try to setup again. (Master might be offline)", 0.6,1.0,0.6);
 					return;
 				end
 		   
@@ -53,7 +53,7 @@ function()
 				if not IsRaidLeader() and not IsRaidOfficer()
 				then
 					--no permission, exit
-					DEFAULT_CHAT_FRAME:AddMessage("KAT: You need to be the raid leader OR have assist to make changes", 0.6,1.0,0.6);
+					DEFAULT_CHAT_FRAME:AddMessage("NAT: You need to be the raid leader OR have assist to make changes", 0.6,1.0,0.6);
 					return;
 				end
 
@@ -89,7 +89,7 @@ function()
 						if tank_found == false
 						then
 							controller.notify_observers("remove_tank", {info.text});
-							KAT_network_message("KAT", "toggle_tank-"..controller.current_focus_mark..":"..info.text.."-"..UnitName("player"), "RAID")
+							SendAddonMessage("NAT", "toggle_tank-"..controller.current_focus_mark..":"..string.sub(info.text, 11, strlen(info.text)).."-"..UnitName("player"), "RAID")
 							controller.update_marks();
 						end
 						
@@ -100,7 +100,7 @@ function()
 				--add to list
 				table.insert(controller.assigned_tanks[controller.current_focus_mark], info.text);
 				controller.notify_observers("add_tank", {info.text});
-				KAT_network_message("KAT", "toggle_tank-"..controller.current_focus_mark..":"..info.text.."-"..UnitName("player"), "RAID")
+				SendAddonMessage("NAT", "toggle_tank-"..controller.current_focus_mark..":"..string.sub(info.text, 11, strlen(info.text)).."-"..UnitName("player"), "RAID")
 				controller.update_marks();
 			end
 			
@@ -114,7 +114,7 @@ function()
 			title.isTitle = true;
 		
 			local warriors = {};
-			warriors.text = "|cffC79C6EWarrior";
+			warriors.text = NAT_retrieve_class_color("Warrior").."Warrior";
 			warriors.value = 1;
 			warriors.hasArrow = true;
 			warriors.func = function() end;
@@ -127,7 +127,7 @@ function()
 			end
 			
 			local druids = {};
-			druids.text = "|cffFF7D0ADruid";
+			druids.text = NAT_retrieve_class_color("Druid").."Druid";
 			druids.value = 2;
 			druids.hasArrow = true;
 			druids.func = function()  end;
@@ -140,7 +140,7 @@ function()
 			end
 			
 			local paladins = {};
-			paladins.text = "|cffF58CBAPaladin";
+			paladins.text = NAT_retrieve_class_color("Paladin").."Paladin";
 			paladins.value = 3;
 			paladins.hasArrow = true;
 			paladins.func = function()  end;
@@ -153,7 +153,7 @@ function()
 			end
 			
 			local mage = {};
-			mage.text = "|cff69CCF0Mage";
+			mage.text = NAT_retrieve_class_color("Mage").."Mage";
 			mage.value = 4;
 			mage.hasArrow = true;
 			mage.func = function()  end;
@@ -166,7 +166,7 @@ function()
 			end
 			
 			local hunter = {};
-			hunter.text = "|cffABD473Hunter";
+			hunter.text = NAT_retrieve_class_color("Hunter").."Hunter";
 			hunter.value = 5;
 			hunter.hasArrow = true;
 			hunter.func = function()  end;
@@ -179,7 +179,7 @@ function()
 			end
 			
 			local warlock = {};
-			warlock.text = "|cff9482C9Warlock";
+			warlock.text = NAT_retrieve_class_color("Warlock").."Warlock";
 			warlock.value = 6;
 			warlock.hasArrow = true;
 			warlock.func = function()  end;
@@ -192,7 +192,7 @@ function()
 			end
 			
 			local priest= {};
-			priest.text = "|cffFFFFFFPriest";
+			priest.text = NAT_retrieve_class_color("Priest").."Priest";
 			priest.value = 7;
 			priest.hasArrow = true;
 			priest.func = function()  end;
@@ -205,7 +205,7 @@ function()
 			end
 			
 			local rogue= {};
-			rogue.text = "|cffFFF569Rogue";
+			rogue.text = NAT_retrieve_class_color("Rogue").."Rogue";
 			rogue.value = 8;
 			rogue.hasArrow = true;
 			rogue.func = function()  end;
@@ -225,7 +225,7 @@ function()
 			function() 
 				if not IsRaidLeader() and not IsRaidOfficer()
 				then
-					DEFAULT_CHAT_FRAME:AddMessage("KAT: Can not use clear function without being the raid leader or having assist.", 0.6,1.0,0.6);
+					DEFAULT_CHAT_FRAME:AddMessage("NAT: Can not use clear function without being the raid leader or having assist.", 0.6,1.0,0.6);
 					return;
 				end
 			
@@ -253,49 +253,49 @@ function()
 			then
 				for i, name in ipairs(controller.available_tanks.warrior)
 				do
-				   UIDropDownMenu_AddButton(create_sub_info(name,"|cffC79C6E"), 2);
+				   UIDropDownMenu_AddButton(create_sub_info(name, NAT_retrieve_class_color("Warrior")), 2);
 				end
 			elseif UIDROPDOWNMENU_MENU_VALUE == 2 --druids
 			then
 				for i, name in ipairs(controller.available_tanks.druid)
 				do
-					UIDropDownMenu_AddButton(create_sub_info(name,"|cffFF7D0A"), 2);
+					UIDropDownMenu_AddButton(create_sub_info(name, NAT_retrieve_class_color("Druid")), 2);
 				end
 			elseif UIDROPDOWNMENU_MENU_VALUE== 3 --paladins
 			then
 				for i, name in ipairs(controller.available_tanks.paladin)
 				do
-					UIDropDownMenu_AddButton(create_sub_info(name, "|cffF58CBA"), 2);
+					UIDropDownMenu_AddButton(create_sub_info(name, NAT_retrieve_class_color("Paladin")), 2);
 				end
 			elseif UIDROPDOWNMENU_MENU_VALUE == 4 --mage 
 			then
 				for i, name in ipairs(controller.available_tanks.mage)
 				do
-					UIDropDownMenu_AddButton(create_sub_info(name, "|cff69CCF0"), 2);
+					UIDropDownMenu_AddButton(create_sub_info(name, NAT_retrieve_class_color("Mage")), 2);
 				end
 			elseif UIDROPDOWNMENU_MENU_VALUE == 5 --hunter
 			then
 				for i, name in ipairs(controller.available_tanks.hunter)
 				do
-					UIDropDownMenu_AddButton(create_sub_info(name, "|cffABD473"), 2);
+					UIDropDownMenu_AddButton(create_sub_info(name, NAT_retrieve_class_color("Hunter")), 2);
 				end
 			elseif UIDROPDOWNMENU_MENU_VALUE == 6 --lock
 			then
 				for i, name in ipairs(controller.available_tanks.warlock)
 				do
-					UIDropDownMenu_AddButton(create_sub_info(name,"|cff9482C9"), 2);
+					UIDropDownMenu_AddButton(create_sub_info(name, NAT_retrieve_class_color("Warlock")), 2);
 				end
 			elseif UIDROPDOWNMENU_MENU_VALUE == 7 --priest
 			then
 				for i, name in ipairs(controller.available_tanks.priest)
 				do
-					UIDropDownMenu_AddButton(create_sub_info(name,"|cffFFFFFF"), 2);
+					UIDropDownMenu_AddButton(create_sub_info(name, NAT_retrieve_class_color("Priest")), 2);
 				end
 			elseif UIDROPDOWNMENU_MENU_VALUE == 8 --rogue
 			then
 				for i, name in ipairs(controller.available_tanks.rogue)
 				do
-					UIDropDownMenu_AddButton(create_sub_info(name,"|cffFFF569"), 2);
+					UIDropDownMenu_AddButton(create_sub_info(name, NAT_retrieve_class_color("Rogue")), 2);
 				end
 			end
 		end
@@ -407,26 +407,27 @@ function()
 			for index, tank in ipairs(controller.assigned_tanks[mark])
 			do
 				--do I have enough free frames at this mark?
-				if 	index > table.getn(controller.kat_assignment_frames[mark])
+				if 	index > table.getn(controller.NAT_assignment_frames[mark])
 				then
 					-- I don't, add a frame to view
-					local frame = KAT_create_player_frame("tank_player_frame_"..mark.."_"..index, KAT_tank_body, tank);
+					local frame = NAT_create_player_frame("tank_player_frame_"..mark.."_"..index, NAT_tank_body, tank);
 					frame.mark = mark;
 					frame.colored_name = tank;
 					frame:SetScript("OnClick", 
 					function()
 						if not IsRaidLeader() and not IsRaidOfficer() 
 						then 
-							DEFAULT_CHAT_FRAME:AddMessage("KAT: You need to be the raid leader OR have assist to make changes", 0.6,1.0,0.6);
+							DEFAULT_CHAT_FRAME:AddMessage("NAT: You need to be the raid leader OR have assist to make changes", 0.6,1.0,0.6);
 							return;
 						end
-						KAT_network_message("KAT", "toggle_tank-"..frame.mark..":"..frame.colored_name.."-"..UnitName("player"), "RAID");
+						
+						SendAddonMessage("NAT", "toggle_tank-"..frame.mark..":"..frame.name:GetText().."-"..UnitName("player"), "RAID");
 						controller.toggle_player(frame.mark, frame.colored_name);  
 					end);
 					
 					if index > 3
 					then
-						frame:SetPoint("TOPLEFT", -40+KAT_mod(index,3)*133, 10-(mark_pos*40)-19);
+						frame:SetPoint("TOPLEFT", -40+NAT_mod(index,4)*133+133, 10-(mark_pos*40)-19);
 						frame:SetHeight(19);
 						frame.highlight:SetHeight(19);
 						frame.name:SetPoint("CENTER",0,0);
@@ -437,17 +438,17 @@ function()
 				
 					
 					frame:Show();
-					table.insert(controller.kat_assignment_frames[mark],frame);
+					table.insert(controller.NAT_assignment_frames[mark],frame);
 				else
 					--I do, adjust content in that frame
 					local uncolored_name = string.sub(tank,  11, strlen(tank));
-					local r,g,b = KAT_hex2rgb(string.sub(tank, 5,11));
+					local r,g,b = NAT_hex2rgb(string.sub(tank, 5,11));
 					
-					local frame = controller.kat_assignment_frames[mark][index];
+					local frame = controller.NAT_assignment_frames[mark][index];
 					frame.mark = mark;
 					frame.colored_name = tank;
 					frame.name:SetText(uncolored_name);
-					frame.model:SetUnit(KAT_retrieve_unitid_from_name(uncolored_name));
+					frame.model:SetUnit(NAT_retrieve_unitid_from_name(uncolored_name));
 					frame.model:SetCamera(0)
 					frame.bg:SetTexture(r/255,g/255,b/255,0.75);
 					frame.bg:SetAllPoints(true);
@@ -461,11 +462,11 @@ function()
 			if table.getn(controller.assigned_tanks[mark])/3 > 1
 			then
 				--check if already smooshed
-				if controller.kat_assignment_frames[mark][1]:GetHeight() > 19
+				if controller.NAT_assignment_frames[mark][1]:GetHeight() > 19
 				then --not smooshed yet
 					for i=1, 3, 1
 					do
-						local tank_frame = controller.kat_assignment_frames[mark][i];
+						local tank_frame = controller.NAT_assignment_frames[mark][i];
 						
 						--smoosh 
 						tank_frame:SetHeight(19);
@@ -479,13 +480,13 @@ function()
 				end
 			else
 				--check if already enlarged and in charge
-				if table.getn(controller.kat_assignment_frames[mark]) > 0
+				if table.getn(controller.NAT_assignment_frames[mark]) > 0
 				then
-					if controller.kat_assignment_frames[mark][1]:GetHeight() < 38
+					if controller.NAT_assignment_frames[mark][1]:GetHeight() < 38
 					then --not enlarged yet nor incharge
 						for i=1, table.getn(controller.assigned_tanks[mark]), 1
 						do
-							local tank_frame = controller.kat_assignment_frames[mark][i];
+							local tank_frame = controller.NAT_assignment_frames[mark][i];
 							
 							--enlarge
 							tank_frame:SetHeight(38);
@@ -500,11 +501,11 @@ function()
 			end
 			
 			--Do I have extra frames?
-			local  i = table.getn(controller.kat_assignment_frames[mark]);
+			local  i = table.getn(controller.NAT_assignment_frames[mark]);
 			while i > table.getn(controller.assigned_tanks[mark])
 			do
 				--I do, hide them and make them inactive
-				local frame = controller.kat_assignment_frames[mark][i];
+				local frame = controller.NAT_assignment_frames[mark][i];
 				frame.name:SetText("");
 				frame.model:ClearModel();
 				frame:Hide();
@@ -524,21 +525,17 @@ function()
 				local tank_list = "";
 				for index, tank in ipairs(controller.assigned_tanks[mark])
 				do
-					--if there was color applied. shitty server doesn't allow colored text in chat
+					--[[if there was color applied. shitty server doesn't allow colored text in chat
 					if strlen(tank) > 10
 					then
 						tank = strsub(tank, 11, strlen(tank));
-					end
+					end--]]
+					tank  = tank .. "|r";
 				
 					tank_list = tank_list .. tank .. " ";
 				end
-				
-				if mark == "x"
-				then
-					mark = "Cross";
-				end
-				
-				SendChatMessage("{"..mark.."}: " ..tank_list, controller.post_location["channel"], nil, controller.post_location["option"]);
+
+				SendChatMessage("["..NAT_retrieve_mark_color(mark)..mark.."|r]: " ..tank_list, controller.post_location["channel"], nil, controller.post_location["option"]);
 			end
 		end
 	end
@@ -559,10 +556,10 @@ function()
 				controller.post_location["channel"] = "CHANNEL";
 				controller.post_location["option"] = _chara;
 				controller.post_location["char"] = _chara;
-				KatTankPostLabel:SetText(": "..name);
+				NATTankPostLabel:SetText(": "..name);
 			else
-				KatTankPostChannelEdit:SetText(controller.post_location["char"]);
-				DEFAULT_CHAT_FRAME:AddMessage("KAT: post location " .. chara .. " is not an acceptable post location", 0.6,1.0,0.6);
+				NATTankPostChannelEdit:SetText(controller.post_location["char"]);
+				DEFAULT_CHAT_FRAME:AddMessage("NAT: post location " .. chara .. " is not an acceptable post location", 0.6,1.0,0.6);
 			end
 		else
 			--check if I have an acceptable char
@@ -570,35 +567,35 @@ function()
 			then
 				controller.post_location["channel"] = "RAID";
 				controller.post_location["option"] = nil;
-				KatTankPostLabel:SetText(": raid");
+				NATTankPostLabel:SetText(": raid");
 				controller.post_location["char"] = _chara;
 			elseif _chara == "p"
 			then
 				controller.post_location["channel"] = "PARTY";
 				controller.post_location["option"] = nil;
-				KatTankPostLabel:SetText(": party");
+				NATTankPostLabel:SetText(": party");
 				controller.post_location["char"] = _chara;
 			elseif _chara == "o"
 			then
 				controller.post_location["channel"] = "OFFICER";
 				controller.post_location["option"] = nil;
-				KatTankPostLabel:SetText(": officer");
+				NATTankPostLabel:SetText(": officer");
 				controller.post_location["char"] = _chara;
 			elseif _chara == "g"
 			then
 				controller.post_location["channel"] = "GUILD";
 				controller.post_location["option"] = nil;
-				KatTankPostLabel:SetText(": guild");
+				NATTankPostLabel:SetText(": guild");
 				controller.post_location["char"] = _chara;
-			elseif c_hara == "s"
+			elseif _chara == "s"
 			then
 				controller.post_location["channel"] = "SAY";
 				controller.post_location["option"] = nil;
-				KatTankPostLabel:SetText(": say");
+				NATTankPostLabel:SetText(": say");
 				controller.post_location["char"] = _chara;
 			else
-				KatTankPostChannelEdit:SetText(controller.post_location["char"]);
-				DEFAULT_CHAT_FRAME:AddMessage("KAT: post location " .. chara .. " is not an acceptable post location", 0.6,1.0,0.6);
+				NATTankPostChannelEdit:SetText(controller.post_location["char"]);
+				DEFAULT_CHAT_FRAME:AddMessage("NAT: post location " .. chara .. " is not an acceptable post location", 0.6,1.0,0.6);
 			end
 		end
 	end
@@ -610,7 +607,7 @@ function()
 		do
 			local tank = controller.assigned_tanks[_mark][1];
 			controller.toggle_player(_mark, tank)
-			KAT_network_message("KAT", "toggle_tank-".._mark..":"..tank.."-"..UnitName("player"), "RAID")
+			SendAddonMessage("NAT", "toggle_tank-".._mark..":"..string.sub(tank,11,strlen(tank)).."-"..UnitName("player"), "RAID")
 		end
 		
 		controller.update_marks(); --update views
@@ -680,6 +677,42 @@ function()
 		return list;
 	end 
 	
+	controller.random_assign = 
+	function(_tank_targets)
+
+		--get all applicable warriors 
+		local temp = {};
+		for _, tank in ipairs(controller.available_tanks.warrior)
+		do
+			--check if they have the HACHE PEES
+			local unitid = NAT_retrieve_unitid_from_name(tank);
+			DEFAULT_CHAT_FRAME:AddMessage("NAT: test " ..tank, 0.6,1.0,0.6);
+			if unitid ~= nil
+			then
+				if UnitHealth(unitid) > 6800
+				then
+					--add them to list 
+					table.insert(temp, NAT_retrieve_class_color("Warrior")..tank);
+				end
+			end
+		end
+		
+		--not enough tanks for each mark, assign what we can
+		if _tank_targets > table.getn(temp)
+		then
+			_tank_targets = table.getn(temp);
+		end
+		
+		for i = 1, _tank_targets, 1
+		do
+			local mark = controller.marks[i];
+			local tank_index = math.random(1, table.getn(temp));
+			controller.toggle_player(mark, temp[tank_index]);
+			
+			table.remove(temp, tank_index);
+		end
+	end
+	
 	--consume list of  assigned tanks and populate views/list
 		--input: list of mark:tank
 	controller.ingest_players = 
@@ -690,9 +723,10 @@ function()
 		--consume assignments
 		for _, tank in ipairs(tanks)
 		do
-			local tuple = KAT_split(tank, ":");
-			table.insert(controller.assigned_tanks[tuple[1]], tuple[2]);
-			controller.notify_observers("add_tank", {tuple[2]});
+			local tuple = NAT_split(tank, ":");
+			local colored_tank = NAT_retrieve_class_color(NAT_retrieve_player_class(tuple[2]))..tuple[2];
+			table.insert(controller.assigned_tanks[tuple[1]], colored_tank);
+			controller.notify_observers("add_tank", {colored_tank});
 		end 
 		
 		controller.update_marks();
@@ -750,7 +784,7 @@ function()
 				return;
 			end
 		end
-
+		
 		--add to list
 		table.insert(controller.assigned_tanks[_mark], _player);
 		controller.notify_observers("add_tank", {_player});

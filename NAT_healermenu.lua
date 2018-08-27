@@ -1,4 +1,4 @@
-KAT_create_healer_menu_controller = 
+NAT_create_healer_menu_controller = 
 function()
 	local controller = {};
 
@@ -18,7 +18,7 @@ function()
 	--currented focus
 	controller.current_focus_mark = "";
 	controller.current_menu_parent = nil;
-	controller.kat_assignment_frames = {[1]={},[2]={},[3]={},[4]={},[5]={},[6]={},[7]={},[8]={},[9]={}};
+	controller.NAT_assignment_frames = {[1]={},[2]={},[3]={},[4]={},[5]={},[6]={},[7]={},[8]={},[9]={}};
 	controller.post_location = {["channel"]="RAID", ["option"]=nil,["char"]="r"};
 	--VARIABLES-------------------------------------------------------------------------------------------------------V
 
@@ -38,9 +38,9 @@ function()
 		   info.func = 
 		   function() 
 				--check if addon is ready 
-				if not KAT_is_ready()
+				if not NAT_is_ready()
 				then 
-					DEFAULT_CHAT_FRAME:AddMessage("KAT: You are not setup yet. Wait for the go ahead or try to setup again. (Master might be offline)", 0.6,1.0,0.6);
+					DEFAULT_CHAT_FRAME:AddMessage("NAT: You are not setup yet. Wait for the go ahead or try to setup again. (Master might be offline)", 0.6,1.0,0.6);
 					return;
 				end
 		   
@@ -48,7 +48,7 @@ function()
 				if not IsRaidLeader() and not IsRaidOfficer()
 				then
 					--no permission, exit
-					DEFAULT_CHAT_FRAME:AddMessage("KAT: You need to be the raid leader OR have assist to make changes", 0.6,1.0,0.6);
+					DEFAULT_CHAT_FRAME:AddMessage("NAT: You need to be the raid leader OR have assist to make changes", 0.6,1.0,0.6);
 					return;
 				end
 		   
@@ -70,15 +70,27 @@ function()
 					then
 						--remove from list
 						table.remove(controller.assigned_healers[controller.current_focus_mark], entry);
-						KAT_network_message("KAT", "toggle_healer-"..controller.current_focus_mark..":"..info.text.."-"..UnitName("player"), "RAID")
+						local tmark = controller.current_focus_mark
+						if controller.current_focus_mark ~= "Raid"
+						then
+							tmark = string.sub(controller.current_focus_mark, 11, strlen(controller.current_focus_mark));
+						end
+						
+						SendAddonMessage("NAT", "toggle_healer-"..tmark..":"..string.sub(info.text, 11, strlen(info.text)).."-"..UnitName("player"), "RAID")
 						controller.update_marks();
 						return;
 					end
 				end
 				
+				local tmark = controller.current_focus_mark
+				if controller.current_focus_mark ~= "Raid"
+				then
+					tmark = string.sub(controller.current_focus_mark, 11, strlen(controller.current_focus_mark));
+				end
+				
 				--add to list
 				table.insert(controller.assigned_healers[controller.current_focus_mark], info.text);
-				KAT_network_message("KAT", "toggle_healer-"..controller.current_focus_mark..":"..info.text.."-"..UnitName("player"), "RAID")
+				SendAddonMessage("NAT", "toggle_healer-"..tmark..":"..string.sub(info.text, 11, strlen(info.text)).."-"..UnitName("player"), "RAID")
 				controller.update_marks();
 				
 			end
@@ -93,7 +105,7 @@ function()
 			title.isTitle = true;
 			
 			local druids = {};
-			druids.text = "|cffFF7D0ADruid";
+			druids.text = NAT_retrieve_class_color("Druid").."Druid";
 			druids.value = 1;
 			druids.hasArrow = true;
 			druids.func = function()  end;
@@ -106,7 +118,7 @@ function()
 			end
 			
 			local paladins = {};
-			paladins.text = "|cffF58CBAPaladin";
+			paladins.text = NAT_retrieve_class_color("Paladin").."Paladin";
 			paladins.value = 2;
 			paladins.hasArrow = true;
 			paladins.func = function()  end;
@@ -119,7 +131,7 @@ function()
 			end
 			
 			local priests = {};
-			priests.text = "|cffFFFFFFPriest";
+			priests.text = NAT_retrieve_class_color("Priest").."Priest";
 			priests.value = 3;
 			priests.hasArrow = true;
 			priests.func = function()  end;
@@ -132,7 +144,7 @@ function()
 			end
 			
 			local shamans = {};
-			shamans.text = "|cff0070DEShaman";
+			shamans.text = NAT_retrieve_class_color("Shaman").."Shaman";
 			shamans.value = 4;
 			shamans.hasArrow = true;
 			shamans.func = function()  end;
@@ -170,25 +182,25 @@ function()
 			then
 				for i, name in ipairs(controller.available_healers.druid)
 				do
-					UIDropDownMenu_AddButton(create_sub_info(name,"|cffFF7D0A"), 2);
+					UIDropDownMenu_AddButton(create_sub_info(name, NAT_retrieve_class_color("Druid")), 2);
 				end
 			elseif UIDROPDOWNMENU_MENU_VALUE== 2 --paladins
 			then
 				for i, name in ipairs(controller.available_healers.paladin)
 				do
-					UIDropDownMenu_AddButton(create_sub_info(name, "|cffF58CBA"), 2);
+					UIDropDownMenu_AddButton(create_sub_info(name, NAT_retrieve_class_color("Paladin")), 2);
 				end
 			elseif UIDROPDOWNMENU_MENU_VALUE == 3 --priest
 			then
 				for i, name in ipairs(controller.available_healers.priest)
 				do
-					UIDropDownMenu_AddButton(create_sub_info(name,"|cffFFFFFF"), 2);
+					UIDropDownMenu_AddButton(create_sub_info(name, NAT_retrieve_class_color("Priest")), 2);
 				end
 			elseif UIDROPDOWNMENU_MENU_VALUE == 4 --shaman
 			then
 				for i, name in ipairs(controller.available_healers.shaman)
 				do
-					UIDropDownMenu_AddButton(create_sub_info(name,"|cff0070DE"), 2);
+					UIDropDownMenu_AddButton(create_sub_info(name, NAT_retrieve_class_color("Shaman")), 2);
 				end
 			end
 		end
@@ -202,6 +214,7 @@ function()
 
 		--lets see what we got in the raid
 		local i = 1;
+		local temp_avail_healers = {};
 		for i=1, GetNumRaidMembers(), 1
 		do
 			local pname = UnitName("raid"..i);
@@ -210,16 +223,67 @@ function()
 			if class == "Druid"
 			then
 				table.insert(controller.available_healers.druid, pname);
+				table.insert(temp_avail_healers, pname);
 			elseif class == "Priest"
 			then
 				table.insert(controller.available_healers.priest, pname)
+				table.insert(temp_avail_healers, pname);
 			elseif class == "Paladin"
 			then
 				table.insert(controller.available_healers.paladin, pname);
+				table.insert(temp_avail_healers, pname);
 			elseif class == "Shaman"
 			then
 				table.insert(controller.available_healers.shaman, pname);
+				table.insert(temp_avail_healers, pname);
 			end
+		end
+		
+		--see if any assigned tank is no longer available
+		local current_healers = controller.retrieve_current_unique_players();
+		local healers_to_remove = {};
+		
+		--check current tanks vs available tanks
+		for _,current_healer in ipairs(current_healers)
+		do
+			local tfound = false;
+			local unprefix_current_healer = strsub(current_healer, 11, strlen(current_healer));
+			for _,avail_healer in ipairs(temp_avail_healers)
+			do
+				if avail_healer == unprefix_current_healer
+				then 
+					tfound = true;
+					break;
+				end
+			end 
+			
+			--not found, mark for removal
+			if tfound == false
+			then
+				table.insert(healers_to_remove, current_healer);
+			end 
+			
+		end
+		
+		for _, healer_to_remove in ipairs(healers_to_remove)
+		do
+			--remove all traces of tanks marked for removal from our controller's model list
+			local prefix_healer = "";
+			for _, mark in ipairs(controller.assigned_tanks)
+			do
+				for i=1, table.getn(controller.assigned_healers[mark]), 1
+				do
+					--attempting to find tank among assignments
+					if controller.assigned_healers[mark][i] == healer_to_remove
+					then
+						table.remove(controller.assigned_healers[mark], i); --remove tank from assignment
+						break;
+					end
+				end 
+			end
+			
+			--inform observers that we removed a tank
+			controller.notify_observers("remove_healer", {healer_to_remove});
 		end
 	end
 	
@@ -258,26 +322,33 @@ function()
 			for index, healer in ipairs(controller.assigned_healers[mark])
 			do
 				--do I have enough free frames at this mark?
-				if 	index > table.getn(controller.kat_assignment_frames[mark_pos])
+				if 	index > table.getn(controller.NAT_assignment_frames[mark_pos])
 				then
 					-- I don't, add a frame to view
-					local frame = KAT_create_player_frame("healer_player_frame_"..mark.."_"..index, KAT_healer_body, healer);
+					local frame = NAT_create_player_frame("healer_player_frame_"..mark.."_"..index, NAT_healer_body, healer);
 					frame.mark = mark;
 					frame.colored_name = healer;
 					frame:SetScript("OnClick", 
 					function()
 						if not IsRaidLeader() and not IsRaidOfficer() 
 						then 
-							DEFAULT_CHAT_FRAME:AddMessage("KAT: You need to be the raid leader OR have assist to make changes", 0.6,1.0,0.6);
+							DEFAULT_CHAT_FRAME:AddMessage("NAT: You need to be the raid leader OR have assist to make changes", 0.6,1.0,0.6);
 							return;
 						end
-						KAT_network_message("KAT", "toggle_healer-"..frame.mark..":"..frame.colored_name.."-"..UnitName("player"), "RAID");
+						
+						local tmark = frame.mark;
+						if frame.mark ~= "Raid"
+						then
+							tmark = string.sub(frame.mark, 11, strlen(frame.mark));
+						end
+						
+						SendAddonMessage("NAT", "toggle_healer-"..tmark..":"..frame.name:GetText().."-"..UnitName("player"), "RAID");
 						controller.toggle_player(frame.mark, frame.colored_name);  
 					end);
 					
 					if index > 3
 					then
-						frame:SetPoint("TOPLEFT", -40+KAT_mod(index,3)*133, 10-(mark_pos*40)-19);
+						frame:SetPoint("TOPLEFT", -40+NAT_mod(index,4)*133+133, 10-(mark_pos*40)-19);
 						frame:SetHeight(19);
 						frame.highlight:SetHeight(19);
 						frame.name:SetPoint("CENTER",0,0);
@@ -288,17 +359,17 @@ function()
 				
 					
 					frame:Show();
-					table.insert(controller.kat_assignment_frames[mark_pos],frame);
+					table.insert(controller.NAT_assignment_frames[mark_pos],frame);
 				else
 					--I do, adjust content in that frame
 					local uncolored_name = string.sub(healer,  11, strlen(healer));
-					local r,g,b = KAT_hex2rgb(string.sub(healer, 5,11));
+					local r,g,b = NAT_hex2rgb(string.sub(healer, 5,11));
 					
-					local frame = controller.kat_assignment_frames[mark_pos][index];
+					local frame = controller.NAT_assignment_frames[mark_pos][index];
 					frame.mark = mark;
 					frame.colored_name = healer;
 					frame.name:SetText(uncolored_name);
-					frame.model:SetUnit(KAT_retrieve_unitid_from_name(uncolored_name));
+					frame.model:SetUnit(NAT_retrieve_unitid_from_name(uncolored_name));
 					frame.model:SetCamera(0)
 					frame.bg:SetTexture(r/255,g/255,b/255,0.75);
 					frame.bg:SetAllPoints(true);
@@ -312,11 +383,11 @@ function()
 			if table.getn(controller.assigned_healers[mark])/3 > 1
 			then
 				--check if already smooshed
-				if controller.kat_assignment_frames[mark_pos][1]:GetHeight() > 19
+				if controller.NAT_assignment_frames[mark_pos][1]:GetHeight() > 19
 				then --not smooshed yet
 					for i=1, 3, 1
 					do
-						local healer_frame = controller.kat_assignment_frames[mark_pos][i];
+						local healer_frame = controller.NAT_assignment_frames[mark_pos][i];
 						
 						--smoosh 
 						healer_frame:SetHeight(19);
@@ -330,13 +401,13 @@ function()
 				end
 			else
 				--check if already enlarged and in charge
-				if table.getn(controller.kat_assignment_frames[mark_pos]) > 0
+				if table.getn(controller.NAT_assignment_frames[mark_pos]) > 0
 				then
-					if controller.kat_assignment_frames[mark_pos][1]:GetHeight() < 38
+					if controller.NAT_assignment_frames[mark_pos][1]:GetHeight() < 38
 					then --not enlarged yet nor incharge
 						for i=1, table.getn(controller.assigned_healers[mark]), 1
 						do
-							local healer_frame = controller.kat_assignment_frames[mark_pos][i];
+							local healer_frame = controller.NAT_assignment_frames[mark_pos][i];
 							
 							--enlarge
 							healer_frame:SetHeight(38);
@@ -351,11 +422,11 @@ function()
 			end
 			
 			--Do I have extra frames?
-			local  i = table.getn(controller.kat_assignment_frames[mark_pos]);
+			local  i = table.getn(controller.NAT_assignment_frames[mark_pos]);
 			while i > table.getn(controller.assigned_healers[mark])
 			do
 				--I do, hide them and make them inactive
-				local frame = controller.kat_assignment_frames[mark_pos][i];
+				local frame = controller.NAT_assignment_frames[mark_pos][i];
 				frame.name:SetText("");
 				frame.model:ClearModel();
 				frame:Hide();
@@ -381,10 +452,10 @@ function()
 				controller.post_location["channel"] = "CHANNEL";
 				controller.post_location["option"] = _chara;
 				controller.post_location["char"] = _chara;
-				KatHealPostLabel:SetText(": "..name);
+				NATHealPostLabel:SetText(": "..name);
 			else
-				KatHealerPostChannelEdit:SetText(controller.post_location["char"]);
-				DEFAULT_CHAT_FRAME:AddMessage("KAT: post location " .. chara .. " is not an acceptable post location", 0.6,1.0,0.6);
+				NATHealerPostChannelEdit:SetText(controller.post_location["char"]);
+				DEFAULT_CHAT_FRAME:AddMessage("NAT: post location " .. chara .. " is not an acceptable post location", 0.6,1.0,0.6);
 			end
 		else
 			--check if I have an acceptable char
@@ -392,35 +463,35 @@ function()
 			then
 				controller.post_location["channel"] = "RAID";
 				controller.post_location["option"] = nil;
-				KatHealPostLabel:SetText(": raid");
+				NATHealPostLabel:SetText(": raid");
 				controller.post_location["char"] = _chara;
 			elseif _chara == "p"
 			then
 				controller.post_location["channel"] = "PARTY";
 				controller.post_location["option"] = nil;
-				KatHealPostLabel:SetText(": party");
+				NATHealPostLabel:SetText(": party");
 				controller.post_location["char"] = _chara;
 			elseif _chara == "o"
 			then
 				controller.post_location["channel"] = "OFFICER";
 				controller.post_location["option"] = nil;
-				KatHealPostLabel:SetText(": officer");
+				NATHealPostLabel:SetText(": officer");
 				controller.post_location["char"] = _chara;
 			elseif _chara == "g"
 			then
 				controller.post_location["channel"] = "GUILD";
 				controller.post_location["option"] = nil;
-				KatHealPostLabel:SetText(": guild");
+				NATHealPostLabel:SetText(": guild");
 				controller.post_location["char"] = _chara;
-			elseif c_hara == "s"
+			elseif _chara == "s"
 			then
 				controller.post_location["channel"] = "SAY";
 				controller.post_location["option"] = nil;
-				KatHealPostLabel:SetText(": say");
+				NATHealPostLabel:SetText(": say");
 				controller.post_location["char"] = _chara;
 			else
-				KatHealerPostChannelEdit:SetText(controller.post_location["char"]);
-				DEFAULT_CHAT_FRAME:AddMessage("KAT: post location " .. chara .. " is not an acceptable post location", 0.6,1.0,0.6);
+				NATHealerPostChannelEdit:SetText(controller.post_location["char"]);
+				DEFAULT_CHAT_FRAME:AddMessage("NAT: post location " .. chara .. " is not an acceptable post location", 0.6,1.0,0.6);
 			end
 		end
 	end
@@ -435,26 +506,23 @@ function()
 				local healer_list = "";
 				for index, healer in ipairs(controller.assigned_healers[mark])
 				do
-					--if there was color applied. shitty server doesn't allow colored text in chat
-					if strlen(healer) > 10
-					then
-						healer = strsub(healer, 11, strlen(healer));
-					end
-				
+					healer = healer .. "|r";
 					healer_list = healer_list .. healer .. " ";
 				end
-
-				if strlen(mark) > 10
-				then
-					mark = strsub(mark, 11, strlen(mark)) ;
-				end
 				
+				if mark == "Raid"
+				then
+					mark = "|cffFFD700" .. mark;
+				end
+				mark = "["..mark .. "|r".."]";
 				SendChatMessage(mark..": " ..healer_list, controller.post_location["channel"], nil, controller.post_location["option"]);
 			else
-				if strlen(mark) > 10
+				if mark == "Raid"
 				then
-					mark = strsub(mark, 11, strlen(mark)) ;
+					mark = "|cffFFD700" .. mark;
 				end
+			
+				mark = "["..mark .. "|r".."]";
 				SendChatMessage(mark..": none", controller.post_location["channel"], nil, controller.post_location["option"]);
 			end
 		end
@@ -532,7 +600,14 @@ function()
 		do
 			local healer = controller.assigned_healers[_mark][1]
 			controller.toggle_player(_mark, healer)
-			KAT_network_message("KAT", "toggle_healer-".._mark..":"..healer.."-"..UnitName("player"), "RAID")
+			
+			local tmark = _mark
+			if _mark ~= "Raid"
+			then
+				tmark = string.sub(_mark, 11, strlen(_mark));
+			end
+			
+			SendAddonMessage("NAT", "toggle_healer-".._mark..":"..string.sub(healer,11,strlen(healer)).."-"..UnitName("player"), "RAID")
 		end
 		
 		controller.update_marks(); --update views
@@ -558,8 +633,13 @@ function()
 		--consume assignments
 		for _, healer in ipairs(healers)
 		do
-			local tuple = KAT_split(healer, ":");
-			table.insert(controller.assigned_healers[tuple[1]], tuple[2]);
+			local tuple = NAT_split(healer, ":");
+			if tuple[1] ~= "Raid"
+			then
+				tuple[1] = NAT_retrieve_class_color(NAT_retrieve_player_class(tuple[1]))..tuple[1];
+			end 
+			
+			table.insert(controller.assigned_healers[tuple[1]], NAT_retrieve_class_color(NAT_retrieve_player_class(tuple[2]))..tuple[2]);
 		end 
 		
 		controller.update_marks();
@@ -633,7 +713,7 @@ function()
 			end
 			
 			--hide frames from removed tanks
-			for _, healer_frame in ipairs(controller.kat_assignment_frames[i])
+			for _, healer_frame in ipairs(controller.NAT_assignment_frames[i])
 			do
 				healer_frame:Hide();
 			end

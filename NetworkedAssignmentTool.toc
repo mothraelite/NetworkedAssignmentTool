@@ -1,0 +1,17 @@
+## Interface: 11200
+## Title: Networked Assignment Tool
+## Author: Katjes <milaninavid@gmail.com>
+## Version: 1.0
+## Notes: Making things silky
+## DefaultState: Enabled
+## LoadOnDemand: 0
+## SavedVariablesPerCharacter: NAT_Settings
+
+NAT_util.lua
+NAT_interruptmenu.lua
+NAT_miscmenu.lua
+NAT_tankmenu.lua
+NAT_healermenu.lua
+NAT_network_handler.lua
+NAT_controller.lua
+NAT.xml

@@ -1,4 +1,4 @@
-KAT_create_interrupt_menu_controller = 
+NAT_create_interrupt_menu_controller = 
 function()
 	local controller = {};
 
@@ -18,7 +18,7 @@ function()
 	--currented focus
 	controller.current_focus_mark = "";
 	controller.current_menu_parent = nil;
-	controller.kat_assignment_frames = {["skull"]={}, ["x"]={}, ["square"]={},["moon"]={},["triangle"]={},["diamond"]={},["circle"]={},["star"]={},["MT"]={}};
+	controller.NAT_assignment_frames = {["skull"]={}, ["x"]={}, ["square"]={},["moon"]={},["triangle"]={},["diamond"]={},["circle"]={},["star"]={},["MT"]={}};
 	controller.post_location = {["channel"]="RAID", ["option"]=nil, ["char"]="r"};
 	--VARIABLES-------------------------------------------------------------------------------------------------------V
 
@@ -38,9 +38,9 @@ function()
 		   info.func = 
 		   function() 
 				--check if addon is ready 
-				if not KAT_is_ready()
+				if not NAT_is_ready()
 				then 
-					DEFAULT_CHAT_FRAME:AddMessage("KAT: You are not setup yet. Wait for the go ahead or try to setup again. (Master might be offline)", 0.6,1.0,0.6);
+					DEFAULT_CHAT_FRAME:AddMessage("NAT: You are not setup yet. Wait for the go ahead or try to setup again. (Master might be offline)", 0.6,1.0,0.6);
 					return;
 				end
 		   
@@ -48,7 +48,7 @@ function()
 				if not IsRaidLeader() and not IsRaidOfficer()
 				then
 					--no permission, exit
-					DEFAULT_CHAT_FRAME:AddMessage("KAT: You need to be the raid leader OR have assist to make changes", 0.6,1.0,0.6);
+					DEFAULT_CHAT_FRAME:AddMessage("NAT: You need to be the raid leader OR have assist to make changes", 0.6,1.0,0.6);
 					return;
 				end
 		   
@@ -59,7 +59,7 @@ function()
 					then
 						--remove from list
 						table.remove(controller.assigned_interrupts[controller.current_focus_mark], entry);
-						KAT_network_message("KAT", "toggle_interrupt-"..controller.current_focus_mark..":"..info.text.."-"..UnitName("player"), "RAID")
+						SendAddonMessage("NAT", "toggle_interrupt-"..controller.current_focus_mark..":"..string.sub(info.text, 11, strlen(info.text)).."-"..UnitName("player"), "RAID")
 						controller.update_marks();
 						
 						return;
@@ -68,7 +68,7 @@ function()
 				
 				--add to list
 				table.insert(controller.assigned_interrupts[controller.current_focus_mark], info.text);
-				KAT_network_message("KAT", "toggle_interrupt-"..controller.current_focus_mark..":"..info.text.."-"..UnitName("player"), "RAID")
+				SendAddonMessage("NAT", "toggle_interrupt-"..controller.current_focus_mark..":"..string.sub(info.text, 11, strlen(info.text)).."-"..UnitName("player"), "RAID")
 				controller.update_marks();
 			end
 			
@@ -82,7 +82,7 @@ function()
 			title.isTitle = true;
 		
 			local warriors = {};
-			warriors.text = "|cffC79C6EWarrior";
+			warriors.text = NAT_retrieve_class_color("Warrior").."Warrior";
 			warriors.value = 1;
 			warriors.hasArrow = true;
 			warriors.func = function() end;
@@ -95,7 +95,7 @@ function()
 			end
 			
 			local mage = {};
-			mage.text = "|cff69CCF0Mage";
+			mage.text = NAT_retrieve_class_color("Mage").."Mage";
 			mage.value = 2;
 			mage.hasArrow = true;
 			mage.func = function()  end;
@@ -108,7 +108,7 @@ function()
 			end
 			
 			local rogue= {};
-			rogue.text = "|cffFFF569Rogue";
+			rogue.text = NAT_retrieve_class_color("Rogue").."Rogue";
 			rogue.value = 3;
 			rogue.hasArrow = true;
 			rogue.func = function()  end;
@@ -121,7 +121,7 @@ function()
 			end
 			
 			local shamans = {};
-			shamans.text = "|cff0070DEShaman";
+			shamans.text = NAT_retrieve_class_color("Shaman").."Shaman";
 			shamans.value = 4;
 			shamans.hasArrow = true;
 			shamans.func = function()  end;
@@ -141,7 +141,7 @@ function()
 			function() 
 				if not IsRaidLeader() and not IsRaidOfficer()
 				then
-					DEFAULT_CHAT_FRAME:AddMessage("KAT: Can not use clear function without being the raid leader or having assist.", 0.6,1.0,0.6);
+					DEFAULT_CHAT_FRAME:AddMessage("NAT: Can not use clear function without being the raid leader or having assist.", 0.6,1.0,0.6);
 					return;
 				end
 			
@@ -165,25 +165,25 @@ function()
 			then
 				for i, name in ipairs(controller.available_interrupts.warrior)
 				do
-				   UIDropDownMenu_AddButton(create_sub_info(name,"|cffC79C6E"), 2);
+				   UIDropDownMenu_AddButton(create_sub_info(name, NAT_retrieve_class_color("Warrior")), 2);
 				end
 			elseif UIDROPDOWNMENU_MENU_VALUE == 2 --mage 
 			then
 				for i, name in ipairs(controller.available_interrupts.mage)
 				do
-					UIDropDownMenu_AddButton(create_sub_info(name, "|cff69CCF0"), 2);
+					UIDropDownMenu_AddButton(create_sub_info(name, NAT_retrieve_class_color("Mage")), 2);
 				end
 			elseif UIDROPDOWNMENU_MENU_VALUE == 3 --rogue
 			then
 				for i, name in ipairs(controller.available_interrupts.rogue)
 				do
-					UIDropDownMenu_AddButton(create_sub_info(name,"|cffFFF569"), 2);
+					UIDropDownMenu_AddButton(create_sub_info(name, NAT_retrieve_class_color("Rogue")), 2);
 				end
 			elseif UIDROPDOWNMENU_MENU_VALUE == 4 --shaman
 			then
 				for i, name in ipairs(controller.available_interrupts.shaman)
 				do
-					UIDropDownMenu_AddButton(create_sub_info(name,"|cff0070DE"), 2);
+					UIDropDownMenu_AddButton(create_sub_info(name, NAT_retrieve_class_color("Shaman")), 2);
 				end
 			end
 		end
@@ -197,6 +197,7 @@ function()
 
 		--lets see what we got in the raid
 		local i = 1;
+		local temp_avail_int = {};
 		for i=1, GetNumRaidMembers(), 1
 		do
 			local pname = UnitName("raid"..i);
@@ -205,17 +206,68 @@ function()
 			if class == "Warrior"
 			then
 				table.insert(controller.available_interrupts.warrior, pname);
+				table.insert(temp_avail_int, pname);
 			elseif class == "Rogue"
 			then
 				table.insert(controller.available_interrupts.rogue, pname);
+				table.insert(temp_avail_int, pname);
 			elseif class == "Shaman"
 			then
 				table.insert(controller.available_interrupts.shaman, pname);
+				table.insert(temp_avail_int, pname);
 			elseif class == "Mage"
 			then
 				table.insert(controller.available_interrupts.mage, pname);
+				table.insert(temp_avail_int, pname);
 			end
 			
+		end
+		
+		--see if any assigned interrupt is no longer available
+		local current_interrupters = controller.retrieve_current_unique_players();
+		local int_to_remove = {};
+		
+		--check current tanks vs available tanks
+		for _,current_int in ipairs(current_interrupters)
+		do
+			local tfound = false;
+			local unprefix_int_tank = strsub(current_int, 11, strlen(current_int));
+			for _,avail_int in ipairs(temp_avail_int)
+			do
+				if avail_int == unprefix_current_int
+				then 
+					tfound = true;
+					break;
+				end
+			end 
+			
+			--not found, mark for removal
+			if tfound == false
+			then
+				table.insert(int_to_remove, current_int);
+			end 
+			
+		end
+		
+		for _, to_remove in ipairs(int_to_remove)
+		do
+			--remove all traces of tanks marked for removal from our controller's model list
+			local prefix_int = "";
+			for _, mark in ipairs(controller.marks)
+			do
+				for i=1, table.getn(controller.assigned_interrupts[mark]), 1
+				do
+					--attempting to find tank among assignments
+					if controller.assigned_interrupts[mark][i] == to_remove
+					then
+						table.remove(controller.assigned_interrupts[mark], i); --remove tank from assignment
+						break;
+					end
+				end 
+			end
+			
+			--inform observers that we removed a tank
+			controller.notify_observers("remove_interrupter", {to_remove});
 		end
 	end
 	
@@ -281,7 +333,7 @@ function()
 		do
 			local interrupter = controller.assigned_interrupts[_mark][1];
 			controller.toggle_player(_mark, interrupter)
-			KAT_network_message("KAT", "toggle_interrupt-".._mark..":"..interrupter.."-"..UnitName("player"), "RAID")
+			SendAddonMessage("NAT", "toggle_interrupt-".._mark..":"..string.sub(interrupter,11,strlen(interrupter)).."-"..UnitName("player"), "RAID")
 		end
 		
 		controller.update_marks(); --update views
@@ -308,8 +360,8 @@ function()
 		--consume assignments
 		for _, interrupter in ipairs(interrupters)
 		do
-			local tuple = KAT_split(interrupter, ":");
-			table.insert(controller.assigned_interrupts[tuple[1]], tuple[2]);
+			local tuple = NAT_split(interrupter, ":");
+			table.insert(controller.assigned_interrupts[tuple[1]], NAT_retrieve_class_color(NAT_retrieve_player_class(tuple[2]))..tuple[2]);
 		end 
 		
 		controller.update_marks();
@@ -324,26 +376,26 @@ function()
 			for index, interrupt in ipairs(controller.assigned_interrupts[mark])
 			do
 				--do I have enough free frames at this mark?
-				if 	index > table.getn(controller.kat_assignment_frames[mark])
+				if 	index > table.getn(controller.NAT_assignment_frames[mark])
 				then
 					-- I don't, add a frame to view
-					local frame = KAT_create_player_frame("tank_player_frame_"..mark.."_"..index, KAT_interrupt_body, interrupt);
+					local frame = NAT_create_player_frame("tank_player_frame_"..mark.."_"..index, NAT_interrupt_body, interrupt);
 					frame.mark = mark;
 					frame.colored_name = interrupt;
 					frame:SetScript("OnClick", 
 					function()
 						if not IsRaidLeader() and not IsRaidOfficer() 
 						then 
-							DEFAULT_CHAT_FRAME:AddMessage("KAT: You need to be the raid leader OR have assist to make changes", 0.6,1.0,0.6);
+							DEFAULT_CHAT_FRAME:AddMessage("NAT: You need to be the raid leader OR have assist to make changes", 0.6,1.0,0.6);
 							return;
 						end
-						KAT_network_message("KAT", "toggle_interrupt-"..frame.mark..":"..frame.colored_name.."-"..UnitName("player"), "RAID");
+						SendAddonMessage("NAT", "toggle_interrupt-"..frame.mark..":"..frame.name:GetText().."-"..UnitName("player"), "RAID");
 						controller.toggle_player(frame.mark, frame.colored_name);  
 					end);
 					
 					if index > 3
 					then
-						frame:SetPoint("TOPLEFT", -40+KAT_mod(index,3)*133, 10-(mark_pos*40)-19);
+						frame:SetPoint("TOPLEFT", -40+NAT_mod(index,4)*133+133, 10-(mark_pos*40)-19);
 						frame:SetHeight(19);
 						frame.highlight:SetHeight(19);
 						frame.name:SetPoint("CENTER",0,0);
@@ -354,17 +406,17 @@ function()
 				
 					
 					frame:Show();
-					table.insert(controller.kat_assignment_frames[mark],frame);
+					table.insert(controller.NAT_assignment_frames[mark],frame);
 				else
 					--I do, adjust content in that frame
 					local uncolored_name = string.sub(interrupt,  11, strlen(interrupt));
-					local r,g,b = KAT_hex2rgb(string.sub(interrupt, 5,11));
+					local r,g,b = NAT_hex2rgb(string.sub(interrupt, 5,11));
 					
-					local frame = controller.kat_assignment_frames[mark][index];
+					local frame = controller.NAT_assignment_frames[mark][index];
 					frame.mark = mark;
 					frame.colored_name = interrupt;
 					frame.name:SetText(uncolored_name);
-					frame.model:SetUnit(KAT_retrieve_unitid_from_name(uncolored_name));
+					frame.model:SetUnit(NAT_retrieve_unitid_from_name(uncolored_name));
 					frame.model:SetCamera(0)
 					frame.bg:SetTexture(r/255,g/255,b/255,0.75);
 					frame.bg:SetAllPoints(true);
@@ -378,11 +430,11 @@ function()
 			if table.getn(controller.assigned_interrupts[mark])/3 > 1
 			then
 				--check if already smooshed
-				if controller.kat_assignment_frames[mark][1]:GetHeight() > 19
+				if controller.NAT_assignment_frames[mark][1]:GetHeight() > 19
 				then --not smooshed yet
 					for i=1, 3, 1
 					do
-						local interrupt_frame = controller.kat_assignment_frames[mark][i];
+						local interrupt_frame = controller.NAT_assignment_frames[mark][i];
 						
 						--smoosh 
 						interrupt_frame:SetHeight(19);
@@ -396,13 +448,13 @@ function()
 				end
 			else
 				--check if already enlarged and in charge
-				if table.getn(controller.kat_assignment_frames[mark]) > 0
+				if table.getn(controller.NAT_assignment_frames[mark]) > 0
 				then
-					if controller.kat_assignment_frames[mark][1]:GetHeight() < 38
+					if controller.NAT_assignment_frames[mark][1]:GetHeight() < 38
 					then --not enlarged yet nor incharge
 						for i=1, table.getn(controller.assigned_interrupts[mark]), 1
 						do
-							local interrupt_frame = controller.kat_assignment_frames[mark][i];
+							local interrupt_frame = controller.NAT_assignment_frames[mark][i];
 							
 							--enlarge
 							interrupt_frame:SetHeight(38);
@@ -417,11 +469,11 @@ function()
 			end
 			
 			--Do I have extra frames?
-			local  i = table.getn(controller.kat_assignment_frames[mark]);
+			local  i = table.getn(controller.NAT_assignment_frames[mark]);
 			while i > table.getn(controller.assigned_interrupts[mark])
 			do
 				--I do, hide them and make them inactive
-				local frame = controller.kat_assignment_frames[mark][i];
+				local frame = controller.NAT_assignment_frames[mark][i];
 				frame.name:SetText("");
 				frame.model:ClearModel();
 				frame:Hide();
@@ -447,10 +499,10 @@ function()
 				controller.post_location["channel"] = "CHANNEL";
 				controller.post_location["option"] = _chara;
 				controller.post_location["char"] = _chara;
-				KatInterruptPostLabel:SetText(": "..name);
+				NATInterruptPostLabel:SetText(": "..name);
 			else
-				KatInterruptPostChannelEdit:SetText(controller.post_location["char"]);
-				DEFAULT_CHAT_FRAME:AddMessage("KAT: post location " .. chara .. " is not an acceptable post location", 0.6,1.0,0.6);
+				NATInterruptPostChannelEdit:SetText(controller.post_location["char"]);
+				DEFAULT_CHAT_FRAME:AddMessage("NAT: post location " .. chara .. " is not an acceptable post location", 0.6,1.0,0.6);
 			end
 		else
 			--check if I have an acceptable char
@@ -458,35 +510,35 @@ function()
 			then
 				controller.post_location["channel"] = "RAID";
 				controller.post_location["option"] = nil;
-				KatInterruptPostLabel:SetText(": raid");
+				NATInterruptPostLabel:SetText(": raid");
 				controller.post_location["char"] = _chara;
 			elseif _chara == "p"
 			then
 				controller.post_location["channel"] = "PARTY";
 				controller.post_location["option"] = nil;
-				KatInterruptPostLabel:SetText(": party");
+				NATInterruptPostLabel:SetText(": party");
 				controller.post_location["char"] = _chara;
 			elseif _chara == "o"
 			then
 				controller.post_location["channel"] = "OFFICER";
 				controller.post_location["option"] = nil;
-				KatInterruptPostLabel:SetText(": officer");
+				NATInterruptPostLabel:SetText(": officer");
 				controller.post_location["char"] = _chara;
 			elseif _chara == "g"
 			then
 				controller.post_location["channel"] = "GUILD";
 				controller.post_location["option"] = nil;
-				KatInterruptPostLabel:SetText(": guild");
+				NATInterruptPostLabel:SetText(": guild");
 				controller.post_location["char"] = _chara;
-			elseif c_hara == "s"
+			elseif _chara == "s"
 			then
 				controller.post_location["channel"] = "SAY";
 				controller.post_location["option"] = nil;
-				KatInterruptPostLabel:SetText(": say");
+				NATInterruptPostLabel:SetText(": say");
 				controller.post_location["char"] = _chara;
 			else
-				KatInterruptPostChannelEdit:SetText(controller.post_location["char"]);
-				DEFAULT_CHAT_FRAME:AddMessage("KAT: post location " .. chara .. " is not an acceptable post location", 0.6,1.0,0.6);
+				NATInterruptPostChannelEdit:SetText(controller.post_location["char"]);
+				DEFAULT_CHAT_FRAME:AddMessage("NAT: post location " .. chara .. " is not an acceptable post location", 0.6,1.0,0.6);
 			end
 		end
 	end
@@ -502,21 +554,17 @@ function()
 				local interrupt_list = "";
 				for index, interrupt in ipairs(controller.assigned_interrupts[mark])
 				do
-					--if there was color applied. shitty server doesn't allow colored text in chat
+					--[[if there was color applied. shitty server doesn't allow colored text in chat
 					if strlen(interrupt) > 10
 					then
 						interrupt = strsub(interrupt, 11, strlen(interrupt));
-					end
+					end--]]
+					interrupt = interrupt .. "|r"
 				
 					interrupt_list = interrupt_list .. interrupt .. " ";
 				end
-				
-				if mark == "x"
-				then
-					mark = "Cross";
-				end
-				
-				SendChatMessage("{"..mark.."}: " ..interrupt_list, controller.post_location["channel"], nil, controller.post_location["option"]);
+
+				SendChatMessage("["..NAT_retrieve_mark_color(mark)..mark.."|r]: " ..interrupt_list, controller.post_location["channel"], nil, controller.post_location["option"]);
 			end
 		end
 	end
