@@ -8,6 +8,12 @@
 ## SavedVariablesPerCharacter: NAT_Settings
 
 NAT_util.lua
+NAT_menu_abstraction.lua
+NAT_warlockmenu.lua
+NAT_druidmenu.lua
+NAT_magemenu.lua
+NAT_priestmenu.lua
+NAT_paladinmenu.lua
 NAT_interruptmenu.lua
 NAT_miscmenu.lua
 NAT_tankmenu.lua

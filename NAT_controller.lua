@@ -7,11 +7,10 @@
 			
 			credits: shout out to attreyo on vg for some inspiration.
 --]]
-local tank_controller = NAT_create_tank_menu_controller(); --tank drop down menu controller
-local healer_controller = NAT_create_healer_menu_controller(); --healer drop down menu controller
-table.insert(tank_controller.observers, healer_controller); --add healer controller to tank observer list
-local interrupt_controller = NAT_create_interrupt_menu_controller();
-local network_controller = NAT_create_network_handler(tank_controller, healer_controller, interrupt_controller);
+local tank_controller; --tank drop down menu controller
+local healer_controller; --healer drop down menu controller
+local interrupt_controller; --interrupt drop down menu controller
+local network_controller;
 
 --what selection mode im in
 	--1: tanks
@@ -26,6 +25,13 @@ function NAT_init()
 	NAT:RegisterEvent("RAID_TARGET_UPDATE"); --unfortunately, no response that indicates what was changed. probably going to notify all assigned tanks that things have changed though.
 	NAT:RegisterEvent("CHAT_MSG_ADDON");
 	--RegisterAddonMessagePrefix("NAT");
+	
+	--setup controllers
+	tank_controller = NAT_create_tank_menu_controller(NATTankPostChannelEdit, NATTankPostLabel, NAT_tank_body); 
+	healer_controller = NAT_create_healer_menu_controller(NATHealerPostChannelEdit, NATHealPostLabel, NAT_healer_body); 
+	table.insert(tank_controller.observers, healer_controller); --add healer controller to tank observer list
+	interrupt_controller = NAT_create_interrupt_menu_controller(NATInterruptPostChannelEdit, NATInterruptPostLabel, NAT_interrupt_body);
+	network_controller = NAT_create_network_handler(tank_controller, healer_controller, interrupt_controller);
 	
 	--get initial list of raid mems
 	NAT_poll_for_players();
@@ -324,15 +330,15 @@ function NAT_poll_for_players()
 	end 
 	
 	--tanks
-	tank_controller.poll_for_tanks();
+	tank_controller.poll_for_players();
 	UIDropDownMenu_Initialize(NAT_tank_list, tank_controller.init, "MENU", 2);
 	
 	--healers 
-	healer_controller.poll_for_healers();
+	healer_controller.poll_for_players();
 	UIDropDownMenu_Initialize(NAT_heal_list, healer_controller.init, "MENU", 2);
 	
 	--interupts
-	interrupt_controller.poll_for_interrupts();
+	interrupt_controller.poll_for_players();
 	UIDropDownMenu_Initialize(NAT_interrupt_list, interrupt_controller.init, "MENU", 2);
 	
 	if current_mode == 1
