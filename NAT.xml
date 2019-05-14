@@ -109,7 +109,7 @@
 							</FontString>
 						
 							<!-- Setup texture //-->
-							<Texture name="tank_shield_texture" file="Interface\AddOns\NetworkedAssignmentTool\resources\images\tank_art.tga">
+							<Texture name="tank_shield_texture" file="Interface\AddOns\NetworkedAssignmentTool\resources\images\icons\tank_icon.tga">
 								<Size><AbsDimension x="256" y="256"/></Size>
 								<Anchors>
 									<Anchor point="CENTER">
@@ -762,7 +762,7 @@
 							</FontString>
 						
 							<!-- Setup texture //-->
-							<Texture  file="Interface\AddOns\NetworkedAssignmentTool\resources\images\interrupt_art.tga">
+							<Texture  file="Interface\AddOns\NetworkedAssignmentTool\resources\images\icons\interrupt_icon.tga">
 								<Size><AbsDimension x="256" y="256"/></Size>
 								<Anchors>
 									<Anchor point="CENTER">
@@ -1067,70 +1067,176 @@
 					</Frames>
 				</Frame>
 			 
-				<Button inherits="OptionsButtonTemplate" name="NATRequestMasterButton" text="Request Master">
-					<Size><AbsDimension x="80" y="30"/></Size>
+				<!--Selectable players menu for respected views //-->
+					<!-- Tank list menu //-->
+					<Frame name="NAT_tank_list" inherits="UIDropDownMenuTemplate" frameStrata="HIGH">
+						<Anchors></Anchors>
+				   </Frame>
+					<!-- Healer list menu //-->
+					<Frame name="NAT_heal_list" inherits="UIDropDownMenuTemplate" frameStrata="HIGH">
+						<Anchors></Anchors>
+				   </Frame>
+				   <!-- Interrupt list menu //-->
+				   <Frame name="NAT_interrupt_list" inherits="UIDropDownMenuTemplate" frameStrata="HIGH">
+						<Anchors></Anchors>
+				   </Frame>
+				<!--Selectable players menu for respected views //-->	
+				
+				<!-- Choose between tank/healing/interupt/misc assignments //-->
+					
+			   <Button name="NAT_choose_tank_menu" frameStrata="LOW">
+					<Size><AbsDimension x="50" y="50"/></Size>
 					<Anchors>
-						<Anchor relativeTo="NAT" point="BOTTOM">
+						<Anchor relativeTo="NAT" point="TOPLEFT">
 							<Offset>
-								<AbsDimension x="-100" y="18" />
+								<AbsDimension x="-38" y="-35" />
 							</Offset>
 						</Anchor>
-						
 					</Anchors>
+					
+					 <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background"
+					   edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+					   
+					   <TileSize>
+						 <AbsValue val="32"/>
+					   </TileSize>
+					   <EdgeSize>
+						 <AbsValue val="8"/>
+					   </EdgeSize>
+					  
+					 </Backdrop>
+					
+					<Layers>
+						<Layer level="background">
+							
+						</Layer>
+						<Layer level="artwork">
+							 <Texture name="NATTankIcon" file="Interface\AddOns\NetworkedAssignmentTool\resources\images\icons\tank_icon.tga">
+								<Size>
+									<AbsDimension x="50" y="50" />
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Texture>
+						</Layer>
+					</Layers>
+					
 					<Scripts>
-						<OnClick>NAT_request_master();</OnClick>
+						<OnClick>NAT_mode_picker_clicked(1);</OnClick>
+						<OnEnter>NAT_hover_choose_frames(NAT_choose_tank_menu, 1, 1)</OnEnter>
+						<OnLeave>NAT_hover_choose_frames(NAT_choose_tank_menu, 2, 1)</OnLeave>
 					</Scripts>
-				</Button>
-			 
-				<!-- Choose between tank/healing/interupt/misc assignments //-->
-			   <Button name="NAT_mode_chooser" inherits="UIDropDownMenuTemplate" id='1'>
-					<Size></Size>
-					<Anchors>
-							<Anchor point="BOTTOM">
-								<Offset>
-									<AbsDimension x="-58" y="15" />
-								</Offset>
-							</Anchor>
-						</Anchors>
-				   <Scripts>
-					   <OnLoad>
-							UIDropDownMenu_Initialize(NAT_mode_chooser, NAT_init_mode_picker);
-							UIDropDownMenu_SetSelectedID(NAT_mode_chooser, 1);
-					   </OnLoad>
-				   </Scripts>
 			   </Button>
-			   <!-- Choose between tank/healing/interupt/misc assignments //-->
 			   
-			   <!-- Tank list menu //-->
-			  <Frame name="NAT_tank_list" inherits="UIDropDownMenuTemplate" frameStrata="HIGH">
-					<Anchors></Anchors>
-			   </Frame>
-			   <!-- Tank list menu //-->
-			   
-			    <!-- Healer list menu //-->
-			  <Frame name="NAT_heal_list" inherits="UIDropDownMenuTemplate" frameStrata="HIGH">
-					<Anchors></Anchors>
-			   </Frame>
-			   <!-- Healer list menu //-->
-			   
-			    <!-- Interrupt list menu //-->
-			  <Frame name="NAT_interrupt_list" inherits="UIDropDownMenuTemplate" frameStrata="HIGH">
-					<Anchors></Anchors>
-			   </Frame>
-			   <!-- Interrupt list menu //-->
-			   
-			    <!-- Misc list menu //-->
-			  <Frame name="NAT_misc_list" inherits="UIDropDownMenuTemplate" frameStrata="HIGH">
-					<Anchors></Anchors>
-			   </Frame>
-			   <!-- Misc list menu //-->
-			   
+				<Button name="NAT_choose_healer_menu" frameStrata="LOW">
+					<Size><AbsDimension x="50" y="50"/></Size>
+					<Anchors>
+						<Anchor relativeTo="NAT" point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="-11" y="-85" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+					
+					 <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background"
+					   edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+					   
+					   <TileSize>
+						 <AbsValue val="32"/>
+					   </TileSize>
+					   <EdgeSize>
+						 <AbsValue val="8"/>
+					   </EdgeSize>
+					  
+					 </Backdrop>
+					
+					<Layers>
+						<Layer level="background">
+							
+						</Layer>
+						<Layer level="artwork">
+							 <Texture name="NATHealerIcon" file="Interface\AddOns\NetworkedAssignmentTool\resources\images\icons\healer_icon.tga">
+								<Size>
+									<AbsDimension x="50" y="50" />
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Texture>
+						</Layer>
+					</Layers>
+					
+					<Scripts>
+						<OnClick>NAT_mode_picker_clicked(2);</OnClick>
+						<OnEnter>NAT_hover_choose_frames(NAT_choose_healer_menu, 1, 2)</OnEnter>
+						<OnLeave>NAT_hover_choose_frames(NAT_choose_healer_menu, 2, 2)</OnLeave>
+					</Scripts>
+			   </Button>
+				
+				<Button name="NAT_choose_interrupt_menu" frameStrata="LOW">
+					<Size><AbsDimension x="50" y="50"/></Size>
+					<Anchors>
+						<Anchor relativeTo="NAT" point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="-11" y="-135" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+					
+					 <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background"
+					   edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+					   
+					   <TileSize>
+						 <AbsValue val="32"/>
+					   </TileSize>
+					   <EdgeSize>
+						 <AbsValue val="8"/>
+					   </EdgeSize>
+					  
+					 </Backdrop>
+					
+					<Layers>
+						<Layer level="background">
+							
+						</Layer>
+						<Layer level="artwork">
+							 <Texture name="NATInterruptIcon" file="Interface\AddOns\NetworkedAssignmentTool\resources\images\icons\interrupt_icon.tga">
+								<Size>
+									<AbsDimension x="50" y="50" />
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Texture>
+						</Layer>
+					</Layers>
+					<Scripts>
+						<OnClick>NAT_mode_picker_clicked(3);</OnClick>
+						<OnEnter>NAT_hover_choose_frames(NAT_choose_interrupt_menu, 1, 3)</OnEnter>
+						<OnLeave>NAT_hover_choose_frames(NAT_choose_interrupt_menu, 2, 3)</OnLeave>
+					</Scripts>
+			   </Button>
+
+			  <!-- Choose between tank/healing/interupt/misc assignments //-->
 			    <Button inherits="OptionsButtonTemplate" name="NATPostButton" text="Post">
 					<Size><AbsDimension x="80" y="30"/></Size>
 					<Anchors>
 						<Anchor relativeTo="NAT" point="BOTTOM">
 							<Offset>
-								<AbsDimension x="110" y="18" />
+								<AbsDimension x="0" y="18" />
 							</Offset>
 						</Anchor>
 						

@@ -1,5 +1,10 @@
 local alarms = {};
 function NAT_set_alarm(_time, _function)
+	if _function == nil
+	then
+		return;
+	end
+	
 	if _time <= 0
 	then
 		_function();
@@ -12,6 +17,7 @@ function NAT_set_alarm(_time, _function)
 end
 
 function NAT_update_alarms()
+	local size = table.getn(alarms);
 	for i=1, table.getn(alarms), 1
 	do
 		local alarm = alarms[i];
@@ -20,7 +26,8 @@ function NAT_update_alarms()
 		then
 			alarm.func();
 			table.remove(alarms, i);
-			i = i -1;
+			i = i - 1
+			size = table.getn(alarms);
 		end
 	end 
 end

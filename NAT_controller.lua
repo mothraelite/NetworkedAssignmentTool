@@ -12,6 +12,9 @@ local healer_controller; --healer drop down menu controller
 local interrupt_controller; --interrupt drop down menu controller
 local network_controller;
 
+--xml references for easy access
+local chooser_buttons = {};
+
 --what selection mode im in
 	--1: tanks
 	--2: healers
@@ -32,6 +35,10 @@ function NAT_init()
 	table.insert(tank_controller.observers, healer_controller); --add healer controller to tank observer list
 	interrupt_controller = NAT_create_interrupt_menu_controller(NATInterruptPostChannelEdit, NATInterruptPostLabel, NAT_interrupt_body);
 	network_controller = NAT_create_network_handler(tank_controller, healer_controller, interrupt_controller);
+
+	table.insert(chooser_buttons, NAT_choose_tank_menu);
+	table.insert(chooser_buttons, NAT_choose_healer_menu);
+	table.insert(chooser_buttons, NAT_choose_interrupt_menu);
 	
 	--get initial list of raid mems
 	NAT_poll_for_players();
@@ -146,6 +153,7 @@ end
 
 local time_since_last_update = 0;
 function NAT_update(elapsed)
+--DEFAULT_CHAT_FRAME:AddMessage("NAT: " .. elapsed , 0.6,1.0,0.6);
 	--UPDATE PER CYCLE
 	network_controller.update();
 	
@@ -153,12 +161,15 @@ function NAT_update(elapsed)
 		--time since last update cycle. note, this returns a float not an int in seconds thus the need to do this.
 	time_since_last_update = time_since_last_update + elapsed;
 	
-	local seconds = math.floor(time_since_last_update);
-	for i=1, seconds, 1
-	do
-		NAT_update_alarms();
-	end 
-	time_since_last_update = time_since_last_update - seconds; --we exhausted the updates needed per second
+	if time_since_last_update >= 1
+	then
+		local seconds = math.floor(time_since_last_update);
+		for i=1, seconds, 1
+		do
+			NAT_update_alarms();
+		end 
+		time_since_last_update = time_since_last_update - seconds; --we exhausted the updates needed per second
+	end
 end
 
 function NAT_slashCommandHandler(msg)
@@ -215,17 +226,20 @@ function NAT_mode_picker_clicked(index)
 		--show tank visuals
 		NAT_tank_body:Show();
 		tank_controller.update_marks();
+		chooser_buttons[index]:SetPoint("TOPLEFT", NAT, "TOPLEFT", -38, -35);
 		current_mode = 1;
 	elseif index == 2 --heals
 	then
 		NAT_healer_body:Show();
 		healer_controller.update_marks();
+		chooser_buttons[index]:SetPoint("TOPLEFT", NAT, "TOPLEFT", -38, -85);
 		current_mode = 2;
 	elseif index == 3 --interrupt
 	then
 		--show interrupt visuals
 		NAT_interrupt_body:Show();
 		interrupt_controller.update_marks();
+		chooser_buttons[index]:SetPoint("TOPLEFT", NAT, "TOPLEFT",  -38, -135);
 		current_mode = 3;
 	end 
 end
@@ -353,33 +367,15 @@ function NAT_poll_for_players()
 	end
 end
 
-
---Function to setup the mode picker selections
-function NAT_init_mode_picker()
-	local tank = {};
-	tank.text = "Tanks";
-	tank.value = 1;
-	tank.func = function() UIDropDownMenu_SetSelectedID(NAT_mode_chooser, 1); NAT_mode_picker_clicked(1); end;
-	
-	local heal = {};
-	heal.text = "Healers";
-	heal.value = 2;
-	heal.func = function() UIDropDownMenu_SetSelectedID(NAT_mode_chooser, 2); NAT_mode_picker_clicked(2); end;
-	
-	local interupts = {};
-	interupts.text = "Interrupts";
-	interupts.value = 3;
-	interupts.func = function() UIDropDownMenu_SetSelectedID(NAT_mode_chooser, 3); NAT_mode_picker_clicked(3); end;
-	
-	UIDropDownMenu_AddButton(tank);
-	UIDropDownMenu_AddButton(heal);
-	UIDropDownMenu_AddButton(interupts);
-end
-
 function NAT_reset_visuals()
 	NAT_tank_body:Hide();
 	NAT_healer_body:Hide();
 	NAT_interrupt_body:Hide();
+	
+	for i,button in ipairs(chooser_buttons)
+	do
+		button:SetPoint("TOPLEFT", NAT, "TOPLEFT",-11,-35-50*(i-1));
+	end
 end
 
 function NAT_reset_addon()
@@ -417,5 +413,25 @@ function NAT_is_ready()
 		return true;
 	else 
 		return false;
+	end
+end
+
+function NAT_hover_choose_frames(_frame, _dir, _mode) --dir: 1 = left, dir: 2 = right
+	local point, relative_to, relative_point, xof, yof = _frame:GetPoint();
+
+	if current_mode ~= _mode
+	then
+		if _dir == 1
+		then
+			xof = -38
+			_frame:SetPoint(point, relative_to, relative_point, xof, yof);
+
+		else
+			xof = -11
+			_frame:SetPoint(point, relative_to, relative_point, xof, yof);
+		end
+	else
+		xof = -38
+		_frame:SetPoint(point, relative_to, relative_point, xof, yof);
 	end
 end
