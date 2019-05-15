@@ -69,6 +69,12 @@ function(_postInputBoxObject, _postLabelObject, _viewBody)
 					DEFAULT_CHAT_FRAME:AddMessage("NAT: You need to be the raid leader OR have assist to make changes", 0.6,1.0,0.6);
 					return;
 				end
+				
+				--check if its setup
+				if controller.current_focus_mark == ""
+				then
+					return;
+				end
 
 				--Am I in the list already? 
 				for entry, list_name in ipairs(controller.assigned_players[controller.current_focus_mark])

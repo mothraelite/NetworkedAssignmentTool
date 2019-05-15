@@ -11,6 +11,9 @@ local tank_controller; --tank drop down menu controller
 local healer_controller; --healer drop down menu controller
 local interrupt_controller; --interrupt drop down menu controller
 local priest_controller; --priest drop down menu controller
+local mage_controller;
+local druid_controller;
+local warlock_controller;
 local network_controller;
 
 --xml references for easy access
@@ -35,10 +38,10 @@ function NAT_init()
 	healer_controller = NAT_create_healer_menu_controller(NATHealerPostChannelEdit, NATHealPostLabel, NAT_healer_body); 
 	table.insert(tank_controller.observers, healer_controller); --add healer controller to tank observer list
 	interrupt_controller = NAT_create_interrupt_menu_controller(NATInterruptPostChannelEdit, NATInterruptPostLabel, NAT_interrupt_body);
-	priest_controller = NAT_create_priest_menu_controller(NATPirestPostChannelEdit, NATPriestPostLabel, NAT_priest_body);
-	mage_controller = NAT_create_mage_menu_controller(NATMagePostChannelEdit, NATMagePostLabel, NAT_mage_body);
-	druid_controller = NAT_create_druid_menu_controller(NATDruidPostChannelEdit, NATDruidPostLabel, NAT_druid_body);
-	warlock_controller = NAT_create_warlock_menu_controller(NATWarlockPostChannelEdit, NATWarlockPostLabel, NAT_warlock_body);
+	priest_controller = NAT_create_priest_menu_controller(NATPriestPostChannelEdit, NATPriestPostLabel, NAT_priest_body);
+	--mage_controller = NAT_create_mage_menu_controller(NATMagePostChannelEdit, NATMagePostLabel, NAT_mage_body);
+	--druid_controller = NAT_create_druid_menu_controller(NATDruidPostChannelEdit, NATDruidPostLabel, NAT_druid_body);
+	--warlock_controller = NAT_create_warlock_menu_controller(NATWarlockPostChannelEdit, NATWarlockPostLabel, NAT_warlock_body);
 	network_controller = NAT_create_network_handler(tank_controller, healer_controller, interrupt_controller);
 
 	table.insert(chooser_buttons, NAT_choose_tank_menu);
@@ -60,7 +63,7 @@ function NAT_init()
 	SLASH_NATCOMMAND1 = "/NAT";
 
 	--Init handler
-	DEFAULT_CHAT_FRAME:AddMessage("NAT: Initializing NAT version 1.02", 0.6,1.0,0.6);
+	DEFAULT_CHAT_FRAME:AddMessage("NAT: Initializing NAT version 2.0d", 0.6,1.0,0.6);
 end
 
 function NAT_request_master()
@@ -259,7 +262,7 @@ function NAT_mode_picker_clicked(index)
 		priest_controller.update_marks();
 		chooser_buttons[index]:SetPoint("TOPLEFT", NAT, "TOPLEFT",  -38, ypos);
 		current_mode = 4;
-	elseif index == 5 --mage
+	--[[elseif index == 5 --mage
 	then
 		--show interrupt visuals
 		NAT_mage_body:Show();
@@ -279,7 +282,7 @@ function NAT_mode_picker_clicked(index)
 		NAT_warlock_body:Show();
 		warlock_controller.update_marks();
 		chooser_buttons[index]:SetPoint("TOPLEFT", NAT, "TOPLEFT",  -38, ypos);
-		current_mode = 7;
+		current_mode = 7;--]]
 	end 
 end
 
@@ -349,7 +352,7 @@ function NAT_show_listmenu(parent, focus_mark)
 		priest_controller.current_focus_mark = focus_mark;
 		priest_controller.current_menu_parent = parent;
 		ToggleDropDownMenu(nil, 1, NAT_priest_list, parent, 0, 25);
-	elseif current_mode == 5
+	--[[elseif current_mode == 5
 	then 
 		mage_controller.current_focus_mark = focus_mark;
 		mage_controller.current_menu_parent = parent;
@@ -363,7 +366,7 @@ function NAT_show_listmenu(parent, focus_mark)
 	then
 		warlock_controller.current_focus_mark = focus_mark;
 		warlock_controller.current_menu_parent = parent;
-		ToggleDropDownMenu(nil, 1, NAT_warlock_list, parent, 0, 25);
+		ToggleDropDownMenu(nil, 1, NAT_warlock_list, parent, 0, 25);--]]
 	end
 end
 
@@ -418,21 +421,21 @@ function NAT_poll_for_players()
 	interrupt_controller.poll_for_players();
 	UIDropDownMenu_Initialize(NAT_interrupt_list, interrupt_controller.init, "MENU", 2);
 	
-	--interupts
+	--priest
 	priest_controller.poll_for_players();
 	UIDropDownMenu_Initialize(NAT_priest_list, priest_controller.init, "MENU", 2);
 	
 	--mage
-	mage_controller.poll_for_players();
+	--[[mage_controller.poll_for_players();
 	UIDropDownMenu_Initialize(NAT_mage_list, mage_controller.init, "MENU", 2);
 	
 	--druid
 	druid_controller.poll_for_players();
 	UIDropDownMenu_Initialize(NAT_druid_list, druid_controller.init, "MENU", 2);
-
+	
 	--warlock
 	warlock_controller.poll_for_players();
-	UIDropDownMenu_Initialize(NAT_warlock_list, warlock_controller.init, "MENU", 2);
+	UIDropDownMenu_Initialize(NAT_warlock_list, warlock_controller.init, "MENU", 2);--]]
 	
 	if current_mode == 1
 	then
@@ -446,7 +449,7 @@ function NAT_poll_for_players()
 	elseif current_mode == 4
 	then
 		priest_controller.update_marks();
-	elseif current_mode == 5 --mage 
+	--[[elseif current_mode == 5 --mage 
 	then
 		mage_controller.update_marks();
 	elseif current_mode == 6 --druid
@@ -454,7 +457,7 @@ function NAT_poll_for_players()
 		druid_controller.update_marks();
 	elseif current_mode == 7 --warlock
 	then 
-		warlock_controller.update_marks();
+		warlock_controller.update_marks();--]]
 	end
 end
 
@@ -463,7 +466,7 @@ function NAT_reset_visuals()
 	NAT_healer_body:Hide();
 	NAT_interrupt_body:Hide();
 	NAT_priest_body:Hide();
-	NAT_mage_body:Hide();
+	NAT_mage_body:Hide():
 	NAT_druid_body:Hide();
 	NAT_warlock_body:Hide();
 	
@@ -501,7 +504,7 @@ function NAT_reset_addon()
 	elseif current_mode == 4
 	then
 		priest_controller.update_marks();
-	elseif current_mode == 5
+	--[[elseif current_mode == 5
 	then
 		mage_controller.update_marks();
 	elseif current_mode == 6
@@ -509,7 +512,7 @@ function NAT_reset_addon()
 		druid_controller.update_marks();
 	elseif current_mode == 7
 	then
-		warlock_controller.update_marks();
+		warlock_controller.update_marks();--]]
 	end
 end
 --HELPER FUNCTIONS---------------------------------------------------------------------------------------HF
