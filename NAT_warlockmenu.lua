@@ -7,8 +7,8 @@ function(_postOptionObject, _postLabel, _viewBody)
 	controller.remove_player_command = "remove_warlock"; --observer command
 	controller.current_focus_mark = "";
 	controller.current_menu_parent = nil;
-	controller.marks = {"Recklessness", "Shadow", "Elements"};
-	controller.assigned_players = {["Recklessness"]={}, ["Shadow"]={}, ["Elements"]={}};
+	controller.marks = {"Recklessness", "Shadow", "Elements", "Weakness", "Exhaustion", "Tongues"};
+	controller.assigned_players = {["Recklessness"]={}, ["Shadow"]={}, ["Elements"]={}, ["Weakness"]={}, ["Exhaustion"]={}, ["Tongues"]={}};
 	controller.useable_classes = {"Warlock"};
 	
 	--FUNCTIONS-------------------------------------------------------------------------------------------------------F

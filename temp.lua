@@ -1,547 +1,673 @@
---[[
-			@author: moth<milaninavid@gmail.com>
-			title: NAT "Networked assignment tool"
-			description: TBC tank and healing assignment tool.  
-			This can be used too coordinate, display, and adjust 
-			assignments quickly and efficiently.
-			
-			credits: shout out to attreyo on vg for some inspiration.
---]]
-local tank_controller; --tank drop down menu controller
-local healer_controller; --healer drop down menu controller
-local interrupt_controller; --interrupt drop down menu controller
-local priest_controller; --priest drop down menu controller
-local mage_controller;
-local druid_controller;
-local warlock_controller;
-local network_controller;
+	--[[
+				@Author: moth<milaninavid@gmail.com>
+				Title: Network handler
+				Description: Handles most of the networking logic between clients
+				Definitions:
+					-Message prefix: NAT
+					-Data is sent via Command-message-sender with the prefix NAT
+	--]]
 
---xml references for easy access
-local chooser_buttons = {};
-
---what selection mode im in
-	--1: tanks
-	--2: healers
-	--3: interrupters
-local current_mode = 1; 
-
-function NAT_init()
-	--setup reg functions
-	NAT:RegisterForDrag("LeftButton");
-	NAT:RegisterEvent("RAID_ROSTER_UPDATE"); --fires on personal promotion, personal demotion, anyone joining raid, anyone leaving raid
-	NAT:RegisterEvent("RAID_TARGET_UPDATE"); --unfortunately, no response that indicates what was changed. probably going to notify all assigned tanks that things have changed though.
-	NAT:RegisterEvent("CHAT_MSG_ADDON");
-	--RegisterAddonMessagePrefix("NAT");
+function NAT_create_network_handler(_tankc, _healerc, _interruptc, _priestc, _magec, _druidc, _warlockc)
+	local controller = {};
 	
-	--setup controllers
-	tank_controller = NAT_create_tank_menu_controller(NATTankPostChannelEdit, NATTankPostLabel, NAT_tank_body); 
-	healer_controller = NAT_create_healer_menu_controller(NATHealerPostChannelEdit, NATHealPostLabel, NAT_healer_body); 
-	table.insert(tank_controller.observers, healer_controller); --add healer controller to tank observer list
-	interrupt_controller = NAT_create_interrupt_menu_controller(NATInterruptPostChannelEdit, NATInterruptPostLabel, NAT_interrupt_body);
-	priest_controller = NAT_create_priest_menu_controller(NATPriestPostChannelEdit, NATPriestPostLabel, NAT_priest_body);
-	--mage_controller = NAT_create_mage_menu_controller(NATMagePostChannelEdit, NATMagePostLabel, NAT_mage_body);
-	--druid_controller = NAT_create_druid_menu_controller(NATDruidPostChannelEdit, NATDruidPostLabel, NAT_druid_body);
-	--warlock_controller = NAT_create_warlock_menu_controller(NATWarlockPostChannelEdit, NATWarlockPostLabel, NAT_warlock_body);
-	network_controller = NAT_create_network_handler(tank_controller, healer_controller, interrupt_controller);
-
-	table.insert(chooser_buttons, NAT_choose_tank_menu);
-	table.insert(chooser_buttons, NAT_choose_healer_menu);
-	table.insert(chooser_buttons, NAT_choose_interrupt_menu);
-	table.insert(chooser_buttons, NAT_choose_priest_menu);
-	table.insert(chooser_buttons, NAT_choose_mage_menu);
-	table.insert(chooser_buttons, NAT_choose_druid_menu);
-	table.insert(chooser_buttons, NAT_choose_warlock_menu);
+	--VARIABLES---------------------------------------------------------------------V
+	controller.master = nil;
+	controller.tank_controller = _tankc;
+	controller.healer_controller = _healerc;
+	controller.interrupt_controller = _interruptc;
+	controller.priest_controller = _priestc;
+	controller.mage_controller = _magec;
+	controller.druid_controller = _druic;
+	controller.warlock_controller = _warlockc;
+	controller.state = -1; -- -1: not setup 0: trying to setup 1: setup 
+	controller.response_state = 1; --0: network waiting for response 1: nothing going on || note: this is for non-setup related responses
+	controller.setup = {["tanks"]=false,["healers"]=false,["interrupters"]=false,["master"]=false,["priests"]=false,["mages"]=false,["druids"]=false, ["warlocks"]=false};
+	--VARIABLES---------------------------------------------------------------------V
 	
-	--get initial list of raid mems
-	NAT_poll_for_players();
-
-	--See if someone is in the raid that is running the addon
-	network_controller.request_setup();
-		
-	-- Slash commands
-	SlashCmdList["NATCOMMAND"] = NAT_slashCommandHandler;
-	SLASH_NATCOMMAND1 = "/NAT";
-
-	--Init handler
-	DEFAULT_CHAT_FRAME:AddMessage("NAT: Initializing NAT version 2.0d", 0.6,1.0,0.6);
-end
-
-function NAT_request_master()
-	if not IsRaidLeader() and not IsRaidOfficer()
-	then
-		DEFAULT_CHAT_FRAME:AddMessage("NAT: You need to be the raid leader or have assist to request master status.", 0.6,1.0,0.6);
-		return;
-	end
-
-	network_controller.request_master();
-end
-
-function NAT_handle_events(event)
-	if event == "RAID_ROSTER_UPDATE" 
-	then
-		--if im not setup yet, request a setup or become master
-		if network_controller.state == -1
+	--FUNCTIONS---------------------------------------------------------------------F
+		-----------------------------REQUESTS-------------------------------REQ
+	controller.request_master
+	=
+	function()
+		if controller.state ~= 1
 		then
-			network_controller.request_setup();
-		else
-		--I lost pre-req for master status so check if I am the master
-			if network_controller.master == UnitName("player") and not IsRaidOfficer() and not IsRaidLeader()
-			then
-				--I was master, relinquish title.
-				--network_controller.request_new_master();
-			end 
+			return;
 		end
 		
-		--check if I left a raid
 		if UnitInRaid("player") == nil
 		then
-			DEFAULT_CHAT_FRAME:AddMessage("NAT: left raid. resetting.", 0.6,1.0,0.6);
-			NAT_reset_addon();
 			return;
 		end
 	
-		NAT_poll_for_players();
-	elseif event == "CHAT_MSG_ADDON"
-	then
-		if arg1 == "NAT"
+		if  IsRaidOfficer()  or IsRaidLeader() 
 		then
-			local command, message, sender = network_controller.extract_command_and_message(arg2);
-			
-			--ignore my own networked messages
-			if sender == UnitName("player")
-			then
-				return;
-			end
-		
-			if command == "request_setup"
-			then
-				network_controller.return_setup(message);
-			elseif command == "request_master"
-			then
-				network_controller.master = message;
-				NATMasterLabel:SetText("Master: "..message);
-			elseif command == "setup_master" --setup my own
-			then 
-				
-				network_controller.setup_master(message);
-			elseif command == "setup_tanks"
-			then
-				network_controller.setup_tanks(message);
-			elseif command == "setup_healers"
-			then
-				network_controller.setup_healers(message);
-			elseif command == "setup_interrupters"
-			then
-				network_controller.setup_interrupters(message);
-				
-				if current_mode == 3
-				then
-					interrupt_controller.update_marks();
-				end
-			elseif command == "toggle_tank"
-			then
-				network_controller.toggle_tank(message);
-			elseif command == "toggle_healer"
-			then
-				network_controller.toggle_healer(message);
-			elseif command == "toggle_interrupt"
-			then
-				network_controller.toggle_interrupter(message);
-			
-				if current_mode == 3
-				then
-					interrupt_controller.update_marks();
-				end
-			elseif command == "reset"
-			then 
-				NAT_reset_addon();
-				network_controller.request_setup();
-				DEFAULT_CHAT_FRAME:AddMessage("NAT: Reset by "..sender, 0.6,1.0,0.6);
-			end
-			
+			SendAddonMessage("NAT", "request_master-"..UnitName("player").."-"..UnitName("player"), "RAID");
+			controller.master = UnitName("player");
+			NATMasterLabel:SetText("Master: " .. UnitName("player"));
 		end
 	end
-end
 
-local time_since_last_update = 0;
-function NAT_update(elapsed)
---DEFAULT_CHAT_FRAME:AddMessage("NAT: " .. elapsed , 0.6,1.0,0.6);
-	--UPDATE PER CYCLE
-	network_controller.update();
+	controller.request_setup
+	=
+	function()
+		if controller.state == 1
+		then
+			DEFAULT_CHAT_FRAME:AddMessage("NAT: Already setup.", 0.6,1.0,0.6);
+			return;
+		end
+		
+		if UnitInRaid("player") == nil
+		then
+			return;
+		end
+		
+		controller.state = 0; --waiting for setup
+		SendAddonMessage("NAT", "request_setup-"..UnitName("player").."-"..UnitName("player"), "RAID");
+		
+		--Set timed event to check if i get a full response in 2 seconds. 
+		local func = 
+		function()
+			--did not get a full response or empty response.
+			if not controller.setup["healers"] or not controller.setup["tanks"] or not controller.setup["interrupters"] or not controller.setup["master"] or not controller.setup["priests"] or not controller.setup["mages"] or not controller.setup["druids"] or not controller.setup["warlocks"]
+			then
+				--did i get a partial reply?
+				if controller.setup["healers"] or controller.setup["tanks"] or controller.setup["interrupters"] or controller.setup["master"] or controller.setup["priests"] or controller.setup["mages"] or controller.setup["druids"] or controller.setup["warlocks"]
+				then--partial reply, might be lagging on either end
+					--wait 3 seconds and request again if needed
+					local partial_setup =
+					function()
+						--still not setup
+						if controller.state ~= 1
+						then 
+							--request again
+								--reset state
+							controller.reset_setup();
+								--request
+							controller.request_setup();
+						end 
+					end
+					NAT_set_alarm(3, partial_setup);
+				else  --no reply
+					--fire function after 2 seconds if no response because no setup available in raid
+					local no_setup = 
+					function()
+						if controller.state == 0
+						then
+							if IsRaidLeader() or IsRaidOfficer()
+							then
+								SendAddonMessage("NAT", "reset- -"..UnitName("player"), "RAID");
+								controller.reset_setup();
+							
+								controller.setup["healers"] = true;
+								controller.setup["tanks"] = true;
+								controller.setup["interrupters"] = true;
+								controller.setup["master"] = true;
+								controller.setup["priests"] = true;
+								controller.setup["mages"] = true;
+								controller.setup["druids"] = true;
+								controller.setup["warlocks"] = true;
+								controller.state = 1;
+								controller.request_master();
+							else
+								controller.request_setup();
+							end
+							
+						end
+					end
+					NAT_set_alarm(2, no_setup);
+				end	
+			end
+		end
+		NAT_set_alarm(2, func);
+	end
+		----------------------END OF REQUESTS-------------------------REQ
+		
+		------------------------------RETURNS--------------------------------RET
 	
-	--UPDATES VIA SECONDS
-		--time since last update cycle. note, this returns a float not an int in seconds thus the need to do this.
-	time_since_last_update = time_since_last_update + elapsed;
+	controller.return_master
+	=
+	function(message)
+		if controller.master ~= nil and controller.state == 1
+		then	
+			--is current master offline?
+			local name, rank, sg, level, class, fileName, zone, online, isDead, role, isML = controller.get_raid_member_info(controller.master);
+			if online ~= nil
+			then
+				SendAddonMessage("NAT", "master_is-"..controller.master.."-"..UnitName('player'), "RAID");
+			else 
+				controller.request_master();
+				SendAddonMessage("NAT", "master_is-"..controller.master.."-"..UnitName('player'), "RAID");
+			end
+		end
+	end
+
+	controller.return_setup
+	=
+	function(message)
+		if controller.master ~= nil and controller.state == 1 and (IsRaidOfficer()  or IsRaidLeader())
+		then	
+			--is current master offline?
+			local name, rank, sg, level, class, fileName, zone, online, isDead, role, isML = controller.get_raid_member_info(controller.master);
+			if online == nil
+			then
+				controller.request_master();
+			end
+		end
 	
-	if time_since_last_update >= 1
-	then
-		local seconds = math.floor(time_since_last_update);
-		for i=1, seconds, 1
-		do
-			NAT_update_alarms();
+		--let the master list holder deal with informing the person asking for info
+		if controller.master == UnitName("player")
+		then
+			--Expected args: player name
+				--Expected return:  whisper with current master,tanks,heals, and interrupts
+		
+			--retrieve current tanks 
+			local current_tanks = controller.tank_controller.get_current_assignments();
+			--retrieve current healers
+			local current_healers = controller.healer_controller.get_current_assignments();
+			--retrieve current interrupters 
+			local current_interrupters = controller.interrupt_controller.get_current_assignments();
+			--retrieve current priests
+			local current_priests = controller.priest_controller.get_current_assignments();
+			--retrieve current mages
+			local current_mages = controller.mage_controller.get_current_assignments();
+			--retrieve current druids
+			local current_druid = controller.priest_controller.get_current_assignments();
+			--retrieve current warlocks
+			local current_warlocks = controller.warlock_controller.get_current_assignments();
+			
+			--encode data
+			--------------------------------------
+			-- space denotes new player 
+			
+			local tanks = "empty";
+			if current_tanks ~= nil
+			then
+				tanks = "";
+				for mark, list in pairs(current_tanks)
+				do
+					for ind, tank in ipairs(list)
+					do
+						tank = string.sub(tank, 11, strlen(tank));
+						tanks = tanks.." ".. mark ..":".. tank;
+					end
+				end
+				tanks = string.sub(tanks, 2, strlen(tanks));
+			end
+			
+			local healers = "empty";
+			if current_healers ~= nil
+			then 
+				healers = "";
+				for mark, list in pairs(current_healers)
+				do
+					for ind, healer in ipairs(list)
+					do
+						local tmark = mark;
+						if tmark ~= "Raid"
+						then
+							tmark = string.sub(tmark, 11, strlen(tmark));
+						end 
+					
+						healer = string.sub(healer, 11, strlen(healer));
+						healers = healers.." "..tmark..":".. healer;
+					end
+				end
+				healers = string.sub(healers, 2, strlen(healers));
+			end
+			
+			local interrupters = "empty";
+			if current_interrupters ~= nil
+			then 
+				interrupters = "";
+				for mark, list in pairs(current_interrupters)
+				do
+					for ind, interrupt in ipairs(list)
+					do
+						interrupt = string.sub(interrupt, 11, strlen(interrupt));
+						interrupters = interrupters.." "..mark..":"..interrupt;
+					end
+				end
+				interrupters = string.sub(interrupters, 2, strlen(interrupters));
+			end
+			
+			local priests = "empty";
+			if current_priests ~= nil
+			then 
+				priests = "";
+				for mark, list in pairs(current_priests)
+				do
+					for ind, priest in ipairs(list)
+					do
+						priest = string.sub(priest, 11, strlen(priest));
+						priests = priest.." "..mark..":"..interrupt;
+					end
+				end
+				priests = string.sub(priests, 2, strlen(priests));
+			end
+			
+			local mages = "empty";
+			if current_mages ~= nil
+			then 
+				mages = "";
+				for mark, list in pairs(current_mages)
+				do
+					for ind, mage in ipairs(list)
+					do
+						mage = string.sub(mage, 11, strlen(mage));
+						mages = mage.." "..mark..":"..interrupt;
+					end
+				end
+				mages = string.sub(mages, 2, strlen(mages));
+			end
+			
+			local druids = "empty";
+			if current_druids ~= nil
+			then 
+				druids = "";
+				for mark, list in pairs(current_druids)
+				do
+					for ind, druid in ipairs(list)
+					do
+						druid = string.sub(druid, 11, strlen(druid));
+						druids = druid.." "..mark..":"..interrupt;
+					end
+				end
+				druids = string.sub(druids, 2, strlen(druids));
+			end
+			
+			local warlocks = "empty";
+			if current_warlocks ~= nil
+			then 
+				warlocks = "";
+				for mark, list in pairs(current_warlocks)
+				do
+					for ind, warlock in ipairs(list)
+					do
+						warlock = string.sub(warlock, 11, strlen(warlock));
+						warlocks = warlock.." "..mark..":"..interrupt;
+					end
+				end
+				warlocks = string.sub(warlocks, 2, strlen(warlocks));
+			end
+
+			--send it out
+			SendAddonMessage("NAT", "setup_master-"..UnitName("player").."-"..UnitName("player"), "RAID");
+			SendAddonMessage("NAT", "setup_tanks-"..tanks.."-"..UnitName("player"), "RAID");
+			SendAddonMessage("NAT", "setup_healers-"..healers.."-"..UnitName("player"), "RAID");
+			SendAddonMessage("NAT", "setup_interrupters-"..interrupters.."-"..UnitName("player"), "RAID");
+			SendAddonMessage("NAT", "setup_priests-"..priests.."-"..UnitName("player"), "RAID");
+			SendAddonMessage("NAT", "setup_mages-"..mages.."-"..UnitName("player"), "RAID");
+			SendAddonMessage("NAT", "setup_druids-"..druids.."-"..UnitName("player"), "RAID");
+			SendAddonMessage("NAT", "setup_warlocks-"..warlocks.."-"..UnitName("player"), "RAID");
+		end
+	end
+		----------------------END OF RETURNS-------------------------RET
+	
+		--------------------RESPONSE HANDELING--------------------RH
+			--Toggle
+			-------------------------------
+			--
+			--expected arg: mark:tank
+			--return: nothing
+			--whats it do? when other users send info about what they are doing (an assignment), we need to interpret it so we send it to their respective controllers here.
+	controller.toggle_tank
+	=
+	function(message)
+		local args = NAT_split(message, ":"); --split mark and player
+		args[2] = NAT_retrieve_class_color(NAT_retrieve_player_class(args[2])) .. args[2];
+		controller.tank_controller.toggle_player(args[1], args[2]);
+	end
+	
+	controller.toggle_healer
+	=
+	function(message)
+		local args = NAT_split(message, ":"); -- split mark and player 
+		if args[1] ~= "Raid"
+		then 
+			args[1] = NAT_retrieve_class_color(NAT_retrieve_player_class(args[1])) .. args[1];
+		end
+		
+		args[2] = NAT_retrieve_class_color(NAT_retrieve_player_class(args[2])) .. args[2];
+		controller.healer_controller.toggle_player(args[1],args[2]);
+	end
+	
+	controller.toggle_interrupter
+	=
+	function(message)
+		local args = NAT_split(message, ":"); -- split mark and player 
+		args[2] = NAT_retrieve_class_color(NAT_retrieve_player_class(args[2])) .. args[2];
+		controller.interrupt_controller.toggle_player(args[1],args[2]);
+	end
+	
+	controller.toggle_priest
+	=
+	function(message)
+		local args = NAT_split(message, ":"); -- split mark and player 
+		args[2] = NAT_retrieve_class_color(NAT_retrieve_player_class(args[2])) .. args[2];
+		controller.priest_controller.toggle_player(args[1],args[2]);
+	end
+	
+	controller.toggle_mage
+	=
+	function(message)
+		local args = NAT_split(message, ":"); -- split mark and player 
+		args[2] = NAT_retrieve_class_color(NAT_retrieve_player_class(args[2])) .. args[2];
+		controller.mage_controller.toggle_player(args[1],args[2]);
+	end
+	
+	controller.toggle_druid
+	=
+	function(message)
+		local args = NAT_split(message, ":"); -- split mark and player 
+		args[2] = NAT_retrieve_class_color(NAT_retrieve_player_class(args[2])) .. args[2];
+		controller.druid_controller.toggle_player(args[1],args[2]);
+	end
+	
+	controller.toggle_warlock
+	=
+	function(message)
+		local args = NAT_split(message, ":"); -- split mark and player 
+		args[2] = NAT_retrieve_class_color(NAT_retrieve_player_class(args[2])) .. args[2];
+		controller.warlock_controller.toggle_player(args[1],args[2]);
+	end
+	
+	controller.setup_master
+	=
+	function(message)
+		--unless im looking for a setup, dont do it
+		if controller.state ~= 0
+		then 
+			return;
+		end
+	
+		controller.master = message;
+		NATMasterLabel:SetText("Master: " .. message);
+		controller.setup["master"] = true;
+		if controller.check_setup()
+		then
+			controller.state = 1;
+			DEFAULT_CHAT_FRAME:AddMessage("NAT: You are now setup.", 0.6,1.0,0.6);
+		end
+	end
+	
+	controller.setup_tanks
+	=
+	function(message)
+		--unless im looking for a setup, dont do it
+		if controller.state ~= 0
+		then 
+			return;
+		end
+	
+		if message ~= "empty"
+		then
+			local split_message = NAT_split(message, " ");
+			local tanks = {};
+			
+			for i, str in ipairs(split_message)
+			do
+				table.insert(tanks,str);
+			end
+			
+			--send tanks to tank controller
+			controller.tank_controller.ingest_players(tanks);
+		end	
+
+		controller.setup["tanks"] = true;
+		if controller.check_setup()
+		then
+			controller.state = 1; --controller.setup["healers"] and controller.setup["tanks"] and controller.setup["interrupters"] and controller.setup["master"]
+			DEFAULT_CHAT_FRAME:AddMessage("NAT: You are now setup.", 0.6,1.0,0.6);
+		end
+	end
+	
+	controller.setup_healers
+	=
+	function(message)
+		--unless im looking for a setup, dont do it
+		if controller.state ~= 0
+		then 
+			return;
+		end
+	
+		if message ~= "empty"
+		then
+			local split_message = NAT_split(message, " ");
+			local healers = {};
+			
+			for i, str in ipairs(split_message)
+			do
+				table.insert(healers,str);
+			end
+		
+			--send tanks to heal controller
+			controller.healer_controller.ingest_players(healers);
 		end 
-		time_since_last_update = time_since_last_update - seconds; --we exhausted the updates needed per second
-	end
-end
-
-function NAT_slashCommandHandler(msg)
-	local msg_split = NAT_split(msg, " ");
-	command = msg_split[1];
-
-	if command == "show"
-	then
-		NAT:Show();
-	elseif command == "hide"
-	then
-		NAT:Hide();
-	elseif command == "post"
-	then
-		NAT_post();
-	elseif command == "postall"
-	then
-		NAT_post_all();
-	elseif command == "reset"
-	then
-		NAT_reset_addon();
-		network_controller.request_setup();
-	elseif command == "randomtanks"
-	then
-		if table.getn(msg_split) == 1
+		controller.setup["healers"] = true;
+		if controller.check_setup()
 		then
-			DEFAULT_CHAT_FRAME:AddMessage("NAT: Error - command randomtanks expects a space then a number to proceed it", 0.6,1.0,0.6);
+			controller.state = 1;
+			DEFAULT_CHAT_FRAME:AddMessage("NAT: You are now setup.", 0.6,1.0,0.6);
+		end
+	end
+	
+	controller.setup_interrupters
+	=
+	function(message)
+		--unless im looking for a setup, dont do it
+		if controller.state ~= 0
+		then 
 			return;
+		end
+	
+		if message ~= "empty"
+		then 
+			local split_message = NAT_split(message, " ");
+			local interrupters = {};
+			
+			for i, str in ipairs(split_message)
+			do
+				table.insert(interrupters,str);
+			end
+		
+			--send tanks to interrupt controller
+			controller.interrupt_controller.ingest_players(interrupters);
+		end
+		controller.setup["interrupters"] = true;
+		if controller.check_setup()
+		then
+			controller.state = 1;
+			DEFAULT_CHAT_FRAME:AddMessage("NAT: You are now setup.", 0.6,1.0,0.6);
+		end
+	end
+	
+	controller.setup_priests
+	=
+	function(message)
+		--unless im looking for a setup, dont do it
+		if controller.state ~= 0
+		then 
+			return;
+		end
+	
+		if message ~= "empty"
+		then 
+			local split_message = NAT_split(message, " ");
+			local priests = {};
+			
+			for i, str in ipairs(split_message)
+			do
+				table.insert(priests,str);
+			end
+		
+			--send priests to  controller
+			controller.priest_controller.ingest_players(priests);
+		end
+		controller.setup["priests"] = true;
+		if controller.check_setup()
+		then
+			controller.state = 1;
+			DEFAULT_CHAT_FRAME:AddMessage("NAT: You are now setup.", 0.6,1.0,0.6);
+		end
+	end
+	
+	controller.setup_mages
+	=
+	function(message)
+		--unless im looking for a setup, dont do it
+		if controller.state ~= 0
+		then 
+			return;
+		end
+	
+		if message ~= "empty"
+		then 
+			local split_message = NAT_split(message, " ");
+			local mages = {};
+			
+			for i, str in ipairs(split_message)
+			do
+				table.insert(mages,str);
+			end
+		
+			--send mages to controller
+			controller.mage_controller.ingest_players(mages);
+		end
+		controller.setup["mages"] = true;
+		if controller.check_setup()
+		then
+			controller.state = 1;
+			DEFAULT_CHAT_FRAME:AddMessage("NAT: You are now setup.", 0.6,1.0,0.6);
+		end
+	end
+	
+	controller.setup_druids
+	=
+	function(message)
+		--unless im looking for a setup, dont do it
+		if controller.state ~= 0
+		then 
+			return;
+		end
+	
+		if message ~= "empty"
+		then 
+			local split_message = NAT_split(message, " ");
+			local druids = {};
+			
+			for i, str in ipairs(split_message)
+			do
+				table.insert(druids,str);
+			end
+		
+			--send druids to druid contorller
+			controller.druid_controller.ingest_players(druids);
+		end
+		controller.setup["druids"] = true;
+		if controller.check_setup()
+		then
+			controller.state = 1;
+			DEFAULT_CHAT_FRAME:AddMessage("NAT: You are now setup.", 0.6,1.0,0.6);
+		end
+	end
+	
+	controller.setup_warlocks
+	=
+	function(message)
+		--unless im looking for a setup, dont do it
+		if controller.state ~= 0
+		then 
+			return;
+		end
+	
+		if message ~= "empty"
+		then 
+			local split_message = NAT_split(message, " ");
+			local warlocks = {};
+			
+			for i, str in ipairs(split_message)
+			do
+				table.insert(warlocks,str);
+			end
+		
+			--send tanks to interrupt controller
+			controller.interrupt_controller.ingest_players(warlocks);
+		end
+		controller.setup["warlocks"] = true;
+		if controller.check_setup()
+		then
+			controller.state = 1;
+			DEFAULT_CHAT_FRAME:AddMessage("NAT: You are now setup.", 0.6,1.0,0.6);
+		end
+	end
+		-------------------------------HELPER-------------------------------HEL
+	controller.extract_command_and_message
+	=
+	function(_message)
+		local split = NAT_split(_message, "-");
+		local command = split[1];
+		local message = split[2];
+		local sender = split[3];
+		return command, message, sender;
+	end
+	
+	controller.reset_setup
+	=
+	function()
+		controller.tank_controller.reset();
+		controller.healer_controller.reset();
+		controller.interrupt_controller.reset();
+	
+		controller.state = -1;
+		controller.master = nil;
+		NATMasterLabel:SetText("Master: None");
+		controller.setup["healers"] = false;
+		controller.setup["tanks"] = false;
+		controller.setup["master"] = false;
+		controller.setup["interrupters"] = false;
+		controller.setup["priests"] = false;
+		controller.setup["mages"] = false;
+		controller.setup["druids"] = false;
+		controller.setup["warlocks"] = false;
+	end
+	
+	controller.get_raid_member_info
+	=
+	function(_name)
+		--Vanilla API does not have a way to get info by name so here we are
+		for i=1, GetNumRaidMembers(), 1
+		do
+			--player found. return shit
+			if UnitName("raid"..i) == controller.name
+			then
+				return GetRaidRosterInfo(i);
+			end
 		end
 		
-		local val = tonumber(msg_split[2]);
-		if val == nil
+		return nil;
+	end
+	
+	controller.check_setup
+	=
+	function()
+		if controller.setup["healers"] and controller.setup["tanks"] and controller.setup["interrupters"] and controller.setup["priests"] 
+		and controller.setup["mages"] and controller.setup["druids"] and controller.setup["warlocks"] and controller.setup["master"]
 		then
-			DEFAULT_CHAT_FRAME:AddMessage("NAT: Error - command randomtanks expects a number but got " .. msg_split[2], 0.6,1.0,0.6);
+			return true;
 		end
-
-		tank_controller.random_assign(val);
-	elseif command == "master"
-	then
-		network_controller.request_master();
-	else
-		DEFAULT_CHAT_FRAME:AddMessage("NAT: Error, could not understand input.\nValid commands:\n1)/nat show\n2)/nat hide\n3)/nat post'\n4)/nat postall\n5)/nat randomtanks <number>", 0.6,1.0,0.6);
-	end
-end
-
---Function to fire when a new mode is selected
-function NAT_mode_picker_clicked(index)
-	--reset visuals
-	NAT_reset_visuals();
-	
-	local ypos = -35-50*(index-1)
-	
-	--select visuals
-	if index == 1 --tank
-	then
-		--show tank visuals
-		NAT_tank_body:Show();
-		tank_controller.update_marks();
-		chooser_buttons[index]:SetPoint("TOPLEFT", NAT, "TOPLEFT", -38, ypos);
-		current_mode = 1;
-	elseif index == 2 --heals
-	then
-		NAT_healer_body:Show();
-		healer_controller.update_marks();
-		chooser_buttons[index]:SetPoint("TOPLEFT", NAT, "TOPLEFT", -38, ypos);
-		current_mode = 2;
-	elseif index == 3 --interrupt
-	then
-		--show interrupt visuals
-		NAT_interrupt_body:Show();
-		interrupt_controller.update_marks();
-		chooser_buttons[index]:SetPoint("TOPLEFT", NAT, "TOPLEFT",  -38, ypos);
-		current_mode = 3;
-	elseif index == 4 --priest
-	then
-		--show interrupt visuals
-		NAT_priest_body:Show();
-		priest_controller.update_marks();
-		chooser_buttons[index]:SetPoint("TOPLEFT", NAT, "TOPLEFT",  -38, ypos);
-		current_mode = 4;
-	--[[elseif index == 5 --mage
-	then
-		--show interrupt visuals
-		NAT_mage_body:Show();
-		mage_controller.update_marks();
-		chooser_buttons[index]:SetPoint("TOPLEFT", NAT, "TOPLEFT",  -38, ypos);
-		current_mode = 5;
-	elseif index == 6 --druid
-	then
-		--show interrupt visuals
-		NAT_druid_body:Show();
-		druid_controller.update_marks();
-		chooser_buttons[index]:SetPoint("TOPLEFT", NAT, "TOPLEFT",  -38, ypos);
-		current_mode = 6;
-	elseif index == 7 --warlock
-	then
-		--show interrupt visuals
-		NAT_warlock_body:Show();
-		warlock_controller.update_marks();
-		chooser_buttons[index]:SetPoint("TOPLEFT", NAT, "TOPLEFT",  -38, ypos);
-		current_mode = 7;--]]
-	end 
-end
-
-function NAT_request_setup()
-	network_controller.request_setup();
-end
-
-function NAT_post()
-	if not IsRaidLeader() and not IsRaidOfficer()
-	then
-		DEFAULT_CHAT_FRAME:AddMessage("NAT: You need to be the raid leader or have assist to use this command", 0.6,1.0,0.6);
-		return;
-	end
-	
-	if current_mode == 1 --tanks
-	then 
-		tank_controller.post();
-	elseif current_mode == 2 --healers
-	then
-		healer_controller.post();
-	elseif current_mode == 3 --interrupts
-	then
-		interrupt_controller.post();
-	elseif current_mode == 4 --priests
-	then
-		priest_controller.post();
-	end
-end
-
-function NAT_post_all()
-	if not IsRaidLeader() and not IsRaidOfficer()
-	then
-		DEFAULT_CHAT_FRAME:AddMessage("NAT: You need to be the raid leader or have assist to use this command", 0.6,1.0,0.6);
-		return;
-	end
-	
-	tank_controller.post();
-	healer_controller.post();
-	interrupt_controller.post();
-	priest_controller.post();
-end
-
---show submenu when mousing over current marks
-function NAT_show_listmenu(parent, focus_mark)
-	if current_mode == 1
-	then
-		tank_controller.current_focus_mark = focus_mark;
-		tank_controller.current_menu_parent = parent;
-		ToggleDropDownMenu(nil, 1, NAT_tank_list, parent, 0, 25);
-	elseif current_mode == 2
-	then
-		if focus_mark == "" or focus_mark == nil
-		then
-			return;
-		end
-	
-		healer_controller.current_focus_mark = focus_mark;
-		healer_controller.current_menu_parent = parent;
-		ToggleDropDownMenu(nil,1,NAT_heal_list, parent, 0, 25);
-	elseif current_mode == 3
-	then
-		interrupt_controller.current_focus_mark = focus_mark;
-		interrupt_controller.current_menu_parent = parent;
-		ToggleDropDownMenu(nil,1,NAT_interrupt_list,parent,0,25);
-	elseif current_mode == 4
-	then
-		priest_controller.current_focus_mark = focus_mark;
-		priest_controller.current_menu_parent = parent;
-		ToggleDropDownMenu(nil, 1, NAT_priest_list, parent, 0, 25);
-	--[[elseif current_mode == 5
-	then 
-		mage_controller.current_focus_mark = focus_mark;
-		mage_controller.current_menu_parent = parent;
-		ToggleDropDownMenu(nil, 1, NAT_mage_list, parent, 0, 25);
-	elseif current_mode == 6
-	then 
-		druid_controller.current_focus_mark = focus_mark;
-		druid_controller.current_menu_parent = parent;
-		ToggleDropDownMenu(nil, 1, NAT_druid_list, parent, 0, 25);
-	elseif current_mode == 7
-	then
-		warlock_controller.current_focus_mark = focus_mark;
-		warlock_controller.current_menu_parent = parent;
-		ToggleDropDownMenu(nil, 1, NAT_warlock_list, parent, 0, 25);--]]
-	end
-end
-
---POST INPUT BOX FUNCTIONS---------------------------------------------------------------------------PI
-function NAT_on_post_enter(self)
-	GameTooltip:SetOwner(self);
-	GameTooltip:SetText("Set channel to announce current assignments");
-	GameTooltip:AddLine("Selections:");
-	GameTooltip:AddLine("-s: Say");
-	GameTooltip:AddLine("-p: Party");
-	GameTooltip:AddLine("-r: Raid");
-	GameTooltip:AddLine("-<number>: Channel number");
-	GameTooltip:Show();
-end
-
-function NAT_on_post_text_changed(self)
-	if current_mode == 1
-	then
-		tank_controller.set_post_location(self:GetText());
-	elseif current_mode == 2
-	then
-		healer_controller.set_post_location(self:GetText());
-	elseif current_mode == 3
-	then
-		interrupt_controller.set_post_location(self:GetText());
-	end
-	self:ClearFocus();
-end
-
-function NAT_on_post_exit(self)
-	GameTooltip:Hide();
-end
---POST INPUT BOX FUNCTIONS---------------------------------------------------------------------------PI
-
---HELPER FUNCTIONS---------------------------------------------------------------------------------------HF
-function NAT_poll_for_players()
-	--am I in raid?
-	if UnitInRaid("player") == nil
-	then
-		return;
-	end 
-	
-	--tanks
-	tank_controller.poll_for_players();
-	UIDropDownMenu_Initialize(NAT_tank_list, tank_controller.init, "MENU", 2);
-	
-	--healers 
-	healer_controller.poll_for_players();
-	UIDropDownMenu_Initialize(NAT_heal_list, healer_controller.init, "MENU", 2);
-	
-	--interupts
-	interrupt_controller.poll_for_players();
-	UIDropDownMenu_Initialize(NAT_interrupt_list, interrupt_controller.init, "MENU", 2);
-	
-	--priest
-	priest_controller.poll_for_players();
-	UIDropDownMenu_Initialize(NAT_priest_list, priest_controller.init, "MENU", 2);
-	
-	--mage
-	--[[mage_controller.poll_for_players();
-	UIDropDownMenu_Initialize(NAT_mage_list, mage_controller.init, "MENU", 2);
-	
-	--druid
-	druid_controller.poll_for_players();
-	UIDropDownMenu_Initialize(NAT_druid_list, druid_controller.init, "MENU", 2);
-	
-	--warlock
-	warlock_controller.poll_for_players();
-	UIDropDownMenu_Initialize(NAT_warlock_list, warlock_controller.init, "MENU", 2);--]]
-	
-	if current_mode == 1
-	then
-		tank_controller.update_marks();
-	elseif current_mode == 2
-	then
-		healer_controller.update_marks();
-	elseif current_mode == 3
-	then
-		interrupt_controller.update_marks();
-	elseif current_mode == 4
-	then
-		priest_controller.update_marks();
-	--[[elseif current_mode == 5 --mage 
-	then
-		mage_controller.update_marks();
-	elseif current_mode == 6 --druid
-	then
-		druid_controller.update_marks();
-	elseif current_mode == 7 --warlock
-	then 
-		warlock_controller.update_marks();--]]
-	end
-end
-
-function NAT_reset_visuals()
-	NAT_tank_body:Hide();
-	NAT_healer_body:Hide();
-	NAT_interrupt_body:Hide();
-	NAT_priest_body:Hide();
-	NAT_mage_body:Hide():
-	NAT_druid_body:Hide();
-	NAT_warlock_body:Hide();
-	
-	for i,button in ipairs(chooser_buttons)
-	do
-		button:SetPoint("TOPLEFT", NAT, "TOPLEFT",-15,-35-50*(i-1));
-	end
-end
-
-function NAT_reset_addon()
-	--reset healer marks
-	tank1_label:SetText("Raid");
-	tank2_label:SetText("");
-	tank3_label:SetText("");
-	tank4_label:SetText("");
-	tank5_label:SetText("");
-	tank6_label:SetText("");
-	tank7_label:SetText("");
-	tank8_label:SetText("");
-	tank9_label:SetText("");
-	
-	--reset data
-	network_controller.reset_setup();
-	
-	--reset visuals
-	if current_mode == 1
-	then
-		tank_controller.update_marks();
-	elseif current_mode == 2
-	then
-		healer_controller.update_marks();
-	elseif current_mode == 3
-	then
-		interrupt_controller.update_marks();
-	elseif current_mode == 4
-	then
-		priest_controller.update_marks();
-	--[[elseif current_mode == 5
-	then
-		mage_controller.update_marks();
-	elseif current_mode == 6
-	then
-		druid_controller.update_marks();
-	elseif current_mode == 7
-	then
-		warlock_controller.update_marks();--]]
-	end
-end
---HELPER FUNCTIONS---------------------------------------------------------------------------------------HF
-
-function NAT_is_ready()
-	if network_controller.state == 1
-	then
-		return true;
-	else 
+		
 		return false;
 	end
-end
+		------------------------END OF HELPER-------------------------HEL
 
-function NAT_hover_choose_frames(_frame, _dir, _mode) --dir: 1 = left, dir: 2 = right
-	local point, relative_to, relative_point, xof, yof = _frame:GetPoint();
+	--this update will happen every tick rather than when visible and every second.
+	controller.update
+	=
+	function()
 
-	if current_mode ~= _mode
-	then
-		if _dir == 1
-		then
-			xof = -38
-			_frame:SetPoint(point, relative_to, relative_point, xof, yof);
-
-		else
-			xof = -15
-			_frame:SetPoint(point, relative_to, relative_point, xof, yof);
-		end
-	else
-		xof = -38
-		_frame:SetPoint(point, relative_to, relative_point, xof, yof);
 	end
+	
+	--FUNCTIONS---------------------------------------------------------------------F
+	
+	return controller;
 end

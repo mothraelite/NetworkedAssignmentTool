@@ -2153,6 +2153,90 @@
 						</Layers>
 					</Frame>
 					
+					<Frame name='warlock4' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>NAT_show_listmenu(warlock4, warlock4_label:GetText());</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-155"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='warlock4_label' inherits="GameFontNormal" text="Weakness">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<Frame name='warlock5' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>NAT_show_listmenu(warlock5, warlock5_label:GetText());</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-195"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='warlock5_label' inherits="GameFontNormal" text="Exhaustion">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<Frame name='warlock6' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>NAT_show_listmenu(warlock6, warlock6_label:GetText());</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-235"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='warlock6_label' inherits="GameFontNormal" text="Tongues">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					
 					<!-- warlock assignment marks //-->
 					
 							<!--WARLOCK POST LOCATION //-->

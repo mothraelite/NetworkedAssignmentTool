@@ -39,7 +39,7 @@ function NAT_init()
 	mage_controller = NAT_create_mage_menu_controller(NATMagePostChannelEdit, NATMagePostLabel, NAT_mage_body);
 	druid_controller = NAT_create_druid_menu_controller(NATDruidPostChannelEdit, NATDruidPostLabel, NAT_druid_body);
 	warlock_controller = NAT_create_warlock_menu_controller(NATWarlockPostChannelEdit, NATWarlockPostLabel, NAT_warlock_body);
-	network_controller = NAT_create_network_handler(tank_controller, healer_controller, interrupt_controller);
+	network_controller = NAT_create_network_handler(tank_controller, healer_controller, interrupt_controller, priest_controller, mage_controller, druid_controller, warlock_controller);
 
 	table.insert(chooser_buttons, NAT_choose_tank_menu);
 	table.insert(chooser_buttons, NAT_choose_healer_menu);
@@ -119,7 +119,6 @@ function NAT_handle_events(event)
 				NATMasterLabel:SetText("Master: "..message);
 			elseif command == "setup_master" --setup my own
 			then 
-				
 				network_controller.setup_master(message);
 			elseif command == "setup_tanks"
 			then
@@ -130,11 +129,18 @@ function NAT_handle_events(event)
 			elseif command == "setup_interrupters"
 			then
 				network_controller.setup_interrupters(message);
-				
-				if current_mode == 3
-				then
-					interrupt_controller.update_marks();
-				end
+			elseif command == "setup_priests"
+			then
+				network_controller.setup_priests(message);
+			elseif command == "setup_mages"
+			then
+				network_controller.setup_mages(message);
+			elseif command =="setup_druids"
+			then
+				network_controller.setup_druids(message);
+			elseif command == "setup_warlocks"
+			then
+				network_controller.setup_warlocks(message);
 			elseif command == "toggle_tank"
 			then
 				network_controller.toggle_tank(message);
@@ -144,11 +150,18 @@ function NAT_handle_events(event)
 			elseif command == "toggle_interrupt"
 			then
 				network_controller.toggle_interrupter(message);
-			
-				if current_mode == 3
-				then
-					interrupt_controller.update_marks();
-				end
+			elseif command == "toggle_priest"
+			then
+				network_controller.toggle_priest(message);
+			elseif command == "toggle_mage"
+			then
+				network_controller.toggle_mage(message);
+			elseif command == "toggle_druid"
+			then
+				network_controller.toggle_druid(message);
+			elseif command == "toggle_warlock"
+			then
+				network_controller.toggle_warlock(message);
 			elseif command == "reset"
 			then 
 				NAT_reset_addon();
@@ -306,6 +319,15 @@ function NAT_post()
 	elseif current_mode == 4 --priests
 	then
 		priest_controller.post();
+	elseif current_mode == 5 --mage
+	then
+		mage_controller.post();
+	elseif current_mode == 6 --druid
+	then
+		druid_controller.post();
+	elseif current_mode == 7 --warlock
+	then
+		warlock_controller.post();
 	end
 end
 
@@ -320,6 +342,9 @@ function NAT_post_all()
 	healer_controller.post();
 	interrupt_controller.post();
 	priest_controller.post();
+	mage_controller.post();
+	druid_controller.post();
+	warlock_controller.post();
 end
 
 --show submenu when mousing over current marks
