@@ -382,8 +382,8 @@ function NAT_create_network_handler(_tankc, _healerc, _interruptc, _priestc, _ma
 	
 		controller.master = message;
 		NATMasterLabel:SetText("Master: " .. message);
-		controller.setup["master"] = true;
-		if controller.check_setup()
+		controller.setup["master"] = true; 
+		if controller.check_setup() == true
 		then
 			controller.state = 1;
 			DEFAULT_CHAT_FRAME:AddMessage("NAT: You are now setup.", 0.6,1.0,0.6);
@@ -414,7 +414,7 @@ function NAT_create_network_handler(_tankc, _healerc, _interruptc, _priestc, _ma
 		end	
 
 		controller.setup["tanks"] = true;
-		if controller.check_setup()
+		if controller.check_setup() == true
 		then
 			controller.state = 1; --controller.setup["healers"] and controller.setup["tanks"] and controller.setup["interrupters"] and controller.setup["master"]
 			DEFAULT_CHAT_FRAME:AddMessage("NAT: You are now setup.", 0.6,1.0,0.6);
@@ -444,7 +444,7 @@ function NAT_create_network_handler(_tankc, _healerc, _interruptc, _priestc, _ma
 			controller.healer_controller.ingest_players(healers);
 		end 
 		controller.setup["healers"] = true;
-		if controller.check_setup()
+		if controller.check_setup() == true
 		then
 			controller.state = 1;
 			DEFAULT_CHAT_FRAME:AddMessage("NAT: You are now setup.", 0.6,1.0,0.6);
@@ -474,7 +474,7 @@ function NAT_create_network_handler(_tankc, _healerc, _interruptc, _priestc, _ma
 			controller.interrupt_controller.ingest_players(interrupters);
 		end
 		controller.setup["interrupters"] = true;
-		if controller.check_setup()
+		if controller.check_setup() == true
 		then
 			controller.state = 1;
 			DEFAULT_CHAT_FRAME:AddMessage("NAT: You are now setup.", 0.6,1.0,0.6);
@@ -494,9 +494,10 @@ function NAT_create_network_handler(_tankc, _healerc, _interruptc, _priestc, _ma
 		then 
 			local split_message = NAT_split(message, " ");
 			local priests = {};
-			
+
 			for i, str in ipairs(split_message)
 			do
+				
 				table.insert(priests,str);
 			end
 		
@@ -504,7 +505,7 @@ function NAT_create_network_handler(_tankc, _healerc, _interruptc, _priestc, _ma
 			controller.priest_controller.ingest_players(priests);
 		end
 		controller.setup["priests"] = true;
-		if controller.check_setup()
+		if controller.check_setup() == true
 		then
 			controller.state = 1;
 			DEFAULT_CHAT_FRAME:AddMessage("NAT: You are now setup.", 0.6,1.0,0.6);
@@ -534,7 +535,7 @@ function NAT_create_network_handler(_tankc, _healerc, _interruptc, _priestc, _ma
 			controller.mage_controller.ingest_players(mages);
 		end
 		controller.setup["mages"] = true;
-		if controller.check_setup()
+		if controller.check_setup() == true
 		then
 			controller.state = 1;
 			DEFAULT_CHAT_FRAME:AddMessage("NAT: You are now setup.", 0.6,1.0,0.6);
@@ -564,7 +565,7 @@ function NAT_create_network_handler(_tankc, _healerc, _interruptc, _priestc, _ma
 			controller.druid_controller.ingest_players(druids);
 		end
 		controller.setup["druids"] = true;
-		if controller.check_setup()
+		if controller.check_setup() == true
 		then
 			controller.state = 1;
 			DEFAULT_CHAT_FRAME:AddMessage("NAT: You are now setup.", 0.6,1.0,0.6);
@@ -594,7 +595,7 @@ function NAT_create_network_handler(_tankc, _healerc, _interruptc, _priestc, _ma
 			controller.interrupt_controller.ingest_players(warlocks);
 		end
 		controller.setup["warlocks"] = true;
-		if controller.check_setup()
+		if controller.check_setup() == true
 		then
 			controller.state = 1;
 			DEFAULT_CHAT_FRAME:AddMessage("NAT: You are now setup.", 0.6,1.0,0.6);
@@ -650,8 +651,8 @@ function NAT_create_network_handler(_tankc, _healerc, _interruptc, _priestc, _ma
 	controller.check_setup
 	=
 	function()
-		if controller.setup["healers"] and controller.setup["tanks"] and controller.setup["interrupters"] and controller.setup["priests"] 
-		and controller.setup["mages"] and controller.setup["druids"] and controller.setup["warlocks"] and controller.setup["master"]
+		if controller.setup["healers"] == true and controller.setup["tanks"] == true and controller.setup["interrupters"] == true and controller.setup["priests"] == true
+		and controller.setup["mages"] == true and controller.setup["druids"] == true and controller.setup["warlocks"] == true and controller.setup["master"] == true
 		then
 			return true;
 		end

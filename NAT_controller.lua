@@ -60,7 +60,7 @@ function NAT_init()
 	SLASH_NATCOMMAND1 = "/NAT";
 
 	--Init handler
-	DEFAULT_CHAT_FRAME:AddMessage("NAT: Initializing NAT version 1.02", 0.6,1.0,0.6);
+	DEFAULT_CHAT_FRAME:AddMessage("NAT: Initializing NAT version 2.0", 0.6,1.0,0.6);
 end
 
 function NAT_request_master()
@@ -125,7 +125,21 @@ function NAT_handle_events(event)
 				network_controller.setup_tanks(message);
 			elseif command == "setup_healers"
 			then
-				network_controller.setup_healers(message);
+				--check if im ready to ingest healers as tanks are a prereq
+				if network_controller.setup["tanks"] == true
+				then
+					network_controller.setup_healers(message);
+				else
+					--im not, wait a second and try then
+					NAT_set_alarm(1, 
+					function() 
+						if network_controller.setup["tanks"] == true 
+						then 
+							network_controller.setup_healers(message); 
+						end 
+					end);
+				end
+				
 			elseif command == "setup_interrupters"
 			then
 				network_controller.setup_interrupters(message);
@@ -251,12 +265,14 @@ function NAT_mode_picker_clicked(index)
 		NAT_tank_body:Show();
 		tank_controller.update_marks();
 		chooser_buttons[index]:SetPoint("TOPLEFT", NAT, "TOPLEFT", -38, ypos);
+		NATTitleLabel:SetText("Tank Assignments");
 		current_mode = 1;
 	elseif index == 2 --heals
 	then
 		NAT_healer_body:Show();
 		healer_controller.update_marks();
 		chooser_buttons[index]:SetPoint("TOPLEFT", NAT, "TOPLEFT", -38, ypos);
+		NATTitleLabel:SetText("Healer Assignments");
 		current_mode = 2;
 	elseif index == 3 --interrupt
 	then
@@ -264,6 +280,7 @@ function NAT_mode_picker_clicked(index)
 		NAT_interrupt_body:Show();
 		interrupt_controller.update_marks();
 		chooser_buttons[index]:SetPoint("TOPLEFT", NAT, "TOPLEFT",  -38, ypos);
+		NATTitleLabel:SetText("Interrupt Assignments");
 		current_mode = 3;
 	elseif index == 4 --priest
 	then
@@ -271,6 +288,7 @@ function NAT_mode_picker_clicked(index)
 		NAT_priest_body:Show();
 		priest_controller.update_marks();
 		chooser_buttons[index]:SetPoint("TOPLEFT", NAT, "TOPLEFT",  -38, ypos);
+		NATTitleLabel:SetText("Priest Assignments");
 		current_mode = 4;
 	elseif index == 5 --mage
 	then
@@ -278,6 +296,7 @@ function NAT_mode_picker_clicked(index)
 		NAT_mage_body:Show();
 		mage_controller.update_marks();
 		chooser_buttons[index]:SetPoint("TOPLEFT", NAT, "TOPLEFT",  -38, ypos);
+		NATTitleLabel:SetText("Mage Assignments");
 		current_mode = 5;
 	elseif index == 6 --druid
 	then
@@ -285,6 +304,7 @@ function NAT_mode_picker_clicked(index)
 		NAT_druid_body:Show();
 		druid_controller.update_marks();
 		chooser_buttons[index]:SetPoint("TOPLEFT", NAT, "TOPLEFT",  -38, ypos);
+		NATTitleLabel:SetText("Druid Assignments");
 		current_mode = 6;
 	elseif index == 7 --warlock
 	then
@@ -292,6 +312,7 @@ function NAT_mode_picker_clicked(index)
 		NAT_warlock_body:Show();
 		warlock_controller.update_marks();
 		chooser_buttons[index]:SetPoint("TOPLEFT", NAT, "TOPLEFT",  -38, ypos);
+		NATTitleLabel:SetText("Warlock Assignments");
 		current_mode = 7;
 	end 
 end

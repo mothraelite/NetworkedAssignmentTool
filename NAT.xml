@@ -47,32 +47,11 @@
 
 			 <Layers>
 				<Layer level="ARTWORK">
-					 <Texture name="TPCFrameTitle" file="Interface\AddOns\NetworkedAssignmentTool\resources\images\head.tga">
-						<Size>
-							<AbsDimension x="480" y="20" />
-						</Size>
-						<Anchors>
-							<Anchor point="TOP">
-								<Offset>
-									<AbsDimension x="0" y="-10" />
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Texture>
 					
-					<FontString inherits="GameFontNormal" name="NATMasterLabel" text="Master: None">
-						<Anchors>
-							<Anchor point="TOP">
-								<Offset>
-									<AbsDimension x="0" y="-10" />
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</FontString>
 				</Layer>
 				
 				<Layer level="OVERLAY">
-					
+
 				</Layer>
 				
 				<Layer>
@@ -81,13 +60,133 @@
 
 			<!-- BUTTONS N SHIT //-->
 			 <Frames>
+				<!--Title view //-->
+				<Frame name='NATMasterLabelContainer' enableMouse="true">
+					<Size><AbsDimension x="504" y="30"/></Size>
+					<Scripts><OnEnter></OnEnter></Scripts>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					 <Layers>
+						<Layer level="ARTWORK">
+							<!-- Setup title label //-->
+							<FontString inherits="GameFontNormal" name="NATTitleLabel" text="Tank Assignments"  outline="THICK">
+								<!--<Color r="0.25" g="0.50" b="0.75" a="1"/>//-->
+								<Anchors>
+									<Anchor point="CENTER">
+										<Offset>
+											<AbsDimension x="0" y="0" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+								
+								 <Shadow>
+									<Offset x="1" y="1" />
+									<Color r="0" g="0" b="0"/>
+								  </Shadow>			
+							</FontString>
+						</Layer>
+					</Layers>
+				</Frame>
+			 
+				<!--Title bar view //-->
+				<Frame name='NATTitleBar' enableMouse="true">
+					<Size><AbsDimension x="120" y="2"/></Size>
+					<Scripts><OnEnter></OnEnter></Scripts>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-25"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					 <Layers>
+						<Layer level="ARTWORK">
+							<!-- Setup bar //-->
+							<Texture name="TPCFrameTitle" file="Interface\AddOns\NetworkedAssignmentTool\resources\images\head.tga" >
+								<Size>
+									<AbsDimension x="120" y="2" />
+								</Size>
+								<Anchors>
+									<Anchor point="TOP">
+										<Offset>
+											<AbsDimension x="0" y="0" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Texture>
+						</Layer>
+					</Layers>
+				</Frame>
+				
+				<!--Footer bar view //-->
+				<Frame name='NATFooterBar' enableMouse="true">
+					<Size><AbsDimension x="120" y="2"/></Size>
+					<Scripts><OnEnter></OnEnter></Scripts>
+					<Anchors>
+						<Anchor point="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="55"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					 <Layers>
+						<Layer level="ARTWORK">
+							<!-- Setup bar //-->
+							<Texture name="TPCFrameTitle" file="Interface\AddOns\NetworkedAssignmentTool\resources\images\head.tga" >
+								<Size>
+									<AbsDimension x="120" y="2" />
+								</Size>
+								<Anchors>
+									<Anchor point="TOP">
+										<Offset>
+											<AbsDimension x="0" y="0" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Texture>
+						</Layer>
+					</Layers>
+				</Frame>
+			 
+				<!--master label view //-->
+				<Frame name='NATMasterLabelContainer' enableMouse="true">
+					<Size><AbsDimension x="80" y="30"/></Size>
+					<Scripts><OnEnter></OnEnter></Scripts>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="50" y="30"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					 <Layers>
+						<Layer level="ARTWORK">
+							<!-- Setup label //-->
+							<FontString inherits="GameFontNormal" name="NATMasterLabel" text="Master: None" >
+								<Anchors>
+									<Anchor point="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</FontString>
+						</Layer>
+					</Layers>
+				</Frame>
+			 
 				<!--NAT TANK VIEW//-->
 				<Frame name='NAT_tank_body' frameStrata="MEDIUM">
-					<Size><AbsDimension x="504" y="438"/></Size>
+					<Size><AbsDimension x="504" y="450"/></Size>
 					<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="-2" y="-14"/>
+									<AbsDimension x="-2" y="0"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -98,11 +197,11 @@
 					</Backdrop>
 					 <Layers>
 						<Layer level="OVERLAY">
-							<FontString inherits="GameFontNormal" name="NATTankPostLabel" text=": raid">
+							<FontString inherits="GameFontNormal" name="NATTankPostLabel" text="raid" justifyV="RIGHT">
 								<Anchors>
-									<Anchor point="BOTTOMRIGHT">
+									<Anchor point="BOTTOM">
 										<Offset>
-											<AbsDimension x="-20" y="30" />
+											<AbsDimension x="160" y="30" />
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -393,9 +492,9 @@
 					<EditBox inherits="InputBoxTemplate" name="NATTankPostChannelEdit" frameStrata="HIGH">
 						<Size><AbsDimension x="18" y="28"/></Size>
 						<Anchors>
-							<Anchor relativeTo="NAT" point="BOTTOMRIGHT">
+							<Anchor relativeTo="NAT" point="BOTTOM">
 								<Offset>
-									<AbsDimension x="-75" y="20" />
+									<AbsDimension x="65" y="19" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -416,11 +515,11 @@
 				
 				<!--NAT HEALER VIEW//-->
 				<Frame name='NAT_healer_body' frameStrata="MEDIUM" hidden="true">
-					<Size><AbsDimension x="504" y="438"/></Size>
+					<Size><AbsDimension x="504" y="450"/></Size>
 					<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="-2" y="-14"/>
+									<AbsDimension x="-2" y="0"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -431,11 +530,11 @@
 					</Backdrop>
 					 <Layers>
 						<Layer level="OVERLAY">
-							<FontString inherits="GameFontNormal" name="NATHealPostLabel" text=": to raid">
+							<FontString inherits="GameFontNormal" name="NATHealPostLabel" text="raid">
 								<Anchors>
-									<Anchor point="BOTTOMRIGHT">
+									<Anchor point="BOTTOM">
 										<Offset>
-											<AbsDimension x="-20" y="30" />
+											<AbsDimension x="160" y="30" />
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -713,9 +812,9 @@
 					<EditBox inherits="InputBoxTemplate" name="NATHealerPostChannelEdit" frameStrata="HIGH">
 						<Size><AbsDimension x="18" y="28"/></Size>
 						<Anchors>
-							<Anchor relativeTo="NAT" point="BOTTOMRIGHT">
+							<Anchor relativeTo="NAT" point="BOTTOM">
 								<Offset>
-									<AbsDimension x="-75" y="20" />
+									<AbsDimension x="65" y="19" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -736,11 +835,11 @@
 			 
 				<!--NAT INTERRUPT VIEW//-->
 				<Frame name='NAT_interrupt_body' frameStrata="MEDIUM" hidden="true">
-					<Size><AbsDimension x="504" y="438"/></Size>
+					<Size><AbsDimension x="504" y="450"/></Size>
 					<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="-2" y="-14"/>
+									<AbsDimension x="-2" y="0"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -751,11 +850,11 @@
 					</Backdrop>
 					 <Layers>
 						<Layer level="OVERLAY">
-							<FontString inherits="GameFontNormal" name="NATInterruptPostLabel" text=": to raid">
+							<FontString inherits="GameFontNormal" name="NATInterruptPostLabel" text="raid">
 								<Anchors>
-									<Anchor point="BOTTOMRIGHT">
+									<Anchor point="BOTTOM">
 										<Offset>
-											<AbsDimension x="-20" y="30" />
+											<AbsDimension x="160" y="30" />
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -1046,9 +1145,9 @@
 					<EditBox inherits="InputBoxTemplate" name="NATInterruptPostChannelEdit" frameStrata="HIGH">
 						<Size><AbsDimension x="18" y="28"/></Size>
 						<Anchors>
-							<Anchor relativeTo="NAT" point="BOTTOMRIGHT">
+							<Anchor relativeTo="NAT" point="BOTTOM">
 								<Offset>
-									<AbsDimension x="-75" y="20" />
+									<AbsDimension x="65" y="19" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -1069,11 +1168,11 @@
 				
 				<!--NAT PRIEST VIEW//-->
 				<Frame name='NAT_priest_body' frameStrata="MEDIUM" hidden="true">
-					<Size><AbsDimension x="504" y="438"/></Size>
+					<Size><AbsDimension x="504" y="450"/></Size>
 					<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="-2" y="-14"/>
+									<AbsDimension x="-2" y="0"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -1084,11 +1183,11 @@
 					</Backdrop>
 					 <Layers>
 						<Layer level="OVERLAY">
-							<FontString inherits="GameFontNormal" name="NATPriestPostLabel" text=": to raid">
+							<FontString inherits="GameFontNormal" name="NATPriestPostLabel" text="raid">
 								<Anchors>
-									<Anchor point="BOTTOMRIGHT">
+									<Anchor point="BOTTOM">
 										<Offset>
-											<AbsDimension x="-20" y="30" />
+											<AbsDimension x="160" y="30" />
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -1111,7 +1210,7 @@
 					<!-- priest assignment marks //-->
 					<Frame name='priest1' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(priest1, priest1_label:GetText());</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT_show_listmenu(priest1, "Group1");</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -1139,7 +1238,7 @@
 					
 					<Frame name='priest2' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(priest2, priest2_label:GetText());</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT_show_listmenu(priest2, "Group2");</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -1167,7 +1266,7 @@
 					
 					<Frame name='priest3' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(priest3, priest3_label:GetText());</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT_show_listmenu(priest3, "Group3");</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -1195,7 +1294,7 @@
 					
 					<Frame name='priest4' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(priest4, priest4_label:GetText());</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT_show_listmenu(priest4, "Group4");</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -1223,7 +1322,7 @@
 					
 					<Frame name='priest5' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(priest5, priest5_label:GetText());</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT_show_listmenu(priest5, "Group5");</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -1251,7 +1350,7 @@
 					
 					<Frame name='priest6' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(priest6, priest6_label:GetText());</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT_show_listmenu(priest6, "Group6");</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -1279,7 +1378,7 @@
 					
 					<Frame name='priest7' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(priest7, priest7_label:GetText());</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT_show_listmenu(priest7, "Group7");</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -1307,7 +1406,7 @@
 					
 					<Frame name='priest8' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(priest8, priest8_label:GetText());</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT_show_listmenu(priest8, "Group8");</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -1366,9 +1465,9 @@
 					<EditBox inherits="InputBoxTemplate" name="NATPriestPostChannelEdit" frameStrata="HIGH">
 						<Size><AbsDimension x="18" y="28"/></Size>
 						<Anchors>
-							<Anchor relativeTo="NAT" point="BOTTOMRIGHT">
+							<Anchor relativeTo="NAT" point="BOTTOM">
 								<Offset>
-									<AbsDimension x="-75" y="20" />
+									<AbsDimension x="65" y="19" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -1389,11 +1488,11 @@
 			 
 				<!--NAT MAGE VIEW//-->
 				<Frame name='NAT_mage_body' frameStrata="MEDIUM" hidden="true">
-					<Size><AbsDimension x="504" y="438"/></Size>
+					<Size><AbsDimension x="504" y="450"/></Size>
 					<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="-2" y="-14"/>
+									<AbsDimension x="-2" y="0"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -1404,11 +1503,11 @@
 					</Backdrop>
 					 <Layers>
 						<Layer level="OVERLAY">
-							<FontString inherits="GameFontNormal" name="NATMagePostLabel" text=": to raid">
+							<FontString inherits="GameFontNormal" name="NATMagePostLabel" text="raid">
 								<Anchors>
-									<Anchor point="BOTTOMRIGHT">
+									<Anchor point="BOTTOM">
 										<Offset>
-											<AbsDimension x="-20" y="30" />
+											<AbsDimension x="160" y="30" />
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -1431,7 +1530,7 @@
 					<!-- mage assignment marks //-->
 					<Frame name='mage1' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(mage1, mage1_label:GetText());</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT_show_listmenu(mage1, "Group1");</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -1459,7 +1558,7 @@
 					
 					<Frame name='mage2' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(mage2, mage2_label:GetText());</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT_show_listmenu(mage2, "Group2");</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -1487,7 +1586,7 @@
 					
 					<Frame name='mage3' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(mage3, mage3_label:GetText());</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT_show_listmenu(mage3, "Group3");</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -1515,7 +1614,7 @@
 					
 					<Frame name='mage4' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(mage4, mage4_label:GetText());</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT_show_listmenu(mage4, "Group4");</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -1543,7 +1642,7 @@
 					
 					<Frame name='mage5' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(mage5, mage5_label:GetText());</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT_show_listmenu(mage5, "Group5");</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -1571,7 +1670,7 @@
 					
 					<Frame name='mage6' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(mage6, mage6_label:GetText());</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT_show_listmenu(mage6, "Group6");</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -1599,7 +1698,7 @@
 					
 					<Frame name='mage7' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(mage7, mage7_label:GetText());</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT_show_listmenu(mage7, "Group7");</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -1627,7 +1726,7 @@
 					
 					<Frame name='mage8' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(mage8, mage8_label:GetText());</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT_show_listmenu(mage8, "Group8");</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -1686,9 +1785,9 @@
 					<EditBox inherits="InputBoxTemplate" name="NATMagePostChannelEdit" frameStrata="HIGH">
 						<Size><AbsDimension x="18" y="28"/></Size>
 						<Anchors>
-							<Anchor relativeTo="NAT" point="BOTTOMRIGHT">
+							<Anchor relativeTo="NAT" point="BOTTOM">
 								<Offset>
-									<AbsDimension x="-75" y="20" />
+									<AbsDimension x="65" y="19" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -1709,11 +1808,11 @@
 			 
 				<!--NAT DRUID VIEW//-->
 				<Frame name='NAT_druid_body' frameStrata="MEDIUM" hidden="true">
-					<Size><AbsDimension x="504" y="438"/></Size>
+					<Size><AbsDimension x="504" y="450"/></Size>
 					<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="-2" y="-14"/>
+									<AbsDimension x="-2" y="0"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -1724,11 +1823,11 @@
 					</Backdrop>
 					 <Layers>
 						<Layer level="OVERLAY">
-							<FontString inherits="GameFontNormal" name="NATDruidPostLabel" text=": to raid">
+							<FontString inherits="GameFontNormal" name="NATDruidPostLabel" text="raid">
 								<Anchors>
-									<Anchor point="BOTTOMRIGHT">
+									<Anchor point="BOTTOM">
 										<Offset>
-											<AbsDimension x="-20" y="30" />
+											<AbsDimension x="160" y="30" />
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -1751,7 +1850,7 @@
 					<!-- druid assignment marks //-->
 					<Frame name='druid1' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(druid1, druid1_label:GetText());</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT_show_listmenu(druid1, "Group1");</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -1779,7 +1878,7 @@
 					
 					<Frame name='druid2' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(druid2, druid2_label:GetText());</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT_show_listmenu(druid2, "Group2");</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -1807,7 +1906,7 @@
 					
 					<Frame name='druid3' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(druid3, druid3_label:GetText());</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT_show_listmenu(druid3, "Group3");</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -1835,7 +1934,7 @@
 					
 					<Frame name='druid4' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(druid4, druid4_label:GetText());</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT_show_listmenu(druid4, "Group4");</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -1863,7 +1962,7 @@
 					
 					<Frame name='druid5' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(druid5, druid5_label:GetText());</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT_show_listmenu(druid5, "Group5");</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -1891,7 +1990,7 @@
 					
 					<Frame name='druid6' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(druid6, druid6_label:GetText());</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT_show_listmenu(druid6, "Group6");</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -1919,7 +2018,7 @@
 					
 					<Frame name='druid7' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(druid7, druid7_label:GetText());</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT_show_listmenu(druid7, "Group7");</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -1947,7 +2046,7 @@
 					
 					<Frame name='druid8' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(druid8, druid8_label:GetText());</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT_show_listmenu(druid8, "Group8");</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -2006,9 +2105,9 @@
 					<EditBox inherits="InputBoxTemplate" name="NATDruidPostChannelEdit" frameStrata="HIGH">
 						<Size><AbsDimension x="18" y="28"/></Size>
 						<Anchors>
-							<Anchor relativeTo="NAT" point="BOTTOMRIGHT">
+							<Anchor relativeTo="NAT" point="BOTTOM">
 								<Offset>
-									<AbsDimension x="-75" y="20" />
+									<AbsDimension x="65" y="19" />
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -2029,11 +2128,11 @@
 				
 				<!--NAT WARLOCK VIEW//-->
 				<Frame name='NAT_warlock_body' frameStrata="MEDIUM" hidden="true">
-					<Size><AbsDimension x="504" y="438"/></Size>
+					<Size><AbsDimension x="504" y="450"/></Size>
 					<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
-									<AbsDimension x="-2" y="-14"/>
+									<AbsDimension x="-2" y="0"/>
 								</Offset>
 							</Anchor>
 						</Anchors>
@@ -2044,11 +2143,11 @@
 					</Backdrop>
 					 <Layers>
 						<Layer level="OVERLAY">
-							<FontString inherits="GameFontNormal" name="NATWarlockPostLabel" text=": to raid">
+							<FontString inherits="GameFontNormal" name="NATWarlockPostLabel" text="raid">
 								<Anchors>
-									<Anchor point="BOTTOMRIGHT">
+									<Anchor point="BOTTOM">
 										<Offset>
-											<AbsDimension x="-20" y="30" />
+											<AbsDimension x="160" y="30" />
 										</Offset>
 									</Anchor>
 								</Anchors>
@@ -2243,9 +2342,9 @@
 					<EditBox inherits="InputBoxTemplate" name="NATWarlockPostChannelEdit" frameStrata="HIGH">
 						<Size><AbsDimension x="18" y="28"/></Size>
 						<Anchors>
-							<Anchor relativeTo="NAT" point="BOTTOMRIGHT">
+							<Anchor relativeTo="NAT" point="BOTTOM">
 								<Offset>
-									<AbsDimension x="-75" y="20" />
+									<AbsDimension x="65" y="19" />
 								</Offset>
 							</Anchor>
 						</Anchors>

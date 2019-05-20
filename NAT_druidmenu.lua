@@ -7,8 +7,8 @@ function(_postOptionObject, _postLabel, _viewBody)
 	controller.remove_player_command = "remove_druid"; --observer command
 	controller.current_focus_mark = "";
 	controller.current_menu_parent = nil;
-	controller.marks = {"Group 1", "Group 2", "Group 3", "Group 4", "Group 5", "Group 6", "Group 7", "Group 8", "Other"};
-	controller.assigned_players = {["Group 1"]={}, ["Group 2"]={}, ["Group 3"]={}, ["Group 4"]={}, ["Group 5"]={}, ["Group 6"]={}, ["Group 7"]={}, ["Group 8"]={}, ["Other"]={}};
+	controller.marks = {"Group1", "Group2", "Group3", "Group4", "Group5", "Group6", "Group7", "Group8", "Other"};
+	controller.assigned_players = {["Group1"]={}, ["Group2"]={}, ["Group3"]={}, ["Group4"]={}, ["Group5"]={}, ["Group6"]={}, ["Group7"]={}, ["Group8"]={}, ["Other"]={}};
 	controller.useable_classes = {"Druid"};
 	
 	--FUNCTIONS-------------------------------------------------------------------------------------------------------F

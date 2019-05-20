@@ -288,8 +288,6 @@ function(_postOptionObject, _postLabel, _viewBody)
 	
 	controller.clean_mark = 
 	function(_mark_text)
-		SendChatMessage(_mark_text, "WHISPER", "COMMON", UnitName("Player"));
-	
 		if _mark_text == "Raid"
 		then
 			return _mark_text;
@@ -297,6 +295,28 @@ function(_postOptionObject, _postLabel, _viewBody)
 	
 		return string.sub(_mark_text,  11, strlen(_mark_text));
 	end
+	
+	
+	controller.ingest_players = 
+	function(players)
+		--reset current assignments 
+		controller.reset();
+
+		--consume assignments
+		for _, player in ipairs(players)
+		do
+			local tuple = NAT_split(player, ":");
+			
+			local colored_mark = NAT_retrieve_class_color(NAT_retrieve_player_class(tuple[1]))..tuple[1];
+			local colored_player = NAT_retrieve_class_color(NAT_retrieve_player_class(tuple[2]))..tuple[2];
+			table.insert(controller.assigned_players[colored_mark], colored_player);
+			
+			controller.notify_observers(controller.add_player_command, {colored_player});
+		end 
+		
+		controller.update_marks();
+	end 
+	
 	--FUNCTIONS-------------------------------------------------------------------------------------------------------F
 	
 	return controller;

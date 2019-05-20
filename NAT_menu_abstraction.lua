@@ -413,7 +413,7 @@ function(_postInputBoxObject, _postLabelObject, _viewBody)
 				controller.post_location["channel"] = "CHANNEL";
 				controller.post_location["option"] = _chara;
 				controller.post_location["char"] = _chara;
-				controller.postLabel:SetText(": "..name);
+				controller.postLabel:SetText(name);
 			else
 				controller.postInputOption:SetText(controller.post_location["char"]);
 				DEFAULT_CHAT_FRAME:AddMessage("NAT: post location " .. chara .. " is not an acceptable post location", 0.6,1.0,0.6);
@@ -424,31 +424,31 @@ function(_postInputBoxObject, _postLabelObject, _viewBody)
 			then
 				controller.post_location["channel"] = "RAID";
 				controller.post_location["option"] = nil;
-				controller.postLabel:SetText(": raid");
+				controller.postLabel:SetText("raid");
 				controller.post_location["char"] = _chara;
 			elseif _chara == "p"
 			then
 				controller.post_location["channel"] = "PARTY";
 				controller.post_location["option"] = nil;
-				controller.postLabel:SetText(": party");
+				controller.postLabel:SetText("party");
 				controller.post_location["char"] = _chara;
 			elseif _chara == "o"
 			then
 				controller.post_location["channel"] = "OFFICER";
 				controller.post_location["option"] = nil;
-				controller.postLabel:SetText(": officer");
+				controller.postLabel:SetText("officer");
 				controller.post_location["char"] = _chara;
 			elseif _chara == "g"
 			then
 				controller.post_location["channel"] = "GUILD";
 				controller.post_location["option"] = nil;
-				controller.postLabel:SetText(": guild");
+				controller.postLabel:SetText("guild");
 				controller.post_location["char"] = _chara;
 			elseif _chara == "s"
 			then
 				controller.post_location["channel"] = "SAY";
 				controller.post_location["option"] = nil;
-				controller.postLabel:SetText(": say");
+				controller.postLabel:SetText("say");
 				controller.post_location["char"] = _chara;
 			else
 				controller.postInputOption:SetText(controller.post_location["char"]);
