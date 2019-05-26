@@ -307,8 +307,14 @@ function(_postOptionObject, _postLabel, _viewBody)
 		do
 			local tuple = NAT_split(player, ":");
 			
-			local colored_mark = NAT_retrieve_class_color(NAT_retrieve_player_class(tuple[1]))..tuple[1];
+			local colored_mark = tuple[1];
 			local colored_player = NAT_retrieve_class_color(NAT_retrieve_player_class(tuple[2]))..tuple[2];
+			
+			if tuple[1] ~= "Raid"
+			then
+				colored_mark = NAT_retrieve_class_color(NAT_retrieve_player_class(tuple[1]))..tuple[1];
+			end
+			
 			table.insert(controller.assigned_players[colored_mark], colored_player);
 			
 			controller.notify_observers(controller.add_player_command, {colored_player});

@@ -60,7 +60,7 @@ function NAT_init()
 	SLASH_NATCOMMAND1 = "/NAT";
 
 	--Init handler
-	DEFAULT_CHAT_FRAME:AddMessage("NAT: Initializing NAT version 2.0", 0.6,1.0,0.6);
+	DEFAULT_CHAT_FRAME:AddMessage("NAT: Initializing NAT version 2.1", 0.6,1.0,0.6);
 end
 
 function NAT_request_master()

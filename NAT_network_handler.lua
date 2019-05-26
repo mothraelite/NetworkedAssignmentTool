@@ -19,6 +19,7 @@ function NAT_create_network_handler(_tankc, _healerc, _interruptc, _priestc, _ma
 	controller.mage_controller = _magec;
 	controller.druid_controller = _druic;
 	controller.warlock_controller = _warlockc;
+	controller.version = 2.1;
 	controller.state = -1; -- -1: not setup 0: trying to setup 1: setup 
 	controller.response_state = 1; --0: network waiting for response 1: nothing going on || note: this is for non-setup related responses
 	controller.setup = {["tanks"]=false,["healers"]=false,["interrupters"]=false,["master"]=false,["priests"]=false,["mages"]=false,["druids"]=false, ["warlocks"]=false};
@@ -592,7 +593,7 @@ function NAT_create_network_handler(_tankc, _healerc, _interruptc, _priestc, _ma
 			end
 		
 			--send tanks to interrupt controller
-			controller.interrupt_controller.ingest_players(warlocks);
+			controller.warlock_controller.ingest_players(warlocks);
 		end
 		controller.setup["warlocks"] = true;
 		if controller.check_setup() == true
