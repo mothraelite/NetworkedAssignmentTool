@@ -19,7 +19,8 @@ function NAT_create_network_handler(_tankc, _healerc, _interruptc, _priestc, _ma
 	controller.mage_controller = _magec;
 	controller.druid_controller = _druic;
 	controller.warlock_controller = _warlockc;
-	controller.version = 2.1;
+	controller.version = 2.2;
+	controller.comp_mode = true;
 	controller.state = -1; -- -1: not setup 0: trying to setup 1: setup 
 	controller.response_state = 1; --0: network waiting for response 1: nothing going on || note: this is for non-setup related responses
 	controller.setup = {["tanks"]=false,["healers"]=false,["interrupters"]=false,["master"]=false,["priests"]=false,["mages"]=false,["druids"]=false, ["warlocks"]=false};
@@ -107,6 +108,7 @@ function NAT_create_network_handler(_tankc, _healerc, _interruptc, _priestc, _ma
 								controller.setup["mages"] = true;
 								controller.setup["druids"] = true;
 								controller.setup["warlocks"] = true;
+								controller.comp_mode = false;
 								controller.state = 1;
 								controller.request_master();
 							else
@@ -292,6 +294,7 @@ function NAT_create_network_handler(_tankc, _healerc, _interruptc, _priestc, _ma
 			end
 
 			--send it out
+			SendAddonMessage("NAT", "setup_version-"..controller.version.."-"..UnitName("player"), "RAID");
 			SendAddonMessage("NAT", "setup_master-"..UnitName("player").."-"..UnitName("player"), "RAID");
 			SendAddonMessage("NAT", "setup_tanks-"..tanks.."-"..UnitName("player"), "RAID");
 			SendAddonMessage("NAT", "setup_healers-"..healers.."-"..UnitName("player"), "RAID");
@@ -370,6 +373,17 @@ function NAT_create_network_handler(_tankc, _healerc, _interruptc, _priestc, _ma
 		local args = NAT_split(message, ":"); -- split mark and player 
 		args[2] = NAT_retrieve_class_color(NAT_retrieve_player_class(args[2])) .. args[2];
 		controller.warlock_controller.toggle_player(args[1],args[2]);
+	end
+	
+	controller.setup_version
+	=
+	function(message)
+		if NAT_tonumber(message) < 2
+		then
+			controller.comp_mode = true;
+		else
+			controller.comp_mode = false;
+		end
 	end
 	
 	controller.setup_master
@@ -621,6 +635,7 @@ function NAT_create_network_handler(_tankc, _healerc, _interruptc, _priestc, _ma
 		controller.interrupt_controller.reset();
 	
 		controller.state = -1;
+		controller.comp_mode = true;
 		controller.master = nil;
 		NATMasterLabel:SetText("Master: None");
 		controller.setup["healers"] = false;
@@ -652,9 +667,20 @@ function NAT_create_network_handler(_tankc, _healerc, _interruptc, _priestc, _ma
 	controller.check_setup
 	=
 	function()
-		if controller.setup["healers"] == true and controller.setup["tanks"] == true and controller.setup["interrupters"] == true and controller.setup["priests"] == true
-		and controller.setup["mages"] == true and controller.setup["druids"] == true and controller.setup["warlocks"] == true and controller.setup["master"] == true
+		if controller.setup["healers"] == true and controller.setup["tanks"] == true and controller.setup["interrupters"] == true
 		then
+			if controller.comp_mode == false
+			then
+				if controller.setup["priests"] == true and controller.setup["mages"] == true and controller.setup["druids"] == true 
+				and controller.setup["warlocks"] == true and controller.setup["master"] == true
+				then
+					return true;
+				else
+					return false;
+				end
+			end
+			
+		
 			return true;
 		end
 		

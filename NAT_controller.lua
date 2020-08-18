@@ -117,6 +117,9 @@ function NAT_handle_events(event)
 			then
 				network_controller.master = message;
 				NATMasterLabel:SetText("Master: "..message);
+			elseif command == "setup_version"
+			then
+				network_controller.setup_version(message);
 			elseif command == "setup_master" --setup my own
 			then 
 				network_controller.setup_master(message);
