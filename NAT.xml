@@ -17,14 +17,14 @@
 
 			<Scripts>
 				<OnLoad>
-					NAT_init();
+					NAT:init();
 					NAT:Hide();
 				</OnLoad>
 				<OnEvent>
-					NAT_handle_events(event);
+					NAT:handle_events(event);
 				</OnEvent>
 				<OnUpdate>
-					NAT_update(arg1);
+					NAT:update(arg1);
 				</OnUpdate>
 				
 				<OnDragStart>NAT:StartMoving();</OnDragStart>
@@ -287,7 +287,7 @@
 							<!-- [  ] //-->
 						<Frame name='mark3' enableMouse="true" frameStrata="HIGH">
 							<Size><AbsDimension x="30" y="30"/></Size>
-							<Scripts><OnEnter>NAT_show_listmenu(mark3, "square");</OnEnter></Scripts>
+							<Scripts><OnEnter>NAT:show_listmenu(mark3, "square");</OnEnter></Scripts>
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset>
@@ -316,7 +316,7 @@
 							<!-- moon //-->
 						<Frame name='mark4' enableMouse="true" frameStrata="HIGH">
 							<Size><AbsDimension x="30" y="30"/></Size>
-							<Scripts><OnEnter>NAT_show_listmenu(mark4, "moon");</OnEnter></Scripts>
+							<Scripts><OnEnter>NAT:show_listmenu(mark4, "moon");</OnEnter></Scripts>
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset>
@@ -345,7 +345,7 @@
 							<!-- triangle //-->
 						<Frame name='mark5' enableMouse="true" frameStrata="HIGH">
 							<Size><AbsDimension x="30" y="30"/></Size>
-							<Scripts><OnEnter>NAT_show_listmenu(mark5, "triangle");</OnEnter></Scripts>
+							<Scripts><OnEnter>NAT:show_listmenu(mark5, "triangle");</OnEnter></Scripts>
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset>
@@ -374,7 +374,7 @@
 							<!-- diamond //-->
 						<Frame name='mark6' enableMouse="true" frameStrata="HIGH">
 							<Size><AbsDimension x="30" y="30"/></Size>
-							<Scripts><OnEnter>NAT_show_listmenu(mark6, "diamond");</OnEnter></Scripts>
+							<Scripts><OnEnter>NAT:show_listmenu(mark6, "diamond");</OnEnter></Scripts>
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset>
@@ -403,7 +403,7 @@
 							<!-- circle //-->
 						<Frame name='mark7' enableMouse="true" frameStrata="HIGH">
 							<Size><AbsDimension x="30" y="30"/></Size>
-							<Scripts><OnEnter>NAT_show_listmenu(mark7, "circle");</OnEnter></Scripts>
+							<Scripts><OnEnter>NAT:show_listmenu(mark7, "circle");</OnEnter></Scripts>
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset>
@@ -432,7 +432,7 @@
 						<!-- star //-->
 						<Frame name='mark8' enableMouse="true" frameStrata="HIGH">
 							<Size><AbsDimension x="30" y="30"/></Size>
-							<Scripts><OnEnter>NAT_show_listmenu(mark8, "star");</OnEnter></Scripts>
+							<Scripts><OnEnter>NAT:show_listmenu(mark8, "star");</OnEnter></Scripts>
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset>
@@ -461,7 +461,7 @@
 						<!-- MT //-->
 						<Frame name='mark9' enableMouse="true" frameStrata="HIGH">
 							<Size><AbsDimension x="60" y="30"/></Size>
-							<Scripts><OnEnter>NAT_show_listmenu(mark9, mt_label:GetText());</OnEnter></Scripts>
+							<Scripts><OnEnter>NAT:show_listmenu(mark9, mt_label:GetText());</OnEnter></Scripts>
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset>
@@ -504,9 +504,9 @@
 								NATTankPostChannelEdit:SetMaxLetters(1);
 								NATTankPostChannelEdit:SetAutoFocus(false);
 							</OnLoad>
-							<OnEnter>NAT_on_post_enter(NATTankPostChannelEdit);</OnEnter>
-							<OnTextChanged>NAT_on_post_text_changed(NATTankPostChannelEdit);</OnTextChanged>
-							<OnLeave>NAT_on_post_exit(NATTankPostChannelEdit);</OnLeave>
+							<OnEnter>NAT:on_post_enter(NATTankPostChannelEdit);</OnEnter>
+							<OnTextChanged>NAT:on_post_text_changed(NATTankPostChannelEdit);</OnTextChanged>
+							<OnLeave>NAT:on_post_exit(NATTankPostChannelEdit);</OnLeave>
 						</Scripts>
 					</EditBox>
 					<!--TANK POST LOCATION //-->
@@ -557,7 +557,7 @@
 					<!-- healer assignment marks //-->
 					<Frame name='tank1' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(tank1, tank1_label:GetText());</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT:show_listmenu(tank1, tank1_label:GetText());</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -585,7 +585,7 @@
 					
 					<Frame name='tank2' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(tank2, tank2_label:GetText());</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT:show_listmenu(tank2, tank2_label:GetText());</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -613,7 +613,7 @@
 					
 					<Frame name='tank3' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(tank3, tank3_label:GetText());</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT:show_listmenu(tank3, tank3_label:GetText());</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -641,7 +641,7 @@
 					
 					<Frame name='tank4' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(tank4, tank4_label:GetText());</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT:show_listmenu(tank4, tank4_label:GetText());</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -669,7 +669,7 @@
 					
 					<Frame name='tank5' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(tank5, tank5_label:GetText());</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT:show_listmenu(tank5, tank5_label:GetText());</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -697,7 +697,7 @@
 					
 					<Frame name='tank6' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(tank6, tank6_label:GetText());</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT:show_listmenu(tank6, tank6_label:GetText());</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -725,7 +725,7 @@
 					
 					<Frame name='tank7' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(tank7, tank7_label:GetText());</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT:show_listmenu(tank7, tank7_label:GetText());</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -753,7 +753,7 @@
 					
 					<Frame name='tank8' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(tank8, tank8_label:GetText());</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT:show_listmenu(tank8, tank8_label:GetText());</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -781,7 +781,7 @@
 					
 					<Frame name='tank9' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(tank9, tank9_label:GetText());</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT:show_listmenu(tank9, tank9_label:GetText());</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -824,9 +824,9 @@
 								NATHealerPostChannelEdit:SetMaxLetters(1);
 								NATHealerPostChannelEdit:SetAutoFocus(false);
 							</OnLoad>
-							<OnEnter>NAT_on_post_enter(NATHealerPostChannelEdit);</OnEnter>
-							<OnTextChanged>NAT_on_post_text_changed(NATHealerPostChannelEdit);</OnTextChanged>
-							<OnLeave>NAT_on_post_exit(NATHealerPostChannelEdit);</OnLeave>
+							<OnEnter>NAT:on_post_enter(NATHealerPostChannelEdit);</OnEnter>
+							<OnTextChanged>NAT:on_post_text_changed(NATHealerPostChannelEdit);</OnTextChanged>
+							<OnLeave>NAT:on_post_exit(NATHealerPostChannelEdit);</OnLeave>
 						</Scripts>
 					</EditBox>
 					<!--HEAL POST LOCATION //-->
@@ -880,7 +880,7 @@
 							<Size><AbsDimension x="30" y="30"/></Size>
 							<Scripts>
 								<OnEnter>
-									NAT_show_listmenu(imark1, "skull");
+									NAT:show_listmenu(imark1, "skull");
 								</OnEnter>
 							</Scripts>
 							<Anchors>
@@ -911,7 +911,7 @@
 							<!-- X //-->
 						<Frame name='imark2' enableMouse="true" frameStrata="HIGH">
 							<Size><AbsDimension x="30" y="30"/></Size>
-							<Scripts><OnEnter>NAT_show_listmenu(imark2, "x");</OnEnter></Scripts>
+							<Scripts><OnEnter>NAT:show_listmenu(imark2, "x");</OnEnter></Scripts>
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset>
@@ -940,7 +940,7 @@
 							<!-- [  ] //-->
 						<Frame name='imark3' enableMouse="true" frameStrata="HIGH">
 							<Size><AbsDimension x="30" y="30"/></Size>
-							<Scripts><OnEnter>NAT_show_listmenu(imark3, "square");</OnEnter></Scripts>
+							<Scripts><OnEnter>NAT:show_listmenu(imark3, "square");</OnEnter></Scripts>
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset>
@@ -969,7 +969,7 @@
 							<!-- moon //-->
 						<Frame name='imark4' enableMouse="true" frameStrata="HIGH">
 							<Size><AbsDimension x="30" y="30"/></Size>
-							<Scripts><OnEnter>NAT_show_listmenu(imark4, "moon");</OnEnter></Scripts>
+							<Scripts><OnEnter>NAT:show_listmenu(imark4, "moon");</OnEnter></Scripts>
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset>
@@ -998,7 +998,7 @@
 							<!-- triangle //-->
 						<Frame name='imark5' enableMouse="true" frameStrata="HIGH">
 							<Size><AbsDimension x="30" y="30"/></Size>
-							<Scripts><OnEnter>NAT_show_listmenu(imark5, "triangle");</OnEnter></Scripts>
+							<Scripts><OnEnter>NAT:show_listmenu(imark5, "triangle");</OnEnter></Scripts>
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset>
@@ -1027,7 +1027,7 @@
 							<!-- diamond //-->
 						<Frame name='imark6' enableMouse="true" frameStrata="HIGH">
 							<Size><AbsDimension x="30" y="30"/></Size>
-							<Scripts><OnEnter>NAT_show_listmenu(imark6, "diamond");</OnEnter></Scripts>
+							<Scripts><OnEnter>NAT:show_listmenu(imark6, "diamond");</OnEnter></Scripts>
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset>
@@ -1056,7 +1056,7 @@
 							<!-- circle //-->
 						<Frame name='imark7' enableMouse="true" frameStrata="HIGH">
 							<Size><AbsDimension x="30" y="30"/></Size>
-							<Scripts><OnEnter>NAT_show_listmenu(imark7, "circle");</OnEnter></Scripts>
+							<Scripts><OnEnter>NAT:show_listmenu(imark7, "circle");</OnEnter></Scripts>
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset>
@@ -1085,7 +1085,7 @@
 						<!-- star //-->
 						<Frame name='imark8' enableMouse="true" frameStrata="HIGH">
 							<Size><AbsDimension x="30" y="30"/></Size>
-							<Scripts><OnEnter>NAT_show_listmenu(imark8, "star");</OnEnter></Scripts>
+							<Scripts><OnEnter>NAT:show_listmenu(imark8, "star");</OnEnter></Scripts>
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset>
@@ -1114,7 +1114,7 @@
 						<!-- MT //-->
 						<Frame name='imark9' enableMouse="true" frameStrata="HIGH">
 							<Size><AbsDimension x="60" y="30"/></Size>
-							<Scripts><OnEnter>NAT_show_listmenu(imark9, mt_label:GetText());</OnEnter></Scripts>
+							<Scripts><OnEnter>NAT:show_listmenu(imark9, mt_label:GetText());</OnEnter></Scripts>
 							<Anchors>
 								<Anchor point="TOPLEFT">
 									<Offset>
@@ -1157,9 +1157,9 @@
 								NATInterruptPostChannelEdit:SetMaxLetters(1);
 								NATInterruptPostChannelEdit:SetAutoFocus(false);
 							</OnLoad>
-							<OnEnter>NAT_on_post_enter(NATInterruptPostChannelEdit);</OnEnter>
-							<OnTextChanged>NAT_on_post_text_changed(NATInterruptPostChannelEdit);</OnTextChanged>
-							<OnLeave>NAT_on_post_exit(NATInterruptPostChannelEdit);</OnLeave>
+							<OnEnter>NAT:on_post_enter(NATInterruptPostChannelEdit);</OnEnter>
+							<OnTextChanged>NAT:on_post_text_changed(NATInterruptPostChannelEdit);</OnTextChanged>
+							<OnLeave>NAT:on_post_exit(NATInterruptPostChannelEdit);</OnLeave>
 						</Scripts>
 					</EditBox>
 					<!--INTERRUPT POST LOCATION //-->
@@ -1210,7 +1210,7 @@
 					<!-- priest assignment marks //-->
 					<Frame name='priest1' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(priest1, "Group1");</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT:show_listmenu(priest1, "Group1");</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -1238,7 +1238,7 @@
 					
 					<Frame name='priest2' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(priest2, "Group2");</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT:show_listmenu(priest2, "Group2");</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -1266,7 +1266,7 @@
 					
 					<Frame name='priest3' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(priest3, "Group3");</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT:show_listmenu(priest3, "Group3");</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -1294,7 +1294,7 @@
 					
 					<Frame name='priest4' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(priest4, "Group4");</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT:show_listmenu(priest4, "Group4");</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -1322,7 +1322,7 @@
 					
 					<Frame name='priest5' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(priest5, "Group5");</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT:show_listmenu(priest5, "Group5");</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -1350,7 +1350,7 @@
 					
 					<Frame name='priest6' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(priest6, "Group6");</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT:show_listmenu(priest6, "Group6");</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -1378,7 +1378,7 @@
 					
 					<Frame name='priest7' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(priest7, "Group7");</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT:show_listmenu(priest7, "Group7");</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -1406,7 +1406,7 @@
 					
 					<Frame name='priest8' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(priest8, "Group8");</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT:show_listmenu(priest8, "Group8");</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -1434,7 +1434,7 @@
 					
 					<Frame name='priest9' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(priest9, priest9_label:GetText());</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT:show_listmenu(priest9, priest9_label:GetText());</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -1477,9 +1477,9 @@
 								NATPriestPostChannelEdit:SetMaxLetters(1);
 								NATPriestPostChannelEdit:SetAutoFocus(false);
 							</OnLoad>
-							<OnEnter>NAT_on_post_enter(NATPriestPostChannelEdit);</OnEnter>
-							<OnTextChanged>NAT_on_post_text_changed(NATPriestPostChannelEdit);</OnTextChanged>
-							<OnLeave>NAT_on_post_exit(NATPriestPostChannelEdit);</OnLeave>
+							<OnEnter>NAT:on_post_enter(NATPriestPostChannelEdit);</OnEnter>
+							<OnTextChanged>NAT:on_post_text_changed(NATPriestPostChannelEdit);</OnTextChanged>
+							<OnLeave>NAT:on_post_exit(NATPriestPostChannelEdit);</OnLeave>
 						</Scripts>
 					</EditBox>
 					<!--HEAL POST LOCATION //-->
@@ -1530,7 +1530,7 @@
 					<!-- mage assignment marks //-->
 					<Frame name='mage1' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(mage1, "Group1");</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT:show_listmenu(mage1, "Group1");</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -1558,7 +1558,7 @@
 					
 					<Frame name='mage2' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(mage2, "Group2");</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT:show_listmenu(mage2, "Group2");</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -1586,7 +1586,7 @@
 					
 					<Frame name='mage3' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(mage3, "Group3");</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT:show_listmenu(mage3, "Group3");</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -1614,7 +1614,7 @@
 					
 					<Frame name='mage4' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(mage4, "Group4");</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT:show_listmenu(mage4, "Group4");</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -1642,7 +1642,7 @@
 					
 					<Frame name='mage5' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(mage5, "Group5");</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT:show_listmenu(mage5, "Group5");</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -1670,7 +1670,7 @@
 					
 					<Frame name='mage6' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(mage6, "Group6");</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT:show_listmenu(mage6, "Group6");</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -1698,7 +1698,7 @@
 					
 					<Frame name='mage7' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(mage7, "Group7");</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT:show_listmenu(mage7, "Group7");</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -1726,7 +1726,7 @@
 					
 					<Frame name='mage8' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(mage8, "Group8");</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT:show_listmenu(mage8, "Group8");</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -1754,7 +1754,7 @@
 					
 					<Frame name='mage9' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(mage9, mage9_label:GetText());</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT:show_listmenu(mage9, mage9_label:GetText());</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -1797,9 +1797,9 @@
 								NATMagePostChannelEdit:SetMaxLetters(1);
 								NATMagePostChannelEdit:SetAutoFocus(false);
 							</OnLoad>
-							<OnEnter>NAT_on_post_enter(NATMagePostChannelEdit);</OnEnter>
-							<OnTextChanged>NAT_on_post_text_changed(NATMagePostChannelEdit);</OnTextChanged>
-							<OnLeave>NAT_on_post_exit(NATMagePostChannelEdit);</OnLeave>
+							<OnEnter>NAT:on_post_enter(NATMagePostChannelEdit);</OnEnter>
+							<OnTextChanged>NAT:on_post_text_changed(NATMagePostChannelEdit);</OnTextChanged>
+							<OnLeave>NAT:on_post_exit(NATMagePostChannelEdit);</OnLeave>
 						</Scripts>
 					</EditBox>
 					<!--HEAL POST LOCATION //-->
@@ -1850,7 +1850,7 @@
 					<!-- druid assignment marks //-->
 					<Frame name='druid1' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(druid1, "Group1");</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT:show_listmenu(druid1, "Group1");</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -1878,7 +1878,7 @@
 					
 					<Frame name='druid2' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(druid2, "Group2");</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT:show_listmenu(druid2, "Group2");</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -1906,7 +1906,7 @@
 					
 					<Frame name='druid3' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(druid3, "Group3");</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT:show_listmenu(druid3, "Group3");</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -1934,7 +1934,7 @@
 					
 					<Frame name='druid4' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(druid4, "Group4");</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT:show_listmenu(druid4, "Group4");</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -1962,7 +1962,7 @@
 					
 					<Frame name='druid5' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(druid5, "Group5");</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT:show_listmenu(druid5, "Group5");</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -1990,7 +1990,7 @@
 					
 					<Frame name='druid6' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(druid6, "Group6");</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT:show_listmenu(druid6, "Group6");</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -2018,7 +2018,7 @@
 					
 					<Frame name='druid7' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(druid7, "Group7");</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT:show_listmenu(druid7, "Group7");</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -2046,7 +2046,7 @@
 					
 					<Frame name='druid8' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(druid8, "Group8");</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT:show_listmenu(druid8, "Group8");</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -2074,7 +2074,7 @@
 					
 					<Frame name='druid9' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(druid9, druid9_label:GetText());</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT:show_listmenu(druid9, druid9_label:GetText());</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -2117,9 +2117,9 @@
 								NATDruidPostChannelEdit:SetMaxLetters(1);
 								NATDruidPostChannelEdit:SetAutoFocus(false);
 							</OnLoad>
-							<OnEnter>NAT_on_post_enter(NATDruidPostChannelEdit);</OnEnter>
-							<OnTextChanged>NAT_on_post_text_changed(NATDruidPostChannelEdit);</OnTextChanged>
-							<OnLeave>NAT_on_post_exit(NATDruidPostChannelEdit);</OnLeave>
+							<OnEnter>NAT:on_post_enter(NATDruidPostChannelEdit);</OnEnter>
+							<OnTextChanged>NAT:on_post_text_changed(NATDruidPostChannelEdit);</OnTextChanged>
+							<OnLeave>NAT:on_post_exit(NATDruidPostChannelEdit);</OnLeave>
 						</Scripts>
 					</EditBox>
 					<!--DRUID POST LOCATION //-->
@@ -2170,7 +2170,7 @@
 					<!-- warlock assignment marks //-->
 					<Frame name='warlock1' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(warlock1, warlock1_label:GetText());</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT:show_listmenu(warlock1, warlock1_label:GetText());</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -2198,7 +2198,7 @@
 					
 					<Frame name='warlock2' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(warlock2, warlock2_label:GetText());</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT:show_listmenu(warlock2, warlock2_label:GetText());</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -2226,7 +2226,7 @@
 					
 					<Frame name='warlock3' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(warlock3, warlock3_label:GetText());</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT:show_listmenu(warlock3, warlock3_label:GetText());</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -2254,7 +2254,7 @@
 					
 					<Frame name='warlock4' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(warlock4, warlock4_label:GetText());</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT:show_listmenu(warlock4, warlock4_label:GetText());</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -2282,7 +2282,7 @@
 					
 					<Frame name='warlock5' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(warlock5, warlock5_label:GetText());</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT:show_listmenu(warlock5, warlock5_label:GetText());</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -2310,7 +2310,7 @@
 					
 					<Frame name='warlock6' enableMouse="true">
 						<Size><AbsDimension x="80" y="30"/></Size>
-						<Scripts><OnEnter>NAT_show_listmenu(warlock6, warlock6_label:GetText());</OnEnter></Scripts>
+						<Scripts><OnEnter>NAT:show_listmenu(warlock6, warlock6_label:GetText());</OnEnter></Scripts>
 						<Anchors>
 							<Anchor point="TOPLEFT">
 								<Offset>
@@ -2354,9 +2354,9 @@
 								NATWarlockPostChannelEdit:SetMaxLetters(1);
 								NATWarlockPostChannelEdit:SetAutoFocus(false);
 							</OnLoad>
-							<OnEnter>NAT_on_post_enter(NATWarlockPostChannelEdit);</OnEnter>
-							<OnTextChanged>NAT_on_post_text_changed(NATWarlockPostChannelEdit);</OnTextChanged>
-							<OnLeave>NAT_on_post_exit(NATWarlockPostChannelEdit);</OnLeave>
+							<OnEnter>NAT:on_post_enter(NATWarlockPostChannelEdit);</OnEnter>
+							<OnTextChanged>NAT:on_post_text_changed(NATWarlockPostChannelEdit);</OnTextChanged>
+							<OnLeave>NAT:on_post_exit(NATWarlockPostChannelEdit);</OnLeave>
 						</Scripts>
 					</EditBox>
 					<!--WARLOCK POST LOCATION //-->
@@ -2443,9 +2443,9 @@
 					</Layers>
 					
 					<Scripts>
-						<OnClick>NAT_mode_picker_clicked(1);</OnClick>
-						<OnEnter>NAT_hover_choose_frames(NAT_choose_tank_menu, 1, 1)</OnEnter>
-						<OnLeave>NAT_hover_choose_frames(NAT_choose_tank_menu, 2, 1)</OnLeave>
+						<OnClick>NAT:mode_picker_clicked(1);</OnClick>
+						<OnEnter>NAT:hover_choose_frames(NAT_choose_tank_menu, 1, 1)</OnEnter>
+						<OnLeave>NAT:hover_choose_frames(NAT_choose_tank_menu, 2, 1)</OnLeave>
 					</Scripts>
 			   </Button>
 			   
@@ -2492,9 +2492,9 @@
 					</Layers>
 					
 					<Scripts>
-						<OnClick>NAT_mode_picker_clicked(2);</OnClick>
-						<OnEnter>NAT_hover_choose_frames(NAT_choose_healer_menu, 1, 2)</OnEnter>
-						<OnLeave>NAT_hover_choose_frames(NAT_choose_healer_menu, 2, 2)</OnLeave>
+						<OnClick>NAT:mode_picker_clicked(2);</OnClick>
+						<OnEnter>NAT:hover_choose_frames(NAT_choose_healer_menu, 1, 2)</OnEnter>
+						<OnLeave>NAT:hover_choose_frames(NAT_choose_healer_menu, 2, 2)</OnLeave>
 					</Scripts>
 			   </Button>
 				
@@ -2540,9 +2540,9 @@
 						</Layer>
 					</Layers>
 					<Scripts>
-						<OnClick>NAT_mode_picker_clicked(3);</OnClick>
-						<OnEnter>NAT_hover_choose_frames(NAT_choose_interrupt_menu, 1, 3)</OnEnter>
-						<OnLeave>NAT_hover_choose_frames(NAT_choose_interrupt_menu, 2, 3)</OnLeave>
+						<OnClick>NAT:mode_picker_clicked(3);</OnClick>
+						<OnEnter>NAT:hover_choose_frames(NAT_choose_interrupt_menu, 1, 3)</OnEnter>
+						<OnLeave>NAT:hover_choose_frames(NAT_choose_interrupt_menu, 2, 3)</OnLeave>
 					</Scripts>
 			   </Button>
 
@@ -2589,9 +2589,9 @@
 					</Layers>
 					
 					<Scripts>
-						<OnClick>NAT_mode_picker_clicked(4);</OnClick>
-						<OnEnter>NAT_hover_choose_frames(NAT_choose_priest_menu, 1, 4)</OnEnter>
-						<OnLeave>NAT_hover_choose_frames(NAT_choose_priest_menu, 2, 4)</OnLeave>
+						<OnClick>NAT:mode_picker_clicked(4);</OnClick>
+						<OnEnter>NAT:hover_choose_frames(NAT_choose_priest_menu, 1, 4)</OnEnter>
+						<OnLeave>NAT:hover_choose_frames(NAT_choose_priest_menu, 2, 4)</OnLeave>
 					</Scripts>
 			   </Button>
 
@@ -2638,9 +2638,9 @@
 					</Layers>
 					
 					<Scripts>
-						<OnClick>NAT_mode_picker_clicked(5);</OnClick>
-						<OnEnter>NAT_hover_choose_frames(NAT_choose_mage_menu, 1, 5)</OnEnter>
-						<OnLeave>NAT_hover_choose_frames(NAT_choose_mage_menu, 2, 5)</OnLeave>
+						<OnClick>NAT:mode_picker_clicked(5);</OnClick>
+						<OnEnter>NAT:hover_choose_frames(NAT_choose_mage_menu, 1, 5)</OnEnter>
+						<OnLeave>NAT:hover_choose_frames(NAT_choose_mage_menu, 2, 5)</OnLeave>
 					</Scripts>
 			   </Button>
 
@@ -2687,9 +2687,9 @@
 					</Layers>
 					
 					<Scripts>
-						<OnClick>NAT_mode_picker_clicked(6);</OnClick>
-						<OnEnter>NAT_hover_choose_frames(NAT_choose_druid_menu, 1, 6)</OnEnter>
-						<OnLeave>NAT_hover_choose_frames(NAT_choose_druid_menu, 2, 6)</OnLeave>
+						<OnClick>NAT:mode_picker_clicked(6);</OnClick>
+						<OnEnter>NAT:hover_choose_frames(NAT_choose_druid_menu, 1, 6)</OnEnter>
+						<OnLeave>NAT:hover_choose_frames(NAT_choose_druid_menu, 2, 6)</OnLeave>
 					</Scripts>
 			   </Button>
 			   
@@ -2736,9 +2736,9 @@
 					</Layers>
 					
 					<Scripts>
-						<OnClick>NAT_mode_picker_clicked(7);</OnClick>
-						<OnEnter>NAT_hover_choose_frames(NAT_choose_warlock_menu, 1, 7)</OnEnter>
-						<OnLeave>NAT_hover_choose_frames(NAT_choose_warlock_menu, 2, 7)</OnLeave>
+						<OnClick>NAT:mode_picker_clicked(7);</OnClick>
+						<OnEnter>NAT:hover_choose_frames(NAT_choose_warlock_menu, 1, 7)</OnEnter>
+						<OnLeave>NAT:hover_choose_frames(NAT_choose_warlock_menu, 2, 7)</OnLeave>
 					</Scripts>
 			   </Button>
 

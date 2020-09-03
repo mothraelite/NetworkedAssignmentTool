@@ -22,7 +22,7 @@ local chooser_buttons = {};
 	--3: interrupters
 local current_mode = 1; 
 
-function NAT_init()
+function NAT:init()
 	--setup reg functions
 	NAT:RegisterForDrag("LeftButton");
 	NAT:RegisterEvent("RAID_ROSTER_UPDATE"); --fires on personal promotion, personal demotion, anyone joining raid, anyone leaving raid
@@ -63,7 +63,7 @@ function NAT_init()
 	DEFAULT_CHAT_FRAME:AddMessage("NAT: Initializing NAT version 2.1", 0.6,1.0,0.6);
 end
 
-function NAT_request_master()
+function NAT:request_master()
 	if not IsRaidLeader() and not IsRaidOfficer()
 	then
 		DEFAULT_CHAT_FRAME:AddMessage("NAT: You need to be the raid leader or have assist to request master status.", 0.6,1.0,0.6);
@@ -73,7 +73,7 @@ function NAT_request_master()
 	network_controller.request_master();
 end
 
-function NAT_handle_events(event)
+function NAT:handle_events(event)
 	if event == "RAID_ROSTER_UPDATE" 
 	then
 		--if im not setup yet, request a setup or become master
@@ -191,7 +191,7 @@ function NAT_handle_events(event)
 end
 
 local time_since_last_update = 0;
-function NAT_update(elapsed)
+function NAT:update(elapsed)
 --DEFAULT_CHAT_FRAME:AddMessage("NAT: " .. elapsed , 0.6,1.0,0.6);
 	--UPDATE PER CYCLE
 	network_controller.update();
@@ -211,7 +211,7 @@ function NAT_update(elapsed)
 	end
 end
 
-function NAT_slashCommandHandler(msg)
+function NAT:slashCommandHandler(msg)
 	local msg_split = NAT_split(msg, " ");
 	command = msg_split[1];
 
@@ -320,11 +320,11 @@ function NAT_mode_picker_clicked(index)
 	end 
 end
 
-function NAT_request_setup()
+function NAT:request_setup()
 	network_controller.request_setup();
 end
 
-function NAT_post()
+function NAT:post()
 	if not IsRaidLeader() and not IsRaidOfficer()
 	then
 		DEFAULT_CHAT_FRAME:AddMessage("NAT: You need to be the raid leader or have assist to use this command", 0.6,1.0,0.6);
@@ -355,7 +355,7 @@ function NAT_post()
 	end
 end
 
-function NAT_post_all()
+function NAT:post_all()
 	if not IsRaidLeader() and not IsRaidOfficer()
 	then
 		DEFAULT_CHAT_FRAME:AddMessage("NAT: You need to be the raid leader or have assist to use this command", 0.6,1.0,0.6);
@@ -372,7 +372,7 @@ function NAT_post_all()
 end
 
 --show submenu when mousing over current marks
-function NAT_show_listmenu(parent, focus_mark)
+function NAT:show_listmenu(parent, focus_mark)
 	if current_mode == 1
 	then
 		tank_controller.current_focus_mark = focus_mark;
@@ -417,7 +417,7 @@ function NAT_show_listmenu(parent, focus_mark)
 end
 
 --POST INPUT BOX FUNCTIONS---------------------------------------------------------------------------PI
-function NAT_on_post_enter(self)
+function NAT:on_post_enter(self)
 	GameTooltip:SetOwner(self);
 	GameTooltip:SetText("Set channel to announce current assignments");
 	GameTooltip:AddLine("Selections:");
@@ -428,7 +428,7 @@ function NAT_on_post_enter(self)
 	GameTooltip:Show();
 end
 
-function NAT_on_post_text_changed(self)
+function NAT:on_post_text_changed(self)
 	if current_mode == 1
 	then
 		tank_controller.set_post_location(self:GetText());
@@ -442,13 +442,13 @@ function NAT_on_post_text_changed(self)
 	self:ClearFocus();
 end
 
-function NAT_on_post_exit(self)
+function NAT:on_post_exit(self)
 	GameTooltip:Hide();
 end
 --POST INPUT BOX FUNCTIONS---------------------------------------------------------------------------PI
 
 --HELPER FUNCTIONS---------------------------------------------------------------------------------------HF
-function NAT_poll_for_players()
+function NAT:poll_for_players()
 	--am I in raid?
 	if UnitInRaid("player") == nil
 	then
@@ -507,7 +507,7 @@ function NAT_poll_for_players()
 	end
 end
 
-function NAT_reset_visuals()
+function NAT:reset_visuals()
 	NAT_tank_body:Hide();
 	NAT_healer_body:Hide();
 	NAT_interrupt_body:Hide();
@@ -522,7 +522,7 @@ function NAT_reset_visuals()
 	end
 end
 
-function NAT_reset_addon()
+function NAT:reset_addon()
 	--reset healer marks
 	tank1_label:SetText("Raid");
 	tank2_label:SetText("");
@@ -563,7 +563,7 @@ function NAT_reset_addon()
 end
 --HELPER FUNCTIONS---------------------------------------------------------------------------------------HF
 
-function NAT_is_ready()
+function NAT:is_ready()
 	if network_controller.state == 1
 	then
 		return true;
@@ -572,7 +572,7 @@ function NAT_is_ready()
 	end
 end
 
-function NAT_hover_choose_frames(_frame, _dir, _mode) --dir: 1 = left, dir: 2 = right
+function NAT:hover_choose_frames(_frame, _dir, _mode) --dir: 1 = left, dir: 2 = right
 	local point, relative_to, relative_point, xof, yof = _frame:GetPoint();
 
 	if current_mode ~= _mode
