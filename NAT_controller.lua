@@ -14,7 +14,10 @@ local priest_controller; --priest drop down menu controller
 local network_controller;
 
 --xml references for easy access
-local chooser_buttons = {};
+local NAT = {};
+NAT.subframes = {};
+NAT.chooser_buttons = {};
+NAT.subviews = {};
 
 --what selection mode im in
 	--1: tanks
@@ -22,12 +25,41 @@ local chooser_buttons = {};
 	--3: interrupters
 local current_mode = 1; 
 
-function NAT:init()
+function NAT_init(_frame)
+	--set reference frame
+	NAT.frame = _frame;
+	
+	--retrieve subframes as references
+	for i, cframe in ipairs({_frame:GetChildren()})
+	do
+		NAT.subframes[cframe:GetName()] = cframe;
+		for _,ssframe in ipairs({cframe:GetChildren()})
+		do
+			NAT.subframes[ssframe:GetName()] = ssframe;
+		end
+	end
+	
+	table.insert(NAT.subviews, NAT.subframes["NAT_tank_body"] )
+	table.insert(NAT.subviews, NAT.subframes["NAT_healer_body"] );
+	table.insert(NAT.subviews, NAT.subframes["NAT_interrupt_body"] ) ;
+	table.insert(NAT.subviews, NAT.subframes["NAT_priest_body"] );
+	table.insert(NAT.subviews, NAT.subframes["NAT_mage_body"] ) ;
+	table.insert(NAT.subviews, NAT.subframes["NAT_druid_body"] );
+	table.insert(NAT.subviews, NAT.subframes["NAT_warlock_body"] );
+	
+	table.insert(NAT.chooser_buttons, NAT.subframes["NAT_choose_tank_menu"] )
+	table.insert(NAT.chooser_buttons, NAT.subframes["NAT_choose_healer_menu"] );
+	table.insert(NAT.chooser_buttons, NAT.subframes["NAT_choose_interrupt_menu"] ) ;
+	table.insert(NAT.chooser_buttons, NAT.subframes["NAT_choose_priest_menu"] );
+	table.insert(NAT.chooser_buttons, NAT.subframes["NAT_choose_mage_menu"] ) ;
+	table.insert(NAT.chooser_buttons, NAT.subframes["NAT_choose_druid_menu"] );
+	table.insert(NAT.chooser_buttons, NAT.subframes["NAT_choose_warlock_menu"] );
+
 	--setup reg functions
-	NAT:RegisterForDrag("LeftButton");
-	NAT:RegisterEvent("RAID_ROSTER_UPDATE"); --fires on personal promotion, personal demotion, anyone joining raid, anyone leaving raid
-	NAT:RegisterEvent("RAID_TARGET_UPDATE"); --unfortunately, no response that indicates what was changed. probably going to notify all assigned tanks that things have changed though.
-	NAT:RegisterEvent("CHAT_MSG_ADDON");
+	NAT.frame:RegisterForDrag("LeftButton");
+	NAT.frame:RegisterEvent("RAID_ROSTER_UPDATE"); --fires on personal promotion, personal demotion, anyone joining raid, anyone leaving raid
+	NAT.frame:RegisterEvent("RAID_TARGET_UPDATE"); --unfortunately, no response that indicates what was changed. probably going to notify all assigned tanks that things have changed though.
+	NAT.frame:RegisterEvent("CHAT_MSG_ADDON");
 	--RegisterAddonMessagePrefix("NAT");
 	
 	--setup controllers
@@ -35,46 +67,38 @@ function NAT:init()
 	healer_controller = NAT_create_healer_menu_controller(NATHealerPostChannelEdit, NATHealPostLabel, NAT_healer_body); 
 	table.insert(tank_controller.observers, healer_controller); --add healer controller to tank observer list
 	interrupt_controller = NAT_create_interrupt_menu_controller(NATInterruptPostChannelEdit, NATInterruptPostLabel, NAT_interrupt_body);
-	priest_controller = NAT_create_priest_menu_controller(NATPirestPostChannelEdit, NATPriestPostLabel, NAT_priest_body);
+	priest_controller = NAT_create_priest_menu_controller(NATPriestPostChannelEdit, NATPriestPostLabel, NAT_priest_body);
 	mage_controller = NAT_create_mage_menu_controller(NATMagePostChannelEdit, NATMagePostLabel, NAT_mage_body);
 	druid_controller = NAT_create_druid_menu_controller(NATDruidPostChannelEdit, NATDruidPostLabel, NAT_druid_body);
 	warlock_controller = NAT_create_warlock_menu_controller(NATWarlockPostChannelEdit, NATWarlockPostLabel, NAT_warlock_body);
 	network_controller = NAT_create_network_handler(tank_controller, healer_controller, interrupt_controller, priest_controller, mage_controller, druid_controller, warlock_controller);
 
-	table.insert(chooser_buttons, NAT_choose_tank_menu);
-	table.insert(chooser_buttons, NAT_choose_healer_menu);
-	table.insert(chooser_buttons, NAT_choose_interrupt_menu);
-	table.insert(chooser_buttons, NAT_choose_priest_menu);
-	table.insert(chooser_buttons, NAT_choose_mage_menu);
-	table.insert(chooser_buttons, NAT_choose_druid_menu);
-	table.insert(chooser_buttons, NAT_choose_warlock_menu);
-	
 	--get initial list of raid mems
-	NAT_poll_for_players();
+	--NAT_poll_for_players();
 
 	--See if someone is in the raid that is running the addon
-	network_controller.request_setup();
+	--network_controller.request_setup();
 		
 	-- Slash commands
 	SlashCmdList["NATCOMMAND"] = NAT_slashCommandHandler;
 	SLASH_NATCOMMAND1 = "/NAT";
 
 	--Init handler
-	DEFAULT_CHAT_FRAME:AddMessage("NAT: Initializing NAT version 2.1", 0.6,1.0,0.6);
+	DEFAULT_CHAT_FRAME:AddMessage("NAT: Initializing NAT version 1.a", 0.6,1.0,0.6);
 end
 
-function NAT:request_master()
-	if not IsRaidLeader() and not IsRaidOfficer()
+function NAT_request_master()
+	--[[if not IsRaidLeader() and not IsRaidOfficer()
 	then
 		DEFAULT_CHAT_FRAME:AddMessage("NAT: You need to be the raid leader or have assist to request master status.", 0.6,1.0,0.6);
 		return;
 	end
 
-	network_controller.request_master();
+	network_controller.request_master();--]]
 end
 
-function NAT:handle_events(event)
-	if event == "RAID_ROSTER_UPDATE" 
+function NAT_handle_events(event)
+	--[[if event == "RAID_ROSTER_UPDATE" 
 	then
 		--if im not setup yet, request a setup or become master
 		if network_controller.state == -1
@@ -187,15 +211,14 @@ function NAT:handle_events(event)
 			end
 			
 		end
-	end
+	end--]]
 end
 
 local time_since_last_update = 0;
-function NAT:update(elapsed)
+function NAT_update(self, elapsed)
 --DEFAULT_CHAT_FRAME:AddMessage("NAT: " .. elapsed , 0.6,1.0,0.6);
 	--UPDATE PER CYCLE
 	network_controller.update();
-	
 	--UPDATES VIA SECONDS
 		--time since last update cycle. note, this returns a float not an int in seconds thus the need to do this.
 	time_since_last_update = time_since_last_update + elapsed;
@@ -211,16 +234,16 @@ function NAT:update(elapsed)
 	end
 end
 
-function NAT:slashCommandHandler(msg)
+function NAT_slashCommandHandler(msg)
 	local msg_split = NAT_split(msg, " ");
 	command = msg_split[1];
 
 	if command == "show"
 	then
-		NAT:Show();
+		NAT.frame:Show();
 	elseif command == "hide"
 	then
-		NAT:Hide();
+		NAT.frame:Hide();
 	elseif command == "post"
 	then
 		NAT_post();
@@ -252,6 +275,7 @@ function NAT:slashCommandHandler(msg)
 	else
 		DEFAULT_CHAT_FRAME:AddMessage("NAT: Error, could not understand input.\nValid commands:\n1)/nat show\n2)/nat hide\n3)/nat post'\n4)/nat postall\n5)/nat randomtanks <number>", 0.6,1.0,0.6);
 	end
+	
 end
 
 --Function to fire when a new mode is selected
@@ -265,67 +289,67 @@ function NAT_mode_picker_clicked(index)
 	if index == 1 --tank
 	then
 		--show tank visuals
-		NAT_tank_body:Show();
+		NAT.subframes["NAT_tank_body"]:Show();
 		tank_controller.update_marks();
-		chooser_buttons[index]:SetPoint("TOPLEFT", NAT, "TOPLEFT", -38, ypos);
-		NATTitleLabel:SetText("Tank Assignments");
+		NAT.subframes["NAT_choose_tank_menu"]:SetPoint("TOPLEFT", NAT.frame, "TOPLEFT", -38, ypos);
+		NAT.subframes["NATTitleLabelContainer"]:GetRegions():SetText("Tank Assignments");
 		current_mode = 1;
 	elseif index == 2 --heals
 	then
 		NAT_healer_body:Show();
 		healer_controller.update_marks();
-		chooser_buttons[index]:SetPoint("TOPLEFT", NAT, "TOPLEFT", -38, ypos);
-		NATTitleLabel:SetText("Healer Assignments");
+		NAT.subframes["NAT_choose_healer_menu"]:SetPoint("TOPLEFT", NAT.frame, "TOPLEFT", -38, ypos);
+		NAT.subframes["NATTitleLabelContainer"]:GetRegions():SetText("Healer Assignments");
 		current_mode = 2;
 	elseif index == 3 --interrupt
 	then
 		--show interrupt visuals
 		NAT_interrupt_body:Show();
 		interrupt_controller.update_marks();
-		chooser_buttons[index]:SetPoint("TOPLEFT", NAT, "TOPLEFT",  -38, ypos);
-		NATTitleLabel:SetText("Interrupt Assignments");
+		NAT.subframes["NAT_choose_interrupt_menu"]:SetPoint("TOPLEFT", NAT.frame, "TOPLEFT",  -38, ypos);
+		NAT.subframes["NATTitleLabelContainer"]:GetRegions():SetText("Interrupt Assignments");
 		current_mode = 3;
 	elseif index == 4 --priest
 	then
-		--show interrupt visuals
+		--show priest visuals
 		NAT_priest_body:Show();
 		priest_controller.update_marks();
-		chooser_buttons[index]:SetPoint("TOPLEFT", NAT, "TOPLEFT",  -38, ypos);
-		NATTitleLabel:SetText("Priest Assignments");
+		NAT.subframes["NAT_choose_priest_menu"]:SetPoint("TOPLEFT", NAT.frame, "TOPLEFT",  -38, ypos);
+		NAT.subframes["NATTitleLabelContainer"]:GetRegions():SetText("Priest Assignments");
 		current_mode = 4;
 	elseif index == 5 --mage
 	then
 		--show interrupt visuals
 		NAT_mage_body:Show();
 		mage_controller.update_marks();
-		chooser_buttons[index]:SetPoint("TOPLEFT", NAT, "TOPLEFT",  -38, ypos);
-		NATTitleLabel:SetText("Mage Assignments");
+		NAT.subframes["NAT_choose_mage_menu"]:SetPoint("TOPLEFT", NAT.frame, "TOPLEFT",  -38, ypos);
+		NAT.subframes["NATTitleLabelContainer"]:GetRegions():SetText("Mage Assignments");
 		current_mode = 5;
 	elseif index == 6 --druid
 	then
 		--show interrupt visuals
 		NAT_druid_body:Show();
 		druid_controller.update_marks();
-		chooser_buttons[index]:SetPoint("TOPLEFT", NAT, "TOPLEFT",  -38, ypos);
-		NATTitleLabel:SetText("Druid Assignments");
+		NAT.subframes["NAT_choose_druid_menu"]:SetPoint("TOPLEFT", NAT.frame, "TOPLEFT",  -38, ypos);
+		NAT.subframes["NATTitleLabelContainer"]:GetRegions():SetText("Druid Assignments");
 		current_mode = 6;
 	elseif index == 7 --warlock
 	then
 		--show interrupt visuals
 		NAT_warlock_body:Show();
 		warlock_controller.update_marks();
-		chooser_buttons[index]:SetPoint("TOPLEFT", NAT, "TOPLEFT",  -38, ypos);
-		NATTitleLabel:SetText("Warlock Assignments");
+		NAT.subframes["NAT_choose_warlock_menu"]:SetPoint("TOPLEFT", NAT.frame, "TOPLEFT",  -38, ypos);
+		NAT.subframes["NATTitleLabelContainer"]:GetRegions():SetText("Warlock Assignments");
 		current_mode = 7;
 	end 
 end
 
-function NAT:request_setup()
-	network_controller.request_setup();
+function NAT_request_setup()
+	--network_controller.request_setup();
 end
 
-function NAT:post()
-	if not IsRaidLeader() and not IsRaidOfficer()
+function NAT_post()
+	--[[if not IsRaidLeader() and not IsRaidOfficer()
 	then
 		DEFAULT_CHAT_FRAME:AddMessage("NAT: You need to be the raid leader or have assist to use this command", 0.6,1.0,0.6);
 		return;
@@ -352,11 +376,11 @@ function NAT:post()
 	elseif current_mode == 7 --warlock
 	then
 		warlock_controller.post();
-	end
+	end--]]
 end
 
-function NAT:post_all()
-	if not IsRaidLeader() and not IsRaidOfficer()
+function NAT_post_all()
+	--[[if not IsRaidLeader() and not IsRaidOfficer()
 	then
 		DEFAULT_CHAT_FRAME:AddMessage("NAT: You need to be the raid leader or have assist to use this command", 0.6,1.0,0.6);
 		return;
@@ -368,16 +392,16 @@ function NAT:post_all()
 	priest_controller.post();
 	mage_controller.post();
 	druid_controller.post();
-	warlock_controller.post();
+	warlock_controller.post();--]]
 end
 
 --show submenu when mousing over current marks
-function NAT:show_listmenu(parent, focus_mark)
+function NAT_show_listmenu(parent, focus_mark)
 	if current_mode == 1
 	then
 		tank_controller.current_focus_mark = focus_mark;
 		tank_controller.current_menu_parent = parent;
-		ToggleDropDownMenu(nil, 1, NAT_tank_list, parent, 0, 25);
+		ToggleDropDownMenu(nil, 1, NAT.subframes["NAT_tank_list"], parent, 0, 25);
 	elseif current_mode == 2
 	then
 		if focus_mark == "" or focus_mark == nil
@@ -387,37 +411,37 @@ function NAT:show_listmenu(parent, focus_mark)
 	
 		healer_controller.current_focus_mark = focus_mark;
 		healer_controller.current_menu_parent = parent;
-		ToggleDropDownMenu(nil,1,NAT_heal_list, parent, 0, 25);
+		ToggleDropDownMenu(nil,1,NAT.subframes["NAT_heal_list"], parent, 0, 25);
 	elseif current_mode == 3
 	then
 		interrupt_controller.current_focus_mark = focus_mark;
 		interrupt_controller.current_menu_parent = parent;
-		ToggleDropDownMenu(nil,1,NAT_interrupt_list,parent,0,25);
+		ToggleDropDownMenu(nil,1,NAT.subframes["NAT_interrupt_list"],parent,0,25);
 	elseif current_mode == 4
 	then
 		priest_controller.current_focus_mark = focus_mark;
 		priest_controller.current_menu_parent = parent;
-		ToggleDropDownMenu(nil, 1, NAT_priest_list, parent, 0, 25);
+		ToggleDropDownMenu(nil, 1, NAT.subframes["NAT_priest_list"], parent, 0, 25);
 	elseif current_mode == 5
 	then 
 		mage_controller.current_focus_mark = focus_mark;
 		mage_controller.current_menu_parent = parent;
-		ToggleDropDownMenu(nil, 1, NAT_mage_list, parent, 0, 25);
+		ToggleDropDownMenu(nil, 1, NAT.subframes["NAT_mage_list"], parent, 0, 25);
 	elseif current_mode == 6
 	then 
 		druid_controller.current_focus_mark = focus_mark;
 		druid_controller.current_menu_parent = parent;
-		ToggleDropDownMenu(nil, 1, NAT_druid_list, parent, 0, 25);
+		ToggleDropDownMenu(nil, 1, NAT.subframes["NAT_druid_list"], parent, 0, 25);
 	elseif current_mode == 7
 	then
 		warlock_controller.current_focus_mark = focus_mark;
 		warlock_controller.current_menu_parent = parent;
-		ToggleDropDownMenu(nil, 1, NAT_warlock_list, parent, 0, 25);
+		ToggleDropDownMenu(nil, 1, NAT.subframes["NAT_warlock_list"], parent, 0, 25);
 	end
 end
 
 --POST INPUT BOX FUNCTIONS---------------------------------------------------------------------------PI
-function NAT:on_post_enter(self)
+function NAT_on_post_enter(self)
 	GameTooltip:SetOwner(self);
 	GameTooltip:SetText("Set channel to announce current assignments");
 	GameTooltip:AddLine("Selections:");
@@ -428,8 +452,8 @@ function NAT:on_post_enter(self)
 	GameTooltip:Show();
 end
 
-function NAT:on_post_text_changed(self)
-	if current_mode == 1
+function NAT_on_post_text_changed(self)
+	--[[if current_mode == 1
 	then
 		tank_controller.set_post_location(self:GetText());
 	elseif current_mode == 2
@@ -439,16 +463,17 @@ function NAT:on_post_text_changed(self)
 	then
 		interrupt_controller.set_post_location(self:GetText());
 	end
-	self:ClearFocus();
+	self:ClearFocus();--]]
 end
 
-function NAT:on_post_exit(self)
+function NAT_on_post_exit(self)
 	GameTooltip:Hide();
 end
 --POST INPUT BOX FUNCTIONS---------------------------------------------------------------------------PI
 
 --HELPER FUNCTIONS---------------------------------------------------------------------------------------HF
-function NAT:poll_for_players()
+function NAT_poll_for_players()
+--[[
 	--am I in raid?
 	if UnitInRaid("player") == nil
 	then
@@ -505,24 +530,23 @@ function NAT:poll_for_players()
 	then 
 		warlock_controller.update_marks();
 	end
+	--]]
 end
 
-function NAT:reset_visuals()
-	NAT_tank_body:Hide();
-	NAT_healer_body:Hide();
-	NAT_interrupt_body:Hide();
-	NAT_priest_body:Hide();
-	NAT_mage_body:Hide();
-	NAT_druid_body:Hide();
-	NAT_warlock_body:Hide();
-	
-	for i,button in ipairs(chooser_buttons)
+function NAT_reset_visuals()
+	for i, _frame in ipairs(NAT.subviews)
 	do
-		button:SetPoint("TOPLEFT", NAT, "TOPLEFT",-15,-35-50*(i-1));
+		_frame:Hide();
+	end
+	
+	for i,button in ipairs(NAT.chooser_buttons)
+	do
+		button:SetPoint("TOPLEFT", NAT.frame, "TOPLEFT",-15,-35-50*(i-1));
 	end
 end
 
-function NAT:reset_addon()
+function NAT_reset_addon()
+--[[
 	--reset healer marks
 	tank1_label:SetText("Raid");
 	tank2_label:SetText("");
@@ -560,20 +584,26 @@ function NAT:reset_addon()
 	then
 		warlock_controller.update_marks();
 	end
+	--]]
 end
 --HELPER FUNCTIONS---------------------------------------------------------------------------------------HF
 
-function NAT:is_ready()
-	if network_controller.state == 1
+function NAT_add_reference_object(_object)
+	print(_object:GetName());
+	NAT.subframes[_object:GetName()] =_object;
+end
+
+function NAT_is_ready()
+	--[[if network_controller.state == 1
 	then
 		return true;
 	else 
 		return false;
-	end
+	end--]]
 end
 
-function NAT:hover_choose_frames(_frame, _dir, _mode) --dir: 1 = left, dir: 2 = right
-	local point, relative_to, relative_point, xof, yof = _frame:GetPoint();
+function NAT_hover_choose_frames(_frame, _dir, _mode) --dir: 1 = left, dir: 2 = right
+	--[[local point, relative_to, relative_point, xof, yof = _frame:GetPoint();
 
 	if current_mode ~= _mode
 	then
@@ -589,5 +619,5 @@ function NAT:hover_choose_frames(_frame, _dir, _mode) --dir: 1 = left, dir: 2 = 
 	else
 		xof = -38
 		_frame:SetPoint(point, relative_to, relative_point, xof, yof);
-	end
+	end--]]
 end
