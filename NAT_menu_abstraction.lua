@@ -63,7 +63,7 @@ function(_postInputBoxObject, _postLabelObject, _viewBody)
 				end
 		   
 				--check if i have permission to make changes
-				if not IsRaidLeader() and not IsRaidOfficer()
+				if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player")
 				then
 					--no permission, exit
 					DEFAULT_CHAT_FRAME:AddMessage("NAT: You need to be the raid leader OR have assist to make changes", 0.6,1.0,0.6);
@@ -108,7 +108,7 @@ function(_postInputBoxObject, _postLabelObject, _viewBody)
 						if player_found == false
 						then
 							controller.notify_observers(controller.remove_player_command, {info.text});
-							SendAddonMessage("NAT", controller.toggle_command..controller.current_focus_mark..":"..string.sub(info.text, 11, strlen(info.text)).."-"..UnitName("player"), "RAID")
+							C_ChatInfo.SendAddonMessage("NAT", controller.toggle_command..controller.current_focus_mark..":"..string.sub(info.text, 11, strlen(info.text)).."-"..UnitName("player"), "RAID")
 							controller.update_marks();
 						end
 						
@@ -119,7 +119,7 @@ function(_postInputBoxObject, _postLabelObject, _viewBody)
 				--add to list
 				table.insert(controller.assigned_players[controller.current_focus_mark], info.text);
 				controller.notify_observers(controller.add_player_command, {info.text});
-				SendAddonMessage("NAT", controller.toggle_command..controller.current_focus_mark..":"..string.sub(info.text, 11, strlen(info.text)).."-"..UnitName("player"), "RAID")
+				C_ChatInfo.SendAddonMessage("NAT", controller.toggle_command..controller.current_focus_mark..":"..string.sub(info.text, 11, strlen(info.text)).."-"..UnitName("player"), "RAID")
 				controller.update_marks();
 			end
 			
@@ -158,7 +158,7 @@ function(_postInputBoxObject, _postLabelObject, _viewBody)
 			clear.hasArrow = false;
 			clear.func = 
 			function() 
-				if not IsRaidLeader() and not IsRaidOfficer()
+				if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player")
 				then
 					DEFAULT_CHAT_FRAME:AddMessage("NAT: Can not use clear function without being the raid leader or having assist.", 0.6,1.0,0.6);
 					return;
@@ -200,7 +200,7 @@ function(_postInputBoxObject, _postLabelObject, _viewBody)
 		--setup available players
 		local i =1;
 		local temp_avail_players = {};
-		for i=1, GetNumRaidMembers(), 1
+		for i=1, GetNumGroupMembers(), 1
 		do
 			local pname = UnitName("raid"..i);
 			local class, classFileName = UnitClass("raid"..i);
@@ -272,13 +272,13 @@ function(_postInputBoxObject, _postLabelObject, _viewBody)
 					frame.colored_name = player;
 					frame:SetScript("OnClick", 
 					function()
-						if not IsRaidLeader() and not IsRaidOfficer() 
+						if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player") 
 						then 
 							DEFAULT_CHAT_FRAME:AddMessage("NAT: You need to be the raid leader OR have assist to make changes", 0.6,1.0,0.6);
 							return;
 						end
 						
-						SendAddonMessage("NAT", controller.toggle_command..controller.clean_mark(frame.mark)..":"..frame.name:GetText().."-"..UnitName("player"), "RAID");
+						C_ChatInfo.SendAddonMessage("NAT", controller.toggle_command..controller.clean_mark(frame.mark)..":"..frame.name:GetText().."-"..UnitName("player"), "RAID");
 						controller.toggle_player(frame.mark, frame.colored_name);  
 					end);
 					
@@ -341,7 +341,7 @@ function(_postInputBoxObject, _postLabelObject, _viewBody)
 				then
 					if controller.NAT_assignment_frames[mark_pos][1]:GetHeight() < 38
 					then --not enlarged yet nor incharge
-						for i=1, table.getn(controller.assigned_players[mark_pos]), 1
+						for i=1, table.getn(controller.assigned_players[controller.marks[mark_pos]]), 1
 						do
 							local player_frame = controller.NAT_assignment_frames[mark_pos][i];
 							
@@ -464,7 +464,7 @@ function(_postInputBoxObject, _postLabelObject, _viewBody)
 		do
 			local player = controller.assigned_players[_mark][1];
 			controller.toggle_player(_mark, player)
-			SendAddonMessage("NAT", controller.toggle_command.._mark..":"..string.sub(player,11,strlen(player)).."-"..UnitName("player"), "RAID")
+			C_ChatInfo.SendAddonMessage("NAT", controller.toggle_command.._mark..":"..string.sub(player,11,strlen(player)).."-"..UnitName("player"), "RAID")
 		end
 		
 		controller.update_marks(); --update views

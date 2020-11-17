@@ -41,9 +41,9 @@ function NAT_create_network_handler(_tankc, _healerc, _interruptc, _priestc, _ma
 			return;
 		end
 	
-		if  IsRaidOfficer()  or IsRaidLeader() 
+		if  UnitIsGroupAssistant("player") or UnitIsGroupLeader("player") 
 		then
-			SendAddonMessage("NAT", "request_master-"..UnitName("player").."-"..UnitName("player"), "RAID");
+			C_ChatInfo.SendAddonMessage("NAT", "request_master-"..UnitName("player").."-"..UnitName("player"), "RAID");
 			controller.master = UnitName("player");
 			NATMasterLabel:SetText("Master: " .. UnitName("player"));
 		end
@@ -64,7 +64,7 @@ function NAT_create_network_handler(_tankc, _healerc, _interruptc, _priestc, _ma
 		end
 		
 		controller.state = 0; --waiting for setup
-		SendAddonMessage("NAT", "request_setup-"..UnitName("player").."-"..UnitName("player"), "RAID");
+		C_ChatInfo.SendAddonMessage("NAT", "request_setup-"..UnitName("player").."-"..UnitName("player"), "RAID");
 		
 		--Set timed event to check if i get a full response in 5 seconds. 
 		local func = 
@@ -95,9 +95,9 @@ function NAT_create_network_handler(_tankc, _healerc, _interruptc, _priestc, _ma
 					function()
 						if controller.state == 0
 						then
-							if IsRaidLeader() or IsRaidOfficer()
+							if UnitIsGroupLeader("player") or UnitIsGroupAssistant("player")
 							then
-								SendAddonMessage("NAT", "reset- -"..UnitName("player"), "RAID");
+								C_ChatInfo.SendAddonMessage("NAT", "reset- -"..UnitName("player"), "RAID");
 								controller.reset_setup();
 							
 								controller.setup["healers"] = true;
@@ -136,10 +136,10 @@ function NAT_create_network_handler(_tankc, _healerc, _interruptc, _priestc, _ma
 			local name, rank, sg, level, class, fileName, zone, online, isDead, role, isML = controller.get_raid_member_info(controller.master);
 			if online ~= nil
 			then
-				SendAddonMessage("NAT", "master_is-"..controller.master.."-"..UnitName('player'), "RAID");
+				C_ChatInfo.SendAddonMessage("NAT", "master_is-"..controller.master.."-"..UnitName('player'), "RAID");
 			else 
 				controller.request_master();
-				SendAddonMessage("NAT", "master_is-"..controller.master.."-"..UnitName('player'), "RAID");
+				C_ChatInfo.SendAddonMessage("NAT", "master_is-"..controller.master.."-"..UnitName('player'), "RAID");
 			end
 		end
 	end
@@ -147,7 +147,7 @@ function NAT_create_network_handler(_tankc, _healerc, _interruptc, _priestc, _ma
 	controller.return_setup
 	=
 	function(message)
-		if controller.master ~= nil and controller.state == 1 and (IsRaidOfficer()  or IsRaidLeader())
+		if controller.master ~= nil and controller.state == 1 and (UnitIsGroupAssistant("player") or UnitIsGroupLeader("player"))
 		then	
 			--is current master offline?
 			local name, rank, sg, level, class, fileName, zone, online, isDead, role, isML = controller.get_raid_member_info(controller.master);
@@ -294,15 +294,15 @@ function NAT_create_network_handler(_tankc, _healerc, _interruptc, _priestc, _ma
 			end
 
 			--send it out
-			SendAddonMessage("NAT", "setup_version-"..controller.version.."-"..UnitName("player"), "RAID");
-			SendAddonMessage("NAT", "setup_master-"..UnitName("player").."-"..UnitName("player"), "RAID");
-			SendAddonMessage("NAT", "setup_tanks-"..tanks.."-"..UnitName("player"), "RAID");
-			SendAddonMessage("NAT", "setup_healers-"..healers.."-"..UnitName("player"), "RAID");
-			SendAddonMessage("NAT", "setup_interrupters-"..interrupters.."-"..UnitName("player"), "RAID");
-			SendAddonMessage("NAT", "setup_priests-"..priests.."-"..UnitName("player"), "RAID");
-			SendAddonMessage("NAT", "setup_mages-"..mages.."-"..UnitName("player"), "RAID");
-			SendAddonMessage("NAT", "setup_druids-"..druids.."-"..UnitName("player"), "RAID");
-			SendAddonMessage("NAT", "setup_warlocks-"..warlocks.."-"..UnitName("player"), "RAID");
+			C_ChatInfo.SendAddonMessage("NAT", "setup_version-"..controller.version.."-"..UnitName("player"), "RAID");
+			C_ChatInfo.SendAddonMessage("NAT", "setup_master-"..UnitName("player").."-"..UnitName("player"), "RAID");
+			C_ChatInfo.SendAddonMessage("NAT", "setup_tanks-"..tanks.."-"..UnitName("player"), "RAID");
+			C_ChatInfo.SendAddonMessage("NAT", "setup_healers-"..healers.."-"..UnitName("player"), "RAID");
+			C_ChatInfo.SendAddonMessage("NAT", "setup_interrupters-"..interrupters.."-"..UnitName("player"), "RAID");
+			C_ChatInfo.SendAddonMessage("NAT", "setup_priests-"..priests.."-"..UnitName("player"), "RAID");
+			C_ChatInfo.SendAddonMessage("NAT", "setup_mages-"..mages.."-"..UnitName("player"), "RAID");
+			C_ChatInfo.SendAddonMessage("NAT", "setup_druids-"..druids.."-"..UnitName("player"), "RAID");
+			C_ChatInfo.SendAddonMessage("NAT", "setup_warlocks-"..warlocks.."-"..UnitName("player"), "RAID");
 		end
 	end
 		----------------------END OF RETURNS-------------------------RET
@@ -652,7 +652,7 @@ function NAT_create_network_handler(_tankc, _healerc, _interruptc, _priestc, _ma
 	=
 	function(_name)
 		--Vanilla API does not have a way to get info by name so here we are
-		for i=1, GetNumRaidMembers(), 1
+		for i=1, GetNumGroupMembers(), 1
 		do
 			--player found. return shit
 			if UnitName("raid"..i) == controller.name

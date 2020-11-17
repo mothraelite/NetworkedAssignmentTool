@@ -213,7 +213,7 @@ end
 function NAT_retrieve_unitid_from_name(_name)
 	if UnitInRaid("player") ~= nil
 	then
-		for i=1, GetNumRaidMembers(), 1
+		for i=1, GetNumGroupMembers(), 1
 		do
 			local unit_id = "raid"..i;
 			local pname = UnitName(unit_id);

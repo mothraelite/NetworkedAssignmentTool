@@ -1,6 +1,6 @@
 NAT_create_healer_menu_controller = 
 function(_postOptionObject, _postLabel, _viewBody)
-	local controller = NAT_create_menu_controller(_postOptionObject, _postLabel, _viewBody);
+	local controller = NAT_create_menu_controller(_postOptionObject, _postLabel, _viewBody, _assignmentLabels);
 	controller.tag = "Healer";
 	controller.toggle_command = "toggle_healer-"; --network
 	controller.add_player_command = "add_healer"; --observer command 
@@ -10,6 +10,7 @@ function(_postOptionObject, _postLabel, _viewBody)
 	controller.assigned_players = {["Raid"]={}};
 	controller.marks = {[1]="Raid"};
 	controller.useable_classes = {"Priest", "Paladin", "Druid", "Shaman"}
+	controller.assignmentLabels = _assignmentLabels;
 	
 	--FUNCTIONS-------------------------------------------------------------------------------------------------------F
 	--function to setup tank list
@@ -34,7 +35,7 @@ function(_postOptionObject, _postLabel, _viewBody)
 				end
 		   
 				--check if i have permission to make changes
-				if not IsRaidLeader() and not IsRaidOfficer()
+				if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player")
 				then
 					--no permission, exit
 					DEFAULT_CHAT_FRAME:AddMessage("NAT: You need to be the raid leader OR have assist to make changes", 0.6,1.0,0.6);
@@ -65,7 +66,7 @@ function(_postOptionObject, _postLabel, _viewBody)
 							tmark = string.sub(controller.current_focus_mark, 11, strlen(controller.current_focus_mark));
 						end
 						
-						SendAddonMessage("NAT", controller.toggle_command..tmark..":"..string.sub(info.text, 11, strlen(info.text)).."-"..UnitName("player"), "RAID")
+						C_ChatInfo.SendAddonMessage("NAT", controller.toggle_command..tmark..":"..string.sub(info.text, 11, strlen(info.text)).."-"..UnitName("player"), "RAID")
 						controller.update_marks();
 						return;
 					end
@@ -79,7 +80,7 @@ function(_postOptionObject, _postLabel, _viewBody)
 				
 				--add to list
 				table.insert(controller.assigned_players[controller.current_focus_mark], info.text);
-				SendAddonMessage("NAT", controller.toggle_command..tmark..":"..string.sub(info.text, 11, strlen(info.text)).."-"..UnitName("player"), "RAID")
+				C_ChatInfo.SendAddonMessage("NAT", controller.toggle_command..tmark..":"..string.sub(info.text, 11, strlen(info.text)).."-"..UnitName("player"), "RAID")
 				controller.update_marks();
 				
 			end
@@ -119,7 +120,7 @@ function(_postOptionObject, _postLabel, _viewBody)
 			clear.hasArrow = false;
 			clear.func = 
 			function() 
-				if not IsRaidLeader() and not IsRaidOfficer()
+				if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player")
 				then
 					DEFAULT_CHAT_FRAME:AddMessage("NAT: Can not use clear function without being the raid leader or having assist.", 0.6,1.0,0.6);
 					return;
@@ -190,72 +191,31 @@ function(_postOptionObject, _postLabel, _viewBody)
 	end
 	
 	
+	controller.reset_visual_marks =
+	function()
+		for i, label in ipairs(controller.assignmentLabels)
+		do
+			if i == 1
+			then
+				label:SetText("Raid");
+			else
+				label:SetText("");
+			end
+		end
+	end
+	
 	controller.update_assigned_tank_labels = 
 	function()
 		--setup label names
 			--shity work around because retrieving frames from primary frame is aids
 		for i,tank in ipairs(controller.marks)
 		do
-			if i == 1
-			then 
-				tank1_label:SetText(tank);
-			elseif i == 2
-			then
-				tank2_label:SetText(tank);
-			elseif i == 3
-			then
-				tank3_label:SetText(tank);
-			elseif i == 4
-			then 
-				tank4_label:SetText(tank);
-			elseif i == 5
-			then 
-				tank5_label:SetText(tank);
-			elseif i == 6
-			then 
-				tank6_label:SetText(tank);
-			elseif i == 7
-			then 
-				tank7_label:SetText(tank);
-			elseif i == 8
-			then 
-				tank8_label:SetText(tank);
-			elseif i == 9
-			then 
-				tank9_label:SetText(tank);
-			end
+			controller.assignmentLabels[i]:SetText(tank);
 		end
 		
 		for i=9, table.getn(controller.marks)+1, -1
 		do
-			if i == 1
-			then 
-				tank1_label:SetText("");
-			elseif i == 2
-			then
-				tank2_label:SetText("");
-			elseif i == 3
-			then
-				tank3_label:SetText("");
-			elseif i == 4
-			then 
-				tank4_label:SetText("");
-			elseif i == 5
-			then 
-				tank5_label:SetText("");
-			elseif i == 6
-			then 
-				tank6_label:SetText("");
-			elseif i == 7
-			then 
-				tank7_label:SetText("");
-			elseif i == 8
-			then 
-				tank8_label:SetText("");
-			elseif i == 9
-			then
-				tank9_label:SetText("");
-			end
+			controller.assignmentLabels[i]:SetText("");
 			
 			--hide frames from removed tanks
 			for _, healer_frame in ipairs(controller.NAT_assignment_frames[i])

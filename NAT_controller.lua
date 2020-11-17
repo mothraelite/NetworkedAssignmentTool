@@ -39,6 +39,7 @@ function NAT_init(_frame)
 		end
 	end
 	
+	--Setting up quick sub references
 	table.insert(NAT.subviews, NAT.subframes["NAT_tank_body"] )
 	table.insert(NAT.subviews, NAT.subframes["NAT_healer_body"] );
 	table.insert(NAT.subviews, NAT.subframes["NAT_interrupt_body"] ) ;
@@ -63,21 +64,42 @@ function NAT_init(_frame)
 	--RegisterAddonMessagePrefix("NAT");
 	
 	--setup controllers
-	tank_controller = NAT_create_tank_menu_controller(NATTankPostChannelEdit, NATTankPostLabel, NAT_tank_body); 
-	healer_controller = NAT_create_healer_menu_controller(NATHealerPostChannelEdit, NATHealPostLabel, NAT_healer_body); 
+	local tank_layers = {NAT.subframes["NAT_tank_body"]:GetRegions()} --retreive layered elemental like fonts etc
+	tank_controller = NAT_create_tank_menu_controller(NAT.subframes["NATTankPostChannelEdit"],  tank_layers[2],NAT.subframes["NAT_tank_body"]); 
+	
+	local healer_layers = {NAT.subframes["NAT_healer_body"]:GetRegions()}
+	local healer_assignment_labels = {
+		NAT.subframes["tank1"]:GetRegions(), NAT.subframes["tank2"]:GetRegions(), 
+		NAT.subframes["tank3"]:GetRegions(), NAT.subframes["tank4"]:GetRegions(), 
+		NAT.subframes["tank5"]:GetRegions(), NAT.subframes["tank6"]:GetRegions(), 
+		NAT.subframes["tank7"]:GetRegions(), NAT.subframes["tank8"]:GetRegions(),
+		NAT.subframes["tank9"]:GetRegions()
+	};
+	healer_controller = NAT_create_healer_menu_controller(NAT.subframes["NATHealerPostChannelEdit"], healer_layers[2], NAT.subframes["NAT_healer_body"], healer_assignment_labels); 
 	table.insert(tank_controller.observers, healer_controller); --add healer controller to tank observer list
-	interrupt_controller = NAT_create_interrupt_menu_controller(NATInterruptPostChannelEdit, NATInterruptPostLabel, NAT_interrupt_body);
-	priest_controller = NAT_create_priest_menu_controller(NATPriestPostChannelEdit, NATPriestPostLabel, NAT_priest_body);
-	mage_controller = NAT_create_mage_menu_controller(NATMagePostChannelEdit, NATMagePostLabel, NAT_mage_body);
-	druid_controller = NAT_create_druid_menu_controller(NATDruidPostChannelEdit, NATDruidPostLabel, NAT_druid_body);
-	warlock_controller = NAT_create_warlock_menu_controller(NATWarlockPostChannelEdit, NATWarlockPostLabel, NAT_warlock_body);
+	
+	local interrupt_layers = {NAT.subframes["NAT_interrupt_body"]:GetRegions()}
+	interrupt_controller = NAT_create_interrupt_menu_controller(NAT.subframes["NATInterruptPostChannelEdit"], interrupt_layers[2], NAT.subframes["NAT_interrupt_body"]);
+	
+	local priest_layers = {NAT.subframes["NAT_priest_body"]:GetRegions()} --retreive layered elemental like fonts etc
+	priest_controller = NAT_create_priest_menu_controller(NAT.subframes["NATPriestPostChannelEdit"], priest_layers[2], NAT.subframes["NAT_priest_body"]);
+	
+	local mage_layers = {NAT.subframes["NAT_mage_body"]:GetRegions()} --retreive layered elemental like fonts etc
+	mage_controller = NAT_create_mage_menu_controller(NAT.subframes["NATMagePostChannelEdit"], mage_layers[2], NAT.subframes["NAT_mage_body"]);
+	
+	local druid_layers = {NAT.subframes["NAT_druid_body"]:GetRegions()} --retreive layered elemental like fonts etc
+	druid_controller = NAT_create_druid_menu_controller(NAT.subframes["NATDruidPostChannelEdit"], druid_layers[2], NAT.subframes["NAT_druid_body"]);
+	
+	local warlock_layers = {NAT.subframes["NAT_warlock_body"]:GetRegions()} --retreive layered elemental like fonts etc
+	warlock_controller = NAT_create_warlock_menu_controller(NAT.subframes["NATWarlockPostChannelEdit"], warlock_layers[2], NAT.subframes["NAT_warlock_body"]);
+	
 	network_controller = NAT_create_network_handler(tank_controller, healer_controller, interrupt_controller, priest_controller, mage_controller, druid_controller, warlock_controller);
 
 	--get initial list of raid mems
-	--NAT_poll_for_players();
+	NAT_poll_for_players();
 
 	--See if someone is in the raid that is running the addon
-	--network_controller.request_setup();
+	network_controller.request_setup();
 		
 	-- Slash commands
 	SlashCmdList["NATCOMMAND"] = NAT_slashCommandHandler;
@@ -88,17 +110,17 @@ function NAT_init(_frame)
 end
 
 function NAT_request_master()
-	--[[if not IsRaidLeader() and not IsRaidOfficer()
+	if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player")
 	then
 		DEFAULT_CHAT_FRAME:AddMessage("NAT: You need to be the raid leader or have assist to request master status.", 0.6,1.0,0.6);
 		return;
 	end
 
-	network_controller.request_master();--]]
+	network_controller.request_master();
 end
 
 function NAT_handle_events(event)
-	--[[if event == "RAID_ROSTER_UPDATE" 
+	if event == "RAID_ROSTER_UPDATE" 
 	then
 		--if im not setup yet, request a setup or become master
 		if network_controller.state == -1
@@ -106,10 +128,10 @@ function NAT_handle_events(event)
 			network_controller.request_setup();
 		else
 		--I lost pre-req for master status so check if I am the master
-			if network_controller.master == UnitName("player") and not IsRaidOfficer() and not IsRaidLeader()
+			if network_controller.master == UnitName("player") and not UnitIsGroupAssistant("player") and not UnitIsGroupLeader("player")
 			then
 				--I was master, relinquish title.
-				--network_controller.request_new_master();
+				network_controller.request_new_master();
 			end 
 		end
 		
@@ -211,7 +233,7 @@ function NAT_handle_events(event)
 			end
 			
 		end
-	end--]]
+	end
 end
 
 local time_since_last_update = 0;
@@ -282,8 +304,7 @@ end
 function NAT_mode_picker_clicked(index)
 	--reset visuals
 	NAT_reset_visuals();
-	
-	local ypos = -35-50*(index-1)
+	local ypos = -35-50*(index-1);
 	
 	--select visuals
 	if index == 1 --tank
@@ -349,7 +370,7 @@ function NAT_request_setup()
 end
 
 function NAT_post()
-	--[[if not IsRaidLeader() and not IsRaidOfficer()
+	if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player")
 	then
 		DEFAULT_CHAT_FRAME:AddMessage("NAT: You need to be the raid leader or have assist to use this command", 0.6,1.0,0.6);
 		return;
@@ -376,11 +397,11 @@ function NAT_post()
 	elseif current_mode == 7 --warlock
 	then
 		warlock_controller.post();
-	end--]]
+	end
 end
 
 function NAT_post_all()
-	--[[if not IsRaidLeader() and not IsRaidOfficer()
+	if not UnitIsGroupLeader("player") and not UnitIsGroupAssistant("player")
 	then
 		DEFAULT_CHAT_FRAME:AddMessage("NAT: You need to be the raid leader or have assist to use this command", 0.6,1.0,0.6);
 		return;
@@ -392,7 +413,7 @@ function NAT_post_all()
 	priest_controller.post();
 	mage_controller.post();
 	druid_controller.post();
-	warlock_controller.post();--]]
+	warlock_controller.post();
 end
 
 --show submenu when mousing over current marks
@@ -453,7 +474,7 @@ function NAT_on_post_enter(self)
 end
 
 function NAT_on_post_text_changed(self)
-	--[[if current_mode == 1
+	if current_mode == 1
 	then
 		tank_controller.set_post_location(self:GetText());
 	elseif current_mode == 2
@@ -462,8 +483,20 @@ function NAT_on_post_text_changed(self)
 	elseif current_mode == 3
 	then
 		interrupt_controller.set_post_location(self:GetText());
+	elseif current_mode == 4
+	then
+		priest_controller.set_post_location(self:GetText());
+	elseif current_mode == 5
+	then
+		mage_controller.set_post_location(self:GetText());
+	elseif current_mode == 6
+	then
+		druid_controller.set_post_location(self:GetText());
+	elseif current_mode == 7
+	then
+		warlock_controller.set_post_location(self:GetText());
 	end
-	self:ClearFocus();--]]
+	self:ClearFocus();
 end
 
 function NAT_on_post_exit(self)
@@ -473,7 +506,6 @@ end
 
 --HELPER FUNCTIONS---------------------------------------------------------------------------------------HF
 function NAT_poll_for_players()
---[[
 	--am I in raid?
 	if UnitInRaid("player") == nil
 	then
@@ -482,31 +514,31 @@ function NAT_poll_for_players()
 	
 	--tanks
 	tank_controller.poll_for_players();
-	UIDropDownMenu_Initialize(NAT_tank_list, tank_controller.init, "MENU", 2);
+	UIDropDownMenu_Initialize(NAT.subframes["NAT_tank_list"], tank_controller.init, "MENU", 2);
 	
 	--healers 
 	healer_controller.poll_for_players();
-	UIDropDownMenu_Initialize(NAT_heal_list, healer_controller.init, "MENU", 2);
+	UIDropDownMenu_Initialize(NAT.subframes["NAT_heal_list"], healer_controller.init, "MENU", 2);
 	
 	--interupts
 	interrupt_controller.poll_for_players();
-	UIDropDownMenu_Initialize(NAT_interrupt_list, interrupt_controller.init, "MENU", 2);
+	UIDropDownMenu_Initialize(NAT.subframes["NAT_interrupt_list"], interrupt_controller.init, "MENU", 2);
 	
 	--interupts
 	priest_controller.poll_for_players();
-	UIDropDownMenu_Initialize(NAT_priest_list, priest_controller.init, "MENU", 2);
+	UIDropDownMenu_Initialize(NAT.subframes["NAT_priest_list"], priest_controller.init, "MENU", 2);
 	
 	--mage
 	mage_controller.poll_for_players();
-	UIDropDownMenu_Initialize(NAT_mage_list, mage_controller.init, "MENU", 2);
+	UIDropDownMenu_Initialize(NAT.subframes["NAT_mage_list"], mage_controller.init, "MENU", 2);
 	
 	--druid
 	druid_controller.poll_for_players();
-	UIDropDownMenu_Initialize(NAT_druid_list, druid_controller.init, "MENU", 2);
+	UIDropDownMenu_Initialize(NAT.subframes["NAT_druid_list"], druid_controller.init, "MENU", 2);
 
 	--warlock
 	warlock_controller.poll_for_players();
-	UIDropDownMenu_Initialize(NAT_warlock_list, warlock_controller.init, "MENU", 2);
+	UIDropDownMenu_Initialize(NAT.subframes["NAT_warlock_list"], warlock_controller.init, "MENU", 2);
 	
 	if current_mode == 1
 	then
@@ -530,7 +562,6 @@ function NAT_poll_for_players()
 	then 
 		warlock_controller.update_marks();
 	end
-	--]]
 end
 
 function NAT_reset_visuals()
@@ -546,17 +577,8 @@ function NAT_reset_visuals()
 end
 
 function NAT_reset_addon()
---[[
 	--reset healer marks
-	tank1_label:SetText("Raid");
-	tank2_label:SetText("");
-	tank3_label:SetText("");
-	tank4_label:SetText("");
-	tank5_label:SetText("");
-	tank6_label:SetText("");
-	tank7_label:SetText("");
-	tank8_label:SetText("");
-	tank9_label:SetText("");
+	healer_controller.reset_visual_marks();
 	
 	--reset data
 	network_controller.reset_setup();
@@ -584,26 +606,24 @@ function NAT_reset_addon()
 	then
 		warlock_controller.update_marks();
 	end
-	--]]
 end
 --HELPER FUNCTIONS---------------------------------------------------------------------------------------HF
 
 function NAT_add_reference_object(_object)
-	print(_object:GetName());
 	NAT.subframes[_object:GetName()] =_object;
 end
 
 function NAT_is_ready()
-	--[[if network_controller.state == 1
+	if network_controller.state == 1
 	then
 		return true;
 	else 
 		return false;
-	end--]]
+	end
 end
 
 function NAT_hover_choose_frames(_frame, _dir, _mode) --dir: 1 = left, dir: 2 = right
-	--[[local point, relative_to, relative_point, xof, yof = _frame:GetPoint();
+	local point, relative_to, relative_point, xof, yof = _frame:GetPoint();
 
 	if current_mode ~= _mode
 	then
@@ -619,5 +639,5 @@ function NAT_hover_choose_frames(_frame, _dir, _mode) --dir: 1 = left, dir: 2 = 
 	else
 		xof = -38
 		_frame:SetPoint(point, relative_to, relative_point, xof, yof);
-	end--]]
+	end
 end
