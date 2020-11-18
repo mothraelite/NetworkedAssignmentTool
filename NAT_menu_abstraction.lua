@@ -307,7 +307,7 @@ function(_postInputBoxObject, _postLabelObject, _viewBody)
 					frame.name:SetText(uncolored_name);
 					frame.model:SetUnit(NAT_retrieve_unitid_from_name(uncolored_name));
 					frame.model:SetCamera(0)
-					frame.bg:SetTexture(r/255,g/255,b/255,0.75);
+					frame.bg:SetColorTexture(r/255,g/255,b/255,0.75);
 					frame.bg:SetAllPoints(true);
 					
 					frame:Show();
@@ -382,17 +382,24 @@ function(_postInputBoxObject, _postLabelObject, _viewBody)
 				local player_list = "";
 				for index, player in ipairs(controller.assigned_players[mark])
 				do
-					--[[if there was color applied. shitty server doesn't allow colored text in chat
+					--if there was color applied to player. shitty server doesn't allow colored text in chat
 					if strlen(player) > 10
 					then
 						player = strsub(player, 11, strlen(player));
-					end--]]
-					player  = player .. "|r";
-				
+					end
+					--player  = player .. "|r";
+
 					player_list = player_list .. player .. " ";
 				end
 
-				SendChatMessage("["..NAT_retrieve_mark_color(mark)..mark.."|r]: " ..player_list, controller.post_location["channel"], nil, controller.post_location["option"]);
+				--if color applied to mark. shitty server doesn't allow colored text in chat
+				local out_mark = mark;
+				if strlen(out_mark) > 10
+				then
+					out_mark = strsub(out_mark, 11, strlen(out_mark));
+				end
+				
+				SendChatMessage("[{"..out_mark.."}]: " ..player_list, controller.post_location["channel"], nil, controller.post_location["option"]);
 			end
 		end
 	end

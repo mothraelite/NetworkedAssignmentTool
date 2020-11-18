@@ -124,7 +124,6 @@ end
 function NAT_create_player_frame(_button_name, _parent_frame, _player_name)
 	local uncolored_name = string.sub(_player_name, 11, strlen(_player_name));
 	local r,g,b = NAT_hex2rgb(string.sub(_player_name, 5, 11));
-
 	local backdrop = {
 			edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
 			bgFile = "Interface/DialogFrame/UI-DialogBox-Background",
@@ -149,7 +148,7 @@ function NAT_create_player_frame(_button_name, _parent_frame, _player_name)
 	frame.highlight = frame:CreateTexture(nil, "HIGHLIGHT");
 	frame.highlight:SetWidth(130);
 	frame.highlight:SetHeight(38);
-	frame.highlight:SetTexture(0.8,0.2,0.2,0.5);
+	frame.highlight:SetColorTexture(0.8,0.2,0.2,0.5);
 	frame.highlight:SetPoint("CENTER",0,0);
 	frame:SetScript("OnEnter", function()frame.highlight:Show();end);
 	frame:SetScript("OnLeave", function()frame.highlight:Hide();end);
@@ -158,7 +157,7 @@ function NAT_create_player_frame(_button_name, _parent_frame, _player_name)
 	frame.bg:SetPoint("CENTER",0,0);
 	frame.bg:SetWidth(125);
 	frame.bg:SetHeight(33);
-	frame.bg:SetTexture(r/255,g/255,b/255,0.75);
+	frame.bg:SetColorTexture(r/255,g/255,b/255,0.75);
 	frame.bg:SetAllPoints(true);
 	
 	local uid = NAT_retrieve_unitid_from_name(uncolored_name);

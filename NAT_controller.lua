@@ -61,20 +61,19 @@ function NAT_init(_frame)
 	NAT.frame:RegisterEvent("RAID_ROSTER_UPDATE"); --fires on personal promotion, personal demotion, anyone joining raid, anyone leaving raid
 	NAT.frame:RegisterEvent("RAID_TARGET_UPDATE"); --unfortunately, no response that indicates what was changed. probably going to notify all assigned tanks that things have changed though.
 	NAT.frame:RegisterEvent("CHAT_MSG_ADDON");
-	--RegisterAddonMessagePrefix("NAT");
+    C_ChatInfo.RegisterAddonMessagePrefix("NAT");
 	
 	--setup controllers
 	local tank_layers = {NAT.subframes["NAT_tank_body"]:GetRegions()} --retreive layered elemental like fonts etc
 	tank_controller = NAT_create_tank_menu_controller(NAT.subframes["NATTankPostChannelEdit"],  tank_layers[2],NAT.subframes["NAT_tank_body"]); 
 	
 	local healer_layers = {NAT.subframes["NAT_healer_body"]:GetRegions()}
-	local healer_assignment_labels = {
-		NAT.subframes["tank1"]:GetRegions(), NAT.subframes["tank2"]:GetRegions(), 
-		NAT.subframes["tank3"]:GetRegions(), NAT.subframes["tank4"]:GetRegions(), 
-		NAT.subframes["tank5"]:GetRegions(), NAT.subframes["tank6"]:GetRegions(), 
-		NAT.subframes["tank7"]:GetRegions(), NAT.subframes["tank8"]:GetRegions(),
-		NAT.subframes["tank9"]:GetRegions()
-	};
+	local healer_assignment_labels = {};
+	for i = 1, 9, 1
+	do
+		table.insert(healer_assignment_labels, NAT.subframes["tank"..i]:GetRegions());
+	end
+	
 	healer_controller = NAT_create_healer_menu_controller(NAT.subframes["NATHealerPostChannelEdit"], healer_layers[2], NAT.subframes["NAT_healer_body"], healer_assignment_labels); 
 	table.insert(tank_controller.observers, healer_controller); --add healer controller to tank observer list
 	
@@ -119,7 +118,7 @@ function NAT_request_master()
 	network_controller.request_master();
 end
 
-function NAT_handle_events(event)
+function NAT_handle_events(event, ...)
 	if event == "RAID_ROSTER_UPDATE" 
 	then
 		--if im not setup yet, request a setup or become master
@@ -146,9 +145,10 @@ function NAT_handle_events(event)
 		NAT_poll_for_players();
 	elseif event == "CHAT_MSG_ADDON"
 	then
-		if arg1 == "NAT"
+		local args = {...};
+		if args[1] == "NAT"
 		then
-			local command, message, sender = network_controller.extract_command_and_message(arg2);
+			local command, message, sender = network_controller.extract_command_and_message(args[2]);
 			
 			--ignore my own networked messages
 			if sender == UnitName("player")
@@ -188,7 +188,6 @@ function NAT_handle_events(event)
 						end 
 					end);
 				end
-				
 			elseif command == "setup_interrupters"
 			then
 				network_controller.setup_interrupters(message);

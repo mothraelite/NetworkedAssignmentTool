@@ -17,10 +17,10 @@ function NAT_create_network_handler(_tankc, _healerc, _interruptc, _priestc, _ma
 	controller.interrupt_controller = _interruptc;
 	controller.priest_controller = _priestc;
 	controller.mage_controller = _magec;
-	controller.druid_controller = _druic;
+	controller.druid_controller = _druidc;
 	controller.warlock_controller = _warlockc;
 	controller.version = 2.2;
-	controller.comp_mode = true;
+	controller.comp_mode = false;
 	controller.state = -1; -- -1: not setup 0: trying to setup 1: setup 
 	controller.response_state = 1; --0: network waiting for response 1: nothing going on || note: this is for non-setup related responses
 	controller.setup = {["tanks"]=false,["healers"]=false,["interrupters"]=false,["master"]=false,["priests"]=false,["mages"]=false,["druids"]=false, ["warlocks"]=false};
@@ -88,9 +88,9 @@ function NAT_create_network_handler(_tankc, _healerc, _interruptc, _priestc, _ma
 							controller.request_setup();
 						end 
 					end
-					NAT_set_alarm(3, partial_setup);
+					NAT_set_alarm(4, partial_setup);
 				else  --no reply
-					--fire function after 3 seconds if no response because no setup available in raid
+					--fire function after 4 seconds if no response because no setup available in raid
 					local no_setup = 
 					function()
 						if controller.state == 0
@@ -121,7 +121,7 @@ function NAT_create_network_handler(_tankc, _healerc, _interruptc, _priestc, _ma
 				end	
 			end
 		end
-		NAT_set_alarm(5, func);
+		NAT_set_alarm(3, func);
 	end
 		----------------------END OF REQUESTS-------------------------REQ
 		
@@ -174,7 +174,7 @@ function NAT_create_network_handler(_tankc, _healerc, _interruptc, _priestc, _ma
 			--retrieve current mages
 			local current_mages = controller.mage_controller.get_current_assignments();
 			--retrieve current druids
-			local current_druid = controller.priest_controller.get_current_assignments();
+			local current_druids = controller.druid_controller.get_current_assignments();
 			--retrieve current warlocks
 			local current_warlocks = controller.warlock_controller.get_current_assignments();
 			

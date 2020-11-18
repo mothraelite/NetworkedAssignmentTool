@@ -1,6 +1,6 @@
 NAT_create_healer_menu_controller = 
-function(_postOptionObject, _postLabel, _viewBody)
-	local controller = NAT_create_menu_controller(_postOptionObject, _postLabel, _viewBody, _assignmentLabels);
+function(_postOptionObject, _postLabel, _viewBody, _assignmentLabels)
+	local controller = NAT_create_menu_controller(_postOptionObject, _postLabel, _viewBody);
 	controller.tag = "Healer";
 	controller.toggle_command = "toggle_healer-"; --network
 	controller.add_player_command = "add_healer"; --observer command 

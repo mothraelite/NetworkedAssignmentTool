@@ -21,7 +21,7 @@
 					NAT:Hide();
 				</OnLoad>
 				<OnEvent>
-					NAT_handle_events(event);
+					NAT_handle_events(event, ...);
 				</OnEvent>
 				<OnUpdate>
 					NAT_update(self, elapsed);
