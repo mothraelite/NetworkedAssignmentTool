@@ -1,0 +1,2895 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/..\..\FrameXML\UI.xsd">
+	<!-- 
+			@Author: Mothraelite <milaninavid@gmail.com>
+			Title: NAT
+			Version: 1.01a
+			Description: Does relevant assignments for raids.
+			
+	//-->
+	 <Script File="NAT_controller.lua" />
+	 <Frame name="NAT" enableMouse="true" movable="true" frameStrata="MEDIUM">
+			 <Size>
+			   <AbsDimension x="500" y="450" />
+			 </Size>
+			 <Anchors>
+			   <Anchor point="CENTER" />
+			 </Anchors>
+
+			<Scripts>
+				<OnLoad>
+					NAT_init(self);
+					NAT:Hide();
+				</OnLoad>
+				<OnEvent>
+					NAT_handle_events(event, ...);
+				</OnEvent>
+				<OnUpdate>
+					NAT_update(self, elapsed);
+				</OnUpdate>
+				
+				<OnDragStart>NAT:StartMoving();</OnDragStart>
+				<OnDragStop>NAT:StopMovingOrSizing();</OnDragStop>
+			</Scripts>
+			
+			 <!--<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background"
+				   edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			   <BackgroundInsets>
+				 <AbsInset left="11" right="12" top="12" bottom="11"/>
+			   </BackgroundInsets>
+			   <TileSize>
+				 <AbsValue val="32"/>
+			   </TileSize>
+			   <EdgeSize>
+				 <AbsValue val="32"/>
+			   </EdgeSize>
+			  
+			 </Backdrop> //!-->
+
+			 <Layers>
+				<Layer level="ARTWORK">
+					
+				</Layer>
+				
+				<Layer level="OVERLAY">
+
+				</Layer>
+				
+				<Layer>
+				</Layer>
+			</Layers>
+
+			<!-- BUTTONS N SHIT //-->
+			 <Frames>
+				<!--Title view //-->
+				<Frame name='NATTitleLabelContainer' enableMouse="true">
+					<Size><AbsDimension x="504" y="30"/></Size>
+					<Scripts>
+						<OnLoad>
+						</OnLoad>
+						<OnEnter>
+						</OnEnter>
+					</Scripts>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-2"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					 <Layers>
+						<Layer level="ARTWORK">
+							<!-- Setup title label //-->
+							<FontString inherits="GameFontNormal" name="NATTitleLabel" text="Tank Assignments"  outline="THICK">
+								<!--<Color r="0.25" g="0.50" b="0.75" a="1"/>//-->
+								<Anchors>
+									<Anchor point="CENTER">
+										<Offset>
+											<AbsDimension x="0" y="0" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+								
+								 <Shadow>
+									<Offset x="1" y="1" />
+									<Color r="0" g="0" b="0"/>
+								  </Shadow>			
+							</FontString>
+						</Layer>
+					</Layers>
+				</Frame>
+			 
+				<!--Title bar view //-->
+				<Frame name='NATTitleBar' enableMouse="true">
+					<Size><AbsDimension x="120" y="2"/></Size>
+					<Scripts><OnEnter></OnEnter></Scripts>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-25"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					 <Layers>
+						<Layer level="OVERLAY">
+							<!-- Setup bar //-->
+							<Texture name="TPCFrameTitle" file="Interface\AddOns\NetworkedAssignmentTool\resources\images\head.tga" >
+								<Size>
+									<AbsDimension x="120" y="2" />
+								</Size>
+								<Anchors>
+									<Anchor point="TOP">
+										<Offset>
+											<AbsDimension x="0" y="0" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Texture>
+						</Layer>
+					</Layers>
+				</Frame>
+				
+				<!--Footer bar view //-->
+				<Frame name='NATFooterBar' enableMouse="true">
+					<Size><AbsDimension x="120" y="2"/></Size>
+					<Scripts><OnEnter></OnEnter></Scripts>
+					<Anchors>
+						<Anchor point="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="55"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					 <Layers>
+						<Layer level="ARTWORK">
+							<!-- Setup bar //-->
+							<Texture name="TPCFrameTitle" file="Interface\AddOns\NetworkedAssignmentTool\resources\images\head.tga" >
+								<Size>
+									<AbsDimension x="120" y="2" />
+								</Size>
+								<Anchors>
+									<Anchor point="TOP">
+										<Offset>
+											<AbsDimension x="0" y="0" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Texture>
+						</Layer>
+					</Layers>
+				</Frame>
+			 
+				<!--master label view //-->
+				<Frame name='NATMasterLabelContainer' enableMouse="true">
+					<Size><AbsDimension x="80" y="30"/></Size>
+					<Scripts><OnEnter></OnEnter></Scripts>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="50" y="30"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					 <Layers>
+						<Layer level="ARTWORK">
+							<!-- Setup label //-->
+							<FontString inherits="GameFontNormal" name="NATMasterLabel" text="Master: None" >
+								<Anchors>
+									<Anchor point="BOTTOMLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</FontString>
+						</Layer>
+					</Layers>
+				</Frame>
+			 
+				<!--NAT TANK VIEW//-->
+				<Frame name='NAT_tank_body' frameStrata="MEDIUM"  inherits="BackdropTemplate">
+					<Size><AbsDimension x="504" y="450"/></Size>
+					<Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="-2" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors> 
+                    
+                    <KeyValues>
+                        <KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_16_16_5555" type="global"/>
+                        <KeyValue key="backdropBorderColor" value="LEGENDARY_ORANGE_COLOR" type="global"/>
+                        <KeyValue key="backdropBorderColorAlpha" value="1" type="number"/>
+                    </KeyValues>
+
+					 <Layers>
+                        <Layer level="ARTWORK">
+                            <Texture name="TPCFrameTitle" file="Interface\AddOns\NetworkedAssignmentTool\resources\images\tank_bg.tga" >
+								<Size>
+									<AbsDimension x="490" y="436" />
+								</Size>
+								<Anchors>
+									<Anchor point="TOP">
+										<Offset>
+											<AbsDimension x="0" y="-8" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Texture>
+                        </Layer>
+                     
+						<Layer level="OVERLAY">
+							<FontString inherits="GameFontNormal" name="NATTankPostLabel" text="raid" justifyV="RIGHT">
+								<Anchors>
+									<Anchor point="BOTTOM">
+										<Offset>
+											<AbsDimension x="160" y="30" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</FontString>
+						
+							<!-- Setup texture //-->
+							<Texture name="tank_shield_texture" file="Interface\AddOns\NetworkedAssignmentTool\resources\images\icons\tank_icon.tga">
+								<Size><AbsDimension x="256" y="256"/></Size>
+								<Anchors>
+									<Anchor point="CENTER">
+										<Offset>
+										<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Texture>
+						</Layer>
+					</Layers>
+					<Frames>
+						<!--Tank assignment marks//-->
+							<!-- Skull //-->
+						<Frame name='mark1' enableMouse="true" frameStrata="HIGH">
+							<Size><AbsDimension x="30" y="30"/></Size>
+							<Scripts>
+								<OnEnter>
+									NAT_show_listmenu(mark1, "skull");
+								</OnEnter>
+							</Scripts>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="15" y="-35"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							 <Layers>
+								<Layer level="ARTWORK">
+									<!-- Setup texture //-->
+									<Texture name="skullTexture" file="Interface\TargetingFrame\UI-RaidTargetingIcons">
+										<Size><AbsDimension x="30" y="30"/></Size>
+										<Anchors>
+											<Anchor point="CENTER">
+												<Offset>
+												<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<TexCoords left="0.75" right="1" top="0.25" bottom="0.5"/>
+									</Texture>
+								</Layer>
+							</Layers>
+						</Frame>
+						
+							<!-- X //-->
+						<Frame name='mark2' enableMouse="true" frameStrata="HIGH">
+							<Size><AbsDimension x="30" y="30"/></Size>
+							<Scripts><OnEnter>NAT_show_listmenu(mark2, "x");</OnEnter></Scripts>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="15" y="-75"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							 <Layers>
+								<Layer level="ARTWORK">
+									<!-- Setup texture //-->
+									<Texture name="skullTexture" file="Interface\TargetingFrame\UI-RaidTargetingIcons">
+										<Size><AbsDimension x="30" y="30"/></Size>
+										<Anchors>
+											<Anchor point="CENTER">
+												<Offset>
+												<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<TexCoords left="0.5" right="0.75" top="0.25" bottom="0.5"/>
+									</Texture>
+								</Layer>
+							</Layers>
+						</Frame>
+						
+							<!-- [  ] //-->
+						<Frame name='mark3' enableMouse="true" frameStrata="HIGH">
+							<Size><AbsDimension x="30" y="30"/></Size>
+							<Scripts><OnEnter>NAT_show_listmenu(mark3, "square");</OnEnter></Scripts>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="15" y="-115"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							 <Layers>
+								<Layer level="ARTWORK">
+									<!-- Setup texture //-->
+									<Texture name="skullTexture" file="Interface\TargetingFrame\UI-RaidTargetingIcons">
+										<Size><AbsDimension x="30" y="30"/></Size>
+										<Anchors>
+											<Anchor point="CENTER">
+												<Offset>
+												<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<TexCoords left="0.25" right="0.5" top="0.25" bottom="0.5"/>
+									</Texture>
+								</Layer>
+							</Layers>
+						</Frame>
+						
+							<!-- moon //-->
+						<Frame name='mark4' enableMouse="true" frameStrata="HIGH">
+							<Size><AbsDimension x="30" y="30"/></Size>
+							<Scripts><OnEnter>NAT_show_listmenu(mark4, "moon");</OnEnter></Scripts>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="15" y="-155"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							 <Layers>
+								<Layer level="ARTWORK">
+									<!-- Setup texture //-->
+									<Texture name="skullTexture" file="Interface\TargetingFrame\UI-RaidTargetingIcons">
+										<Size><AbsDimension x="30" y="30"/></Size>
+										<Anchors>
+											<Anchor point="CENTER">
+												<Offset>
+												<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<TexCoords left="0" right="0.25" top="0.25" bottom="0.5"/>
+									</Texture>
+								</Layer>
+							</Layers>
+						</Frame>
+						
+							<!-- triangle //-->
+						<Frame name='mark5' enableMouse="true" frameStrata="HIGH">
+							<Size><AbsDimension x="30" y="30"/></Size>
+							<Scripts><OnEnter>NAT_show_listmenu(mark5, "triangle");</OnEnter></Scripts>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="15" y="-195"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							 <Layers>
+								<Layer level="ARTWORK">
+									<!-- Setup texture //-->
+									<Texture name="skullTexture" file="Interface\TargetingFrame\UI-RaidTargetingIcons">
+										<Size><AbsDimension x="30" y="30"/></Size>
+										<Anchors>
+											<Anchor point="CENTER">
+												<Offset>
+												<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<TexCoords left="0.75" right="1" top="0" bottom="0.25"/>
+									</Texture>
+								</Layer>
+							</Layers>
+						</Frame>
+						
+							<!-- diamond //-->
+						<Frame name='mark6' enableMouse="true" frameStrata="HIGH">
+							<Size><AbsDimension x="30" y="30"/></Size>
+							<Scripts><OnEnter>NAT_show_listmenu(mark6, "diamond");</OnEnter></Scripts>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="15" y="-235"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							 <Layers>
+								<Layer level="ARTWORK">
+									<!-- Setup texture //-->
+									<Texture name="skullTexture" file="Interface\TargetingFrame\UI-RaidTargetingIcons">
+										<Size><AbsDimension x="30" y="30"/></Size>
+										<Anchors>
+											<Anchor point="CENTER">
+												<Offset>
+													<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<TexCoords left="0.5" right="0.75" top="0" bottom="0.25"/>
+									</Texture>
+								</Layer>
+							</Layers>
+						</Frame>
+						
+							<!-- circle //-->
+						<Frame name='mark7' enableMouse="true" frameStrata="HIGH">
+							<Size><AbsDimension x="30" y="30"/></Size>
+							<Scripts><OnEnter>NAT_show_listmenu(mark7, "circle");</OnEnter></Scripts>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="15" y="-275"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							 <Layers>
+								<Layer level="ARTWORK">
+									<!-- Setup texture //-->
+									<Texture name="skullTexture" file="Interface\TargetingFrame\UI-RaidTargetingIcons">
+										<Size><AbsDimension x="30" y="30"/></Size>
+										<Anchors>
+											<Anchor point="CENTER">
+												<Offset>
+												<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<TexCoords left="0.25" right="0.5" top="0" bottom="0.25"/>
+									</Texture>
+								</Layer>
+							</Layers>
+						</Frame>
+						
+						<!-- star //-->
+						<Frame name='mark8' enableMouse="true" frameStrata="HIGH">
+							<Size><AbsDimension x="30" y="30"/></Size>
+							<Scripts><OnEnter>NAT_show_listmenu(mark8, "star");</OnEnter></Scripts>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="15" y="-315"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							 <Layers>
+								<Layer level="ARTWORK">
+									<!-- Setup texture //-->
+									<Texture name="skullTexture" file="Interface\TargetingFrame\UI-RaidTargetingIcons">
+										<Size><AbsDimension x="30" y="30"/></Size>
+										<Anchors>
+											<Anchor point="CENTER">
+												<Offset>
+												<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+									</Texture>
+								</Layer>
+							</Layers>
+						</Frame>
+						
+						<!-- MT //-->
+						<Frame name='mark9' enableMouse="true" frameStrata="HIGH">
+							<Size><AbsDimension x="60" y="30"/></Size>
+							<Scripts><OnEnter>NAT_show_listmenu(mark9, mt_label:GetText());</OnEnter></Scripts>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-355"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							 <Layers>
+								<Layer level="ARTWORK">
+									<!-- Setup label //-->
+									<FontString name='mt_label' inherits="GameFontNormal" text="MT">
+										<Size><AbsDimension x="80" y="30"/></Size>
+										<FontHeight><AbsValue val="30" /></FontHeight>
+										<Anchors>
+											<Anchor point="CENTER">
+												<Offset>
+												<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+									</FontString>
+								</Layer>
+							</Layers>
+						</Frame>
+						<!--Tank assignment marks //-->
+						<!--TANK POST LOCATION //-->
+					<EditBox inherits="InputBoxTemplate" name="NATTankPostChannelEdit" frameStrata="HIGH">
+						<Size><AbsDimension x="18" y="28"/></Size>
+						<Anchors>
+							<Anchor relativeTo="NAT" point="BOTTOM">
+								<Offset>
+									<AbsDimension x="65" y="19" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								NATTankPostChannelEdit:SetText("r"); 
+								NATTankPostChannelEdit:SetMaxLetters(1);
+								NATTankPostChannelEdit:SetAutoFocus(false);
+							</OnLoad>
+							<OnEnter>NAT_on_post_enter(NATTankPostChannelEdit);</OnEnter>
+							<OnTextChanged>NAT_on_post_text_changed(NATTankPostChannelEdit);</OnTextChanged>
+							<OnLeave>NAT_on_post_exit(NATTankPostChannelEdit);</OnLeave>
+						</Scripts>
+					</EditBox>
+					<!--TANK POST LOCATION //-->
+					</Frames>
+				</Frame>
+				
+				<!--NAT HEALER VIEW//-->
+				<Frame name='NAT_healer_body' frameStrata="MEDIUM"  inherits="BackdropTemplate" hidden="true">
+					<Size><AbsDimension x="504" y="450"/></Size>
+					<Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="-2" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                    <KeyValues>
+                        <KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_16_16_5555" type="global"/>
+                        <KeyValue key="backdropBorderColor" value="LEGENDARY_ORANGE_COLOR" type="global"/>
+                        <KeyValue key="backdropBorderColorAlpha" value="1" type="number"/>
+                    </KeyValues>
+					 <Layers>
+                         <Layer level="ARTWORK">
+                            <Texture name="TPCFrameTitle" file="Interface\AddOns\NetworkedAssignmentTool\resources\images\healer_bg.tga" >
+								<Size>
+									<AbsDimension x="490" y="436" />
+								</Size>
+								<Anchors>
+									<Anchor point="TOP">
+										<Offset>
+											<AbsDimension x="0" y="-8" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Texture>
+                        </Layer>
+                     
+						<Layer level="OVERLAY">
+							<FontString inherits="GameFontNormal" name="NATHealPostLabel" text="raid">
+								<Anchors>
+									<Anchor point="BOTTOM">
+										<Offset>
+											<AbsDimension x="160" y="30" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</FontString>
+						
+							<!-- Setup texture //-->
+							<Texture name="healer_icon_texture" file="Interface\AddOns\NetworkedAssignmentTool\resources\images\icons\healer_icon.tga">
+								<Size><AbsDimension x="256" y="256"/></Size>
+								<Anchors>
+									<Anchor point="CENTER">
+										<Offset>
+										<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Texture>
+						</Layer>
+					</Layers>
+					<Frames>
+					<!-- healer assignment marks //-->
+					<Frame name='tank1' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>NAT_show_listmenu(tank1, tank1_label:GetText());</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-35"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='tank1_label' inherits="GameFontNormal" text="Raid">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<Frame name='tank2' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>NAT_show_listmenu(tank2, tank2_label:GetText());</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-75"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='tank2_label' inherits="GameFontNormal" text="">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<Frame name='tank3' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>NAT_show_listmenu(tank3, tank3_label:GetText());</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-115"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='tank3_label' inherits="GameFontNormal" text="">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<Frame name='tank4' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>NAT_show_listmenu(tank4, tank4_label:GetText());</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-155"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='tank4_label' inherits="GameFontNormal" text="">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<Frame name='tank5' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>NAT_show_listmenu(tank5, tank5_label:GetText());</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-195"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='tank5_label' inherits="GameFontNormal" text="">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<Frame name='tank6' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>NAT_show_listmenu(tank6, tank6_label:GetText());</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-235"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='tank6_label' inherits="GameFontNormal" text="">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<Frame name='tank7' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>NAT_show_listmenu(tank7, tank7_label:GetText());</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-275"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='tank7_label' inherits="GameFontNormal" text="">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<Frame name='tank8' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>NAT_show_listmenu(tank8, tank8_label:GetText());</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-315"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='tank8_label' inherits="GameFontNormal" text="">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<Frame name='tank9' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>NAT_show_listmenu(tank9, tank9_label:GetText());</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-355"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='tank9_label' inherits="GameFontNormal" text="">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					<!-- healer assignment marks //-->
+					
+							<!--HEAL POST LOCATION //-->
+					<EditBox inherits="InputBoxTemplate" name="NATHealerPostChannelEdit" frameStrata="HIGH">
+						<Size><AbsDimension x="18" y="28"/></Size>
+						<Anchors>
+							<Anchor relativeTo="NAT" point="BOTTOM">
+								<Offset>
+									<AbsDimension x="65" y="19" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								NATHealerPostChannelEdit:SetText("r"); 
+								NATHealerPostChannelEdit:SetMaxLetters(1);
+								NATHealerPostChannelEdit:SetAutoFocus(false);
+							</OnLoad>
+							<OnEnter>NAT_on_post_enter(NATHealerPostChannelEdit);</OnEnter>
+							<OnTextChanged>NAT_on_post_text_changed(NATHealerPostChannelEdit);</OnTextChanged>
+							<OnLeave>NAT_on_post_exit(NATHealerPostChannelEdit);</OnLeave>
+						</Scripts>
+					</EditBox>
+					<!--HEAL POST LOCATION //-->
+				</Frames>
+			</Frame>
+			 
+				<!--NAT INTERRUPT VIEW//-->
+				<Frame name='NAT_interrupt_body' frameStrata="MEDIUM" inherits="BackdropTemplate" hidden="true">
+					<Size><AbsDimension x="504" y="450"/></Size>
+					<Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="-2" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                    <KeyValues>
+                        <KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_16_16_5555" type="global"/>
+                        <KeyValue key="backdropBorderColor" value="LEGENDARY_ORANGE_COLOR" type="global"/>
+                        <KeyValue key="backdropBorderColorAlpha" value="1" type="number"/>
+                    </KeyValues>
+					 <Layers>
+                         <Layer level="ARTWORK">
+                            <Texture name="TPCFrameTitle" file="Interface\AddOns\NetworkedAssignmentTool\resources\images\interrupt_bg.tga" >
+								<Size>
+									<AbsDimension x="490" y="436" />
+								</Size>
+								<Anchors>
+									<Anchor point="TOP">
+										<Offset>
+											<AbsDimension x="0" y="-8" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Texture>
+                        </Layer>
+                        
+						<Layer level="OVERLAY">
+							<FontString inherits="GameFontNormal" name="NATInterruptPostLabel" text="raid">
+								<Anchors>
+									<Anchor point="BOTTOM">
+										<Offset>
+											<AbsDimension x="160" y="30" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</FontString>
+						
+							<!-- Setup texture //-->
+							<Texture  file="Interface\AddOns\NetworkedAssignmentTool\resources\images\icons\interrupt_icon.tga">
+								<Size><AbsDimension x="256" y="256"/></Size>
+								<Anchors>
+									<Anchor point="CENTER">
+										<Offset>
+										<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Texture>
+						</Layer>
+					</Layers>
+					<Frames>
+						<!--Tank assignment marks//-->
+							<!-- Skull //-->
+						<Frame name='imark1' enableMouse="true" frameStrata="HIGH">
+							<Size><AbsDimension x="30" y="30"/></Size>
+							<Scripts>
+								<OnEnter>
+									NAT_show_listmenu(imark1, "skull");
+								</OnEnter>
+							</Scripts>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="15" y="-35"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							 <Layers>
+								<Layer level="ARTWORK">
+									<!-- Setup texture //-->
+									<Texture name="skullTexture" file="Interface\TargetingFrame\UI-RaidTargetingIcons">
+										<Size><AbsDimension x="30" y="30"/></Size>
+										<Anchors>
+											<Anchor point="CENTER">
+												<Offset>
+												<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<TexCoords left="0.75" right="1" top="0.25" bottom="0.5"/>
+									</Texture>
+								</Layer>
+							</Layers>
+						</Frame>
+						
+							<!-- X //-->
+						<Frame name='imark2' enableMouse="true" frameStrata="HIGH">
+							<Size><AbsDimension x="30" y="30"/></Size>
+							<Scripts><OnEnter>NAT_show_listmenu(imark2, "x");</OnEnter></Scripts>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="15" y="-75"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							 <Layers>
+								<Layer level="ARTWORK">
+									<!-- Setup texture //-->
+									<Texture name="skullTexture" file="Interface\TargetingFrame\UI-RaidTargetingIcons">
+										<Size><AbsDimension x="30" y="30"/></Size>
+										<Anchors>
+											<Anchor point="CENTER">
+												<Offset>
+												<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<TexCoords left="0.5" right="0.75" top="0.25" bottom="0.5"/>
+									</Texture>
+								</Layer>
+							</Layers>
+						</Frame>
+						
+							<!-- [  ] //-->
+						<Frame name='imark3' enableMouse="true" frameStrata="HIGH">
+							<Size><AbsDimension x="30" y="30"/></Size>
+							<Scripts><OnEnter>NAT_show_listmenu(imark3, "square");</OnEnter></Scripts>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="15" y="-115"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							 <Layers>
+								<Layer level="ARTWORK">
+									<!-- Setup texture //-->
+									<Texture name="skullTexture" file="Interface\TargetingFrame\UI-RaidTargetingIcons">
+										<Size><AbsDimension x="30" y="30"/></Size>
+										<Anchors>
+											<Anchor point="CENTER">
+												<Offset>
+												<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<TexCoords left="0.25" right="0.5" top="0.25" bottom="0.5"/>
+									</Texture>
+								</Layer>
+							</Layers>
+						</Frame>
+						
+							<!-- moon //-->
+						<Frame name='imark4' enableMouse="true" frameStrata="HIGH">
+							<Size><AbsDimension x="30" y="30"/></Size>
+							<Scripts><OnEnter>NAT_show_listmenu(imark4, "moon");</OnEnter></Scripts>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="15" y="-155"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							 <Layers>
+								<Layer level="ARTWORK">
+									<!-- Setup texture //-->
+									<Texture name="skullTexture" file="Interface\TargetingFrame\UI-RaidTargetingIcons">
+										<Size><AbsDimension x="30" y="30"/></Size>
+										<Anchors>
+											<Anchor point="CENTER">
+												<Offset>
+												<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<TexCoords left="0" right="0.25" top="0.25" bottom="0.5"/>
+									</Texture>
+								</Layer>
+							</Layers>
+						</Frame>
+						
+							<!-- triangle //-->
+						<Frame name='imark5' enableMouse="true" frameStrata="HIGH">
+							<Size><AbsDimension x="30" y="30"/></Size>
+							<Scripts><OnEnter>NAT_show_listmenu(imark5, "triangle");</OnEnter></Scripts>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="15" y="-195"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							 <Layers>
+								<Layer level="ARTWORK">
+									<!-- Setup texture //-->
+									<Texture name="skullTexture" file="Interface\TargetingFrame\UI-RaidTargetingIcons">
+										<Size><AbsDimension x="30" y="30"/></Size>
+										<Anchors>
+											<Anchor point="CENTER">
+												<Offset>
+												<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<TexCoords left="0.75" right="1" top="0" bottom="0.25"/>
+									</Texture>
+								</Layer>
+							</Layers>
+						</Frame>
+						
+							<!-- diamond //-->
+						<Frame name='imark6' enableMouse="true" frameStrata="HIGH">
+							<Size><AbsDimension x="30" y="30"/></Size>
+							<Scripts><OnEnter>NAT_show_listmenu(imark6, "diamond");</OnEnter></Scripts>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="15" y="-235"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							 <Layers>
+								<Layer level="ARTWORK">
+									<!-- Setup texture //-->
+									<Texture name="skullTexture" file="Interface\TargetingFrame\UI-RaidTargetingIcons">
+										<Size><AbsDimension x="30" y="30"/></Size>
+										<Anchors>
+											<Anchor point="CENTER">
+												<Offset>
+													<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<TexCoords left="0.5" right="0.75" top="0" bottom="0.25"/>
+									</Texture>
+								</Layer>
+							</Layers>
+						</Frame>
+						
+							<!-- circle //-->
+						<Frame name='imark7' enableMouse="true" frameStrata="HIGH">
+							<Size><AbsDimension x="30" y="30"/></Size>
+							<Scripts><OnEnter>NAT_show_listmenu(imark7, "circle");</OnEnter></Scripts>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="15" y="-275"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							 <Layers>
+								<Layer level="ARTWORK">
+									<!-- Setup texture //-->
+									<Texture name="skullTexture" file="Interface\TargetingFrame\UI-RaidTargetingIcons">
+										<Size><AbsDimension x="30" y="30"/></Size>
+										<Anchors>
+											<Anchor point="CENTER">
+												<Offset>
+												<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<TexCoords left="0.25" right="0.5" top="0" bottom="0.25"/>
+									</Texture>
+								</Layer>
+							</Layers>
+						</Frame>
+						
+						<!-- star //-->
+						<Frame name='imark8' enableMouse="true" frameStrata="HIGH">
+							<Size><AbsDimension x="30" y="30"/></Size>
+							<Scripts><OnEnter>NAT_show_listmenu(imark8, "star");</OnEnter></Scripts>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="15" y="-315"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							 <Layers>
+								<Layer level="ARTWORK">
+									<!-- Setup texture //-->
+									<Texture name="skullTexture" file="Interface\TargetingFrame\UI-RaidTargetingIcons">
+										<Size><AbsDimension x="30" y="30"/></Size>
+										<Anchors>
+											<Anchor point="CENTER">
+												<Offset>
+												<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+									</Texture>
+								</Layer>
+							</Layers>
+						</Frame>
+						
+						<!-- MT //-->
+						<Frame name='imark9' enableMouse="true" frameStrata="HIGH">
+							<Size><AbsDimension x="60" y="30"/></Size>
+							<Scripts><OnEnter>NAT_show_listmenu(imark9, mt_label:GetText());</OnEnter></Scripts>
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="0" y="-355"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							 <Layers>
+								<Layer level="ARTWORK">
+									<!-- Setup label //-->
+									<FontString name='mt_label' inherits="GameFontNormal" text="MT">
+										<Size><AbsDimension x="80" y="30"/></Size>
+										<FontHeight><AbsValue val="30" /></FontHeight>
+										<Anchors>
+											<Anchor point="CENTER">
+												<Offset>
+												<AbsDimension x="0" y="0"/>
+												</Offset>
+											</Anchor>
+										</Anchors>
+										<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+									</FontString>
+								</Layer>
+							</Layers>
+						</Frame>
+						<!--Tank assignment marks //-->
+						<!--INTERRUPT POST LOCATION //-->
+					<EditBox inherits="InputBoxTemplate" name="NATInterruptPostChannelEdit" frameStrata="HIGH">
+						<Size><AbsDimension x="18" y="28"/></Size>
+						<Anchors>
+							<Anchor relativeTo="NAT" point="BOTTOM">
+								<Offset>
+									<AbsDimension x="65" y="19" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								NATInterruptPostChannelEdit:SetText("r"); 
+								NATInterruptPostChannelEdit:SetMaxLetters(1);
+								NATInterruptPostChannelEdit:SetAutoFocus(false);
+							</OnLoad>
+							<OnEnter>NAT_on_post_enter(NATInterruptPostChannelEdit);</OnEnter>
+							<OnTextChanged>NAT_on_post_text_changed(NATInterruptPostChannelEdit);</OnTextChanged>
+							<OnLeave>NAT_on_post_exit(NATInterruptPostChannelEdit);</OnLeave>
+						</Scripts>
+					</EditBox>
+					<!--INTERRUPT POST LOCATION //-->
+					</Frames>
+				</Frame>
+				
+				<!--NAT PRIEST VIEW//-->
+				<Frame name='NAT_priest_body' frameStrata="MEDIUM" inherits="BackdropTemplate" hidden="true">
+					<Size><AbsDimension x="504" y="450"/></Size>
+					<Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="-2" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                    <KeyValues>
+                        <KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_16_16_5555" type="global"/>
+                        <KeyValue key="backdropBorderColor" value="LEGENDARY_ORANGE_COLOR" type="global"/>
+                        <KeyValue key="backdropBorderColorAlpha" value="1" type="number"/>
+                    </KeyValues>
+					 <Layers>
+                         <Layer level="ARTWORK">
+                            <Texture name="TPCFrameTitle" file="Interface\AddOns\NetworkedAssignmentTool\resources\images\priest_bg.tga" >
+								<Size>
+									<AbsDimension x="490" y="436" />
+								</Size>
+								<Anchors>
+									<Anchor point="TOP">
+										<Offset>
+											<AbsDimension x="0" y="-8" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Texture>
+                        </Layer>
+                        
+						<Layer level="OVERLAY">
+							<FontString inherits="GameFontNormal" name="NATPriestPostLabel" text="raid">
+								<Anchors>
+									<Anchor point="BOTTOM">
+										<Offset>
+											<AbsDimension x="160" y="30" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</FontString>
+						
+							<!-- Setup texture //-->
+							<Texture name="priest_texture" file="Interface\AddOns\NetworkedAssignmentTool\resources\images\icons\priest_icon.tga">
+								<Size><AbsDimension x="256" y="256"/></Size>
+								<Anchors>
+									<Anchor point="CENTER">
+										<Offset>
+										<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Texture>
+						</Layer>
+					</Layers>
+					<Frames>
+					<!-- priest assignment marks //-->
+					<Frame name='priest1' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>NAT_show_listmenu(priest1, "Group1");</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-35"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='priest1_label' inherits="GameFontNormal" text="Group 1">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<Frame name='priest2' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>NAT_show_listmenu(priest2, "Group2");</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-75"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='priest2_label' inherits="GameFontNormal" text="Group 2">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<Frame name='priest3' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>NAT_show_listmenu(priest3, "Group3");</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-115"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='priest3_label' inherits="GameFontNormal" text="Group 3">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<Frame name='priest4' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>NAT_show_listmenu(priest4, "Group4");</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-155"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='priest4_label' inherits="GameFontNormal" text="Group 4">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<Frame name='priest5' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>NAT_show_listmenu(priest5, "Group5");</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-195"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='priest5_label' inherits="GameFontNormal" text="Group 5">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<Frame name='priest6' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>NAT_show_listmenu(priest6, "Group6");</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-235"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='priest6_label' inherits="GameFontNormal" text="Group 6">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<Frame name='priest7' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>NAT_show_listmenu(priest7, "Group7");</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-275"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='priest7_label' inherits="GameFontNormal" text="Group 7">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<Frame name='priest8' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>NAT_show_listmenu(priest8, "Group8");</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-315"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='priest8_label' inherits="GameFontNormal" text="Group 8">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<Frame name='priest9' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>NAT_show_listmenu(priest9, priest9_label:GetText());</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-355"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='priest9_label' inherits="GameFontNormal" text="Other">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					<!-- healer assignment marks //-->
+					
+							<!--HEAL POST LOCATION //-->
+					<EditBox inherits="InputBoxTemplate" name="NATPriestPostChannelEdit" frameStrata="HIGH">
+						<Size><AbsDimension x="18" y="28"/></Size>
+						<Anchors>
+							<Anchor relativeTo="NAT" point="BOTTOM">
+								<Offset>
+									<AbsDimension x="65" y="19" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								NATPriestPostChannelEdit:SetText("r"); 
+								NATPriestPostChannelEdit:SetMaxLetters(1);
+								NATPriestPostChannelEdit:SetAutoFocus(false);
+							</OnLoad>
+							<OnEnter>NAT_on_post_enter(NATPriestPostChannelEdit);</OnEnter>
+							<OnTextChanged>NAT_on_post_text_changed(NATPriestPostChannelEdit);</OnTextChanged>
+							<OnLeave>NAT_on_post_exit(NATPriestPostChannelEdit);</OnLeave>
+						</Scripts>
+					</EditBox>
+					<!--HEAL POST LOCATION //-->
+				</Frames>
+			</Frame>
+			 
+				<!--NAT MAGE VIEW//-->
+				<Frame name='NAT_mage_body' frameStrata="MEDIUM" inherits="BackdropTemplate" hidden="true">
+					<Size><AbsDimension x="504" y="450"/></Size>
+					<Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="-2" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                    <KeyValues>
+                        <KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_16_16_5555" type="global"/>
+                        <KeyValue key="backdropBorderColor" value="LEGENDARY_ORANGE_COLOR" type="global"/>
+                        <KeyValue key="backdropBorderColorAlpha" value="1" type="number"/>
+                    </KeyValues>
+					 <Layers>
+                         <Layer level="ARTWORK">
+                            <Texture name="TPCFrameTitle" file="Interface\AddOns\NetworkedAssignmentTool\resources\images\mage_bg.tga" >
+								<Size>
+									<AbsDimension x="490" y="436" />
+								</Size>
+								<Anchors>
+									<Anchor point="TOP">
+										<Offset>
+											<AbsDimension x="0" y="-8" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Texture>
+                        </Layer>
+                     
+						<Layer level="OVERLAY">
+							<FontString inherits="GameFontNormal" name="NATMagePostLabel" text="raid">
+								<Anchors>
+									<Anchor point="BOTTOM">
+										<Offset>
+											<AbsDimension x="160" y="30" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</FontString>
+						
+							<!-- Setup texture //-->
+							<Texture name="mage_bg_texture" file="Interface\AddOns\NetworkedAssignmentTool\resources\images\icons\mage_icon.tga">
+								<Size><AbsDimension x="256" y="256"/></Size>
+								<Anchors>
+									<Anchor point="CENTER">
+										<Offset>
+										<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Texture>
+						</Layer>
+					</Layers>
+					<Frames>
+					<!-- mage assignment marks //-->
+					<Frame name='mage1' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>NAT_show_listmenu(mage1, "Group1");</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-35"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='mage1_label' inherits="GameFontNormal" text="Group 1">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<Frame name='mage2' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>NAT_show_listmenu(mage2, "Group2");</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-75"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='mage2_label' inherits="GameFontNormal" text="Group 2">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<Frame name='mage3' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>NAT_show_listmenu(mage3, "Group3");</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-115"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='mage3_label' inherits="GameFontNormal" text="Group 3">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<Frame name='mage4' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>NAT_show_listmenu(mage4, "Group4");</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-155"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='mage4_label' inherits="GameFontNormal" text="Group 4">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<Frame name='mage5' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>NAT_show_listmenu(mage5, "Group5");</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-195"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='mage5_label' inherits="GameFontNormal" text="Group 5">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<Frame name='mage6' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>NAT_show_listmenu(mage6, "Group6");</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-235"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='mage6_label' inherits="GameFontNormal" text="Group 6">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<Frame name='mage7' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>NAT_show_listmenu(mage7, "Group7");</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-275"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='mage7_label' inherits="GameFontNormal" text="Group 7">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<Frame name='mage8' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>NAT_show_listmenu(mage8, "Group8");</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-315"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='mage8_label' inherits="GameFontNormal" text="Group 8">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<Frame name='mage9' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>NAT_show_listmenu(mage9, mage9_label:GetText());</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-355"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='mage9_label' inherits="GameFontNormal" text="Other">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					<!-- healer assignment marks //-->
+					
+							<!--HEAL POST LOCATION //-->
+					<EditBox inherits="InputBoxTemplate" name="NATMagePostChannelEdit" frameStrata="HIGH">
+						<Size><AbsDimension x="18" y="28"/></Size>
+						<Anchors>
+							<Anchor relativeTo="NAT" point="BOTTOM">
+								<Offset>
+									<AbsDimension x="65" y="19" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								NATMagePostChannelEdit:SetText("r"); 
+								NATMagePostChannelEdit:SetMaxLetters(1);
+								NATMagePostChannelEdit:SetAutoFocus(false);
+							</OnLoad>
+							<OnEnter>NAT_on_post_enter(NATMagePostChannelEdit);</OnEnter>
+							<OnTextChanged>NAT_on_post_text_changed(NATMagePostChannelEdit);</OnTextChanged>
+							<OnLeave>NAT_on_post_exit(NATMagePostChannelEdit);</OnLeave>
+						</Scripts>
+					</EditBox>
+					<!--HEAL POST LOCATION //-->
+				</Frames>
+			</Frame>
+			 
+				<!--NAT DRUID VIEW//-->
+				<Frame name='NAT_druid_body' frameStrata="MEDIUM" inherits="BackdropTemplate" hidden="true">
+					<Size><AbsDimension x="504" y="450"/></Size>
+					<Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="-2" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                    <KeyValues>
+                        <KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_16_16_5555" type="global"/>
+                        <KeyValue key="backdropBorderColor" value="LEGENDARY_ORANGE_COLOR" type="global"/>
+                        <KeyValue key="backdropBorderColorAlpha" value="1" type="number"/>
+                    </KeyValues>
+					 <Layers>
+                         <Layer level="ARTWORK">
+                            <Texture name="TPCFrameTitle" file="Interface\AddOns\NetworkedAssignmentTool\resources\images\druid_bg.tga" >
+								<Size>
+									<AbsDimension x="490" y="436" />
+								</Size>
+								<Anchors>
+									<Anchor point="TOP">
+										<Offset>
+											<AbsDimension x="0" y="-8" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Texture>
+                        </Layer>
+                        
+						<Layer level="OVERLAY">
+							<FontString inherits="GameFontNormal" name="NATDruidPostLabel" text="raid">
+								<Anchors>
+									<Anchor point="BOTTOM">
+										<Offset>
+											<AbsDimension x="160" y="30" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</FontString>
+						
+							<!-- Setup texture //-->
+							<Texture name="druid_bg_texture" file="Interface\AddOns\NetworkedAssignmentTool\resources\images\icons\druid_icon.tga">
+								<Size><AbsDimension x="256" y="256"/></Size>
+								<Anchors>
+									<Anchor point="CENTER">
+										<Offset>
+										<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Texture>
+						</Layer>
+					</Layers>
+					<Frames>
+					<!-- druid assignment marks //-->
+					<Frame name='druid1' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>NAT_show_listmenu(druid1, "Group1");</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-35"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='druid1_label' inherits="GameFontNormal" text="Group 1">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<Frame name='druid2' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>NAT_show_listmenu(druid2, "Group2");</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-75"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='druid2_label' inherits="GameFontNormal" text="Group 2">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<Frame name='druid3' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>NAT_show_listmenu(druid3, "Group3");</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-115"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='druid3_label' inherits="GameFontNormal" text="Group 3">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<Frame name='druid4' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>NAT_show_listmenu(druid4, "Group4");</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-155"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='druid4_label' inherits="GameFontNormal" text="Group 4">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<Frame name='druid5' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>NAT_show_listmenu(druid5, "Group5");</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-195"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='druid5_label' inherits="GameFontNormal" text="Group 5">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<Frame name='druid6' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>NAT_show_listmenu(druid6, "Group6");</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-235"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='druid6_label' inherits="GameFontNormal" text="Group 6">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<Frame name='druid7' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>NAT_show_listmenu(druid7, "Group7");</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-275"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='druid7_label' inherits="GameFontNormal" text="Group 7">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<Frame name='druid8' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>NAT_show_listmenu(druid8, "Group8");</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-315"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='druid8_label' inherits="GameFontNormal" text="Group 8">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<Frame name='druid9' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>NAT_show_listmenu(druid9, druid9_label:GetText());</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-355"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='druid9_label' inherits="GameFontNormal" text="Other">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					<!-- healer assignment marks //-->
+					
+							<!--DRUID POST LOCATION //-->
+					<EditBox inherits="InputBoxTemplate" name="NATDruidPostChannelEdit" frameStrata="HIGH">
+						<Size><AbsDimension x="18" y="28"/></Size>
+						<Anchors>
+							<Anchor relativeTo="NAT" point="BOTTOM">
+								<Offset>
+									<AbsDimension x="65" y="19" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								NATDruidPostChannelEdit:SetText("r"); 
+								NATDruidPostChannelEdit:SetMaxLetters(1);
+								NATDruidPostChannelEdit:SetAutoFocus(false);
+							</OnLoad>
+							<OnEnter>NAT_on_post_enter(NATDruidPostChannelEdit);</OnEnter>
+							<OnTextChanged>NAT_on_post_text_changed(NATDruidPostChannelEdit);</OnTextChanged>
+							<OnLeave>NAT_on_post_exit(NATDruidPostChannelEdit);</OnLeave>
+						</Scripts>
+					</EditBox>
+					<!--DRUID POST LOCATION //-->
+				</Frames>
+			</Frame>
+				
+				<!--NAT WARLOCK VIEW//-->
+				<Frame name='NAT_warlock_body' frameStrata="MEDIUM" inherits="BackdropTemplate" hidden="true">
+					<Size><AbsDimension x="504" y="450"/></Size>
+					<Anchors>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="-2" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+					<KeyValues>
+                        <KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_16_16_5555" type="global"/>
+                        <KeyValue key="backdropBorderColor" value="LEGENDARY_ORANGE_COLOR" type="global"/>
+                        <KeyValue key="backdropBorderColorAlpha" value="1" type="number"/>
+                    </KeyValues>
+					 <Layers>
+                         <Layer level="ARTWORK">
+                            <Texture name="TPCFrameTitle" file="Interface\AddOns\NetworkedAssignmentTool\resources\images\warlock_bg.tga" >
+								<Size>
+									<AbsDimension x="490" y="436" />
+								</Size>
+								<Anchors>
+									<Anchor point="TOP">
+										<Offset>
+											<AbsDimension x="0" y="-8" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Texture>
+                        </Layer>
+                     
+						<Layer level="OVERLAY">
+							<FontString inherits="GameFontNormal" name="NATWarlockPostLabel" text="raid">
+								<Anchors>
+									<Anchor point="BOTTOM">
+										<Offset>
+											<AbsDimension x="160" y="30" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</FontString>
+						
+							<!-- Setup texture //-->
+							<Texture name="warlock_bg_texture" file="Interface\AddOns\NetworkedAssignmentTool\resources\images\icons\warlock_icon.tga">
+								<Size><AbsDimension x="256" y="256"/></Size>
+								<Anchors>
+									<Anchor point="CENTER">
+										<Offset>
+										<AbsDimension x="0" y="0"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Texture>
+						</Layer>
+					</Layers>
+					<Frames>
+					<!-- warlock assignment marks //-->
+					<Frame name='warlock1' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>NAT_show_listmenu(self, warlock1_label:GetText());</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-35"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='warlock1_label' inherits="GameFontNormal" text="Recklessness">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<Frame name='warlock2' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>NAT_show_listmenu(warlock2, warlock2_label:GetText());</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-75"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='warlock2_label' inherits="GameFontNormal" text="Shadow">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<Frame name='warlock3' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>NAT_show_listmenu(warlock3, warlock3_label:GetText());</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-115"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='warlock3_label' inherits="GameFontNormal" text="Elements">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<Frame name='warlock4' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>NAT_show_listmenu(warlock4, warlock4_label:GetText());</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-155"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='warlock4_label' inherits="GameFontNormal" text="Weakness">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<Frame name='warlock5' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>NAT_show_listmenu(warlock5, warlock5_label:GetText());</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-195"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='warlock5_label' inherits="GameFontNormal" text="Exhaustion">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<Frame name='warlock6' enableMouse="true">
+						<Size><AbsDimension x="80" y="30"/></Size>
+						<Scripts><OnEnter>NAT_show_listmenu(warlock6, warlock6_label:GetText());</OnEnter></Scripts>
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="15" y="-235"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						 <Layers>
+							<Layer level="ARTWORK">
+								<!-- Setup label //-->
+								<FontString name='warlock6_label' inherits="GameFontNormal" text="Tongues">
+									<Size><AbsDimension x="80" y="30"/></Size>
+									<Anchors>
+										<Anchor point="CENTER">
+											<Offset>
+											<AbsDimension x="0" y="0"/>
+											</Offset>
+										</Anchor>
+									</Anchors>
+									<TexCoords left="0" right="0.25" top="0" bottom="0.25"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+					
+					<!-- warlock assignment marks //-->
+					
+							<!--WARLOCK POST LOCATION //-->
+					<EditBox inherits="InputBoxTemplate" name="NATWarlockPostChannelEdit" frameStrata="HIGH">
+						<Size><AbsDimension x="18" y="28"/></Size>
+						<Anchors>
+							<Anchor relativeTo="NAT" point="BOTTOM">
+								<Offset>
+									<AbsDimension x="65" y="19" />
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnLoad>
+								NATWarlockPostChannelEdit:SetText("r"); 
+								NATWarlockPostChannelEdit:SetMaxLetters(1);
+								NATWarlockPostChannelEdit:SetAutoFocus(false);
+							</OnLoad>
+							<OnEnter>NAT_on_post_enter(NATWarlockPostChannelEdit);</OnEnter>
+							<OnTextChanged>NAT_on_post_text_changed(NATWarlockPostChannelEdit);</OnTextChanged>
+							<OnLeave>NAT_on_post_exit(NATWarlockPostChannelEdit);</OnLeave>
+						</Scripts>
+					</EditBox>
+					<!--WARLOCK POST LOCATION //-->
+				</Frames>
+			</Frame>
+				
+				<!--Selectable players menu for respected views //-->
+					<!-- Tank list menu //-->
+					<Frame name="NAT_tank_list" inherits="UIDropDownMenuTemplate" frameStrata="HIGH">
+						<Anchors></Anchors>
+				   </Frame>
+					<!-- Healer list menu //-->
+					<Frame name="NAT_heal_list" inherits="UIDropDownMenuTemplate" frameStrata="HIGH">
+						<Anchors></Anchors>
+				   </Frame>
+				   <!-- Interrupt list menu //-->
+				   <Frame name="NAT_interrupt_list" inherits="UIDropDownMenuTemplate" frameStrata="HIGH">
+						<Anchors></Anchors>
+				   </Frame>
+				   
+				   <!-- Priest list menu //-->
+				   <Frame name="NAT_priest_list" inherits="UIDropDownMenuTemplate" frameStrata="HIGH">
+						<Anchors></Anchors>
+				   </Frame>
+				   
+				   <!-- Mage list menu //-->
+				   <Frame name="NAT_mage_list" inherits="UIDropDownMenuTemplate" frameStrata="HIGH">
+						<Anchors></Anchors>
+				   </Frame>
+				   
+				   <!-- Druid list menu //-->
+				   <Frame name="NAT_druid_list" inherits="UIDropDownMenuTemplate" frameStrata="HIGH">
+						<Anchors></Anchors>
+				   </Frame>
+				   
+				   <!-- Warlock list menu //-->
+				   <Frame name="NAT_warlock_list" inherits="UIDropDownMenuTemplate" frameStrata="HIGH">
+						<Anchors></Anchors>
+				   </Frame>
+				<!--Selectable players menu for respected views //-->	
+				
+				<!-- Choose between tank/healing/interupt/misc assignments //-->
+					
+			   <Button name="NAT_choose_tank_menu" frameStrata="LOW">
+					<Size><AbsDimension x="50" y="50"/></Size>
+					<Anchors>
+						<Anchor relativeTo="NAT" point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="-38" y="-35" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+					
+					 <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background"
+					   edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+					   
+					   <TileSize>
+						 <AbsValue val="32"/>
+					   </TileSize>
+					   <EdgeSize>
+						 <AbsValue val="8"/>
+					   </EdgeSize>
+					  
+					 </Backdrop>
+					
+					<Layers>
+						<Layer level="background">
+							
+						</Layer>
+						<Layer level="artwork">
+							 <Texture name="NATTankIcon" file="Interface\AddOns\NetworkedAssignmentTool\resources\images\icons\tank_icon.tga">
+								<Size>
+									<AbsDimension x="50" y="50" />
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Texture>
+						</Layer>
+					</Layers>
+					
+					<Scripts>
+						<OnClick>NAT_mode_picker_clicked(1);</OnClick>
+						<OnEnter>NAT_hover_choose_frames(NAT_choose_tank_menu, 1, 1)</OnEnter>
+						<OnLeave>NAT_hover_choose_frames(NAT_choose_tank_menu, 2, 1)</OnLeave>
+					</Scripts>
+			   </Button>
+			   
+				<Button name="NAT_choose_healer_menu" frameStrata="LOW">
+					<Size><AbsDimension x="50" y="50"/></Size>
+					<Anchors>
+						<Anchor relativeTo="NAT" point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="-25" y="-85" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+					
+					 <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background"
+					   edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+					   
+					   <TileSize>
+						 <AbsValue val="32"/>
+					   </TileSize>
+					   <EdgeSize>
+						 <AbsValue val="8"/>
+					   </EdgeSize>
+					  
+					 </Backdrop>
+					
+					<Layers>
+						<Layer level="background">
+							
+						</Layer>
+						<Layer level="artwork">
+							 <Texture name="NATHealerIcon" file="Interface\AddOns\NetworkedAssignmentTool\resources\images\icons\healer_icon.tga">
+								<Size>
+									<AbsDimension x="50" y="50" />
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Texture>
+						</Layer>
+					</Layers>
+					
+					<Scripts>
+						<OnClick>NAT_mode_picker_clicked(2);</OnClick>
+						<OnEnter>NAT_hover_choose_frames(NAT_choose_healer_menu, 1, 2)</OnEnter>
+						<OnLeave>NAT_hover_choose_frames(NAT_choose_healer_menu, 2, 2)</OnLeave>
+					</Scripts>
+			   </Button>
+				
+				<Button name="NAT_choose_interrupt_menu" frameStrata="LOW">
+					<Size><AbsDimension x="50" y="50"/></Size>
+					<Anchors>
+						<Anchor relativeTo="NAT" point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="-25" y="-135" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+					
+					 <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background"
+					   edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+					   
+					   <TileSize>
+						 <AbsValue val="32"/>
+					   </TileSize>
+					   <EdgeSize>
+						 <AbsValue val="8"/>
+					   </EdgeSize>
+					  
+					 </Backdrop>
+					
+					<Layers>
+						<Layer level="background">
+							
+						</Layer>
+						<Layer level="artwork">
+							 <Texture name="NATInterruptIcon" file="Interface\AddOns\NetworkedAssignmentTool\resources\images\icons\interrupt_icon.tga">
+								<Size>
+									<AbsDimension x="50" y="50" />
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Texture>
+						</Layer>
+					</Layers>
+					<Scripts>
+						<OnClick>NAT_mode_picker_clicked(3);</OnClick>
+						<OnEnter>NAT_hover_choose_frames(NAT_choose_interrupt_menu, 1, 3)</OnEnter>
+						<OnLeave>NAT_hover_choose_frames(NAT_choose_interrupt_menu, 2, 3)</OnLeave>
+					</Scripts>
+			   </Button>
+
+			    <Button name="NAT_choose_priest_menu" frameStrata="LOW">
+					<Size><AbsDimension x="50" y="50"/></Size>
+					<Anchors>
+						<Anchor relativeTo="NAT" point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="-25" y="-185" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+					
+					 <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background"
+					   edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+					   
+					   <TileSize>
+						 <AbsValue val="32"/>
+					   </TileSize>
+					   <EdgeSize>
+						 <AbsValue val="8"/>
+					   </EdgeSize>
+					  
+					 </Backdrop>
+					
+					<Layers>
+						<Layer level="background">
+							
+						</Layer>
+						<Layer level="artwork">
+							 <Texture name="NATTankIcon" file="Interface\AddOns\NetworkedAssignmentTool\resources\images\icons\priest_icon.tga">
+								<Size>
+									<AbsDimension x="50" y="50" />
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Texture>
+						</Layer>
+					</Layers>
+					
+					<Scripts>
+						<OnClick>NAT_mode_picker_clicked(4);</OnClick>
+						<OnEnter>NAT_hover_choose_frames(NAT_choose_priest_menu, 1, 4)</OnEnter>
+						<OnLeave>NAT_hover_choose_frames(NAT_choose_priest_menu, 2, 4)</OnLeave>
+					</Scripts>
+			   </Button>
+
+			  <Button name="NAT_choose_mage_menu" frameStrata="LOW">
+					<Size><AbsDimension x="50" y="50"/></Size>
+					<Anchors>
+						<Anchor relativeTo="NAT" point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="-25" y="-235" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+					
+					 <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background"
+					   edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+					   
+					   <TileSize>
+						 <AbsValue val="32"/>
+					   </TileSize>
+					   <EdgeSize>
+						 <AbsValue val="8"/>
+					   </EdgeSize>
+					  
+					 </Backdrop>
+					
+					<Layers>
+						<Layer level="background">
+							
+						</Layer>
+						<Layer level="artwork">
+							 <Texture name="NATTankIcon" file="Interface\AddOns\NetworkedAssignmentTool\resources\images\icons\mage_icon.tga">
+								<Size>
+									<AbsDimension x="50" y="50" />
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Texture>
+						</Layer>
+					</Layers>
+					
+					<Scripts>
+						<OnClick>NAT_mode_picker_clicked(5);</OnClick>
+						<OnEnter>NAT_hover_choose_frames(NAT_choose_mage_menu, 1, 5)</OnEnter>
+						<OnLeave>NAT_hover_choose_frames(NAT_choose_mage_menu, 2, 5)</OnLeave>
+					</Scripts>
+			   </Button>
+
+			    <Button name="NAT_choose_druid_menu" frameStrata="LOW">
+					<Size><AbsDimension x="50" y="50"/></Size>
+					<Anchors>
+						<Anchor relativeTo="NAT" point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="-25" y="-285" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+					
+					 <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background"
+					   edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+					   
+					   <TileSize>
+						 <AbsValue val="32"/>
+					   </TileSize>
+					   <EdgeSize>
+						 <AbsValue val="8"/>
+					   </EdgeSize>
+					  
+					 </Backdrop>
+					
+					<Layers>
+						<Layer level="background">
+							
+						</Layer>
+						<Layer level="artwork">
+							 <Texture name="NATTankIcon" file="Interface\AddOns\NetworkedAssignmentTool\resources\images\icons\druid_icon.tga">
+								<Size>
+									<AbsDimension x="50" y="50" />
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Texture>
+						</Layer>
+					</Layers>
+					
+					<Scripts>
+						<OnClick>NAT_mode_picker_clicked(6);</OnClick>
+						<OnEnter>NAT_hover_choose_frames(NAT_choose_druid_menu, 1, 6)</OnEnter>
+						<OnLeave>NAT_hover_choose_frames(NAT_choose_druid_menu, 2, 6)</OnLeave>
+					</Scripts>
+			   </Button>
+			   
+			    <Button name="NAT_choose_warlock_menu" frameStrata="LOW">
+					<Size><AbsDimension x="50" y="50"/></Size>
+					<Anchors>
+						<Anchor relativeTo="NAT" point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="-25" y="-335" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+					
+					 <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background"
+					   edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+					   
+					   <TileSize>
+						 <AbsValue val="32"/>
+					   </TileSize>
+					   <EdgeSize>
+						 <AbsValue val="8"/>
+					   </EdgeSize>
+					  
+					 </Backdrop>
+					
+					<Layers>
+						<Layer level="background">
+							
+						</Layer>
+						<Layer level="artwork">
+							 <Texture name="NATTankIcon" file="Interface\AddOns\NetworkedAssignmentTool\resources\images\icons\warlock_icon.tga">
+								<Size>
+									<AbsDimension x="50" y="50" />
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT">
+										<Offset>
+											<AbsDimension x="0" y="0" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Texture>
+						</Layer>
+					</Layers>
+					
+					<Scripts>
+						<OnClick>NAT_mode_picker_clicked(7);</OnClick>
+						<OnEnter>NAT_hover_choose_frames(NAT_choose_warlock_menu, 1, 7)</OnEnter>
+						<OnLeave>NAT_hover_choose_frames(NAT_choose_warlock_menu, 2, 7)</OnLeave>
+					</Scripts>
+			   </Button>
+
+			   
+			 <!-- Choose between tank/healing/interupt/misc assignments //-->
+			    <Button inherits="OptionsButtonTemplate" name="NATPostButton" text="Post" frameStrata="HIGH">
+					<Size><AbsDimension x="80" y="30"/></Size>
+					<Anchors>
+						<Anchor relativeTo="NAT" point="BOTTOM">
+							<Offset>
+								<AbsDimension x="0" y="18" />
+							</Offset>
+						</Anchor>
+						
+					</Anchors>
+					<Scripts>
+						<OnClick>NAT_post();</OnClick>
+					</Scripts>
+				</Button>
+			   
+			   <!-- Close button //-->
+			    <Button inherits="OptionsButtonTemplate" name="NATCloseButton" text="X" frameStrata="HIGH">
+					<Size><AbsDimension x="14" y="14"/></Size>
+					<Anchors>
+						<Anchor relativeTo="NAT" point="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="-10" y="-12" />
+							</Offset>
+						</Anchor>
+						
+					</Anchors>
+					<Scripts>
+						<OnClick>NAT:Hide();</OnClick>
+					</Scripts>
+				</Button>
+				<!-- Close button //-->
+			</Frames>
+			<!-- BUTTONS N SHIT //-->
+			
+	 </Frame>
+</Ui>
+
