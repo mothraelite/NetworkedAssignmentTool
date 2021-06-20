@@ -125,11 +125,6 @@ function NAT_create_player_frame(_button_name, _parent_frame, _player_name)
 	local uncolored_name = string.sub(_player_name, 11, strlen(_player_name));
 	local r,g,b = NAT_hex2rgb(string.sub(_player_name, 5, 11));
 	local backdrop = {
-			edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
-			bgFile = "Interface/DialogFrame/UI-DialogBox-Background",
-			tile="false",
-			tileSize="8",
-			edgeSize="4",
 			insets={
 				left="2",
 				right="2",
@@ -138,7 +133,7 @@ function NAT_create_player_frame(_button_name, _parent_frame, _player_name)
 			}
 	}
 	
-	local frame = CreateFrame("Button", _button_name, _parent_frame);
+	local frame = CreateFrame("Button", _button_name, _parent_frame, "BackdropTemplate");
 	frame:EnableMouse();
 	frame:RegisterForClicks("RightButtonDown");
 	frame:SetWidth(130)
@@ -184,6 +179,7 @@ function NAT_create_player_frame(_button_name, _parent_frame, _player_name)
 		if UnitInRaid("player")
 		then
 			local funit_id = NAT_retrieve_unitid_from_name(frame.name:GetText());
+            
 			if frame.model.unit_id ~= funit_id
 			then
 				frame.model:SetUnit(funit_id);

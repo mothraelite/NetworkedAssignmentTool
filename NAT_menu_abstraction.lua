@@ -550,7 +550,6 @@ function(_postInputBoxObject, _postLabelObject, _viewBody)
 		do
 			--check if they have the HACHE PEES
 			local unitid = NAT_retrieve_unitid_from_name(player);
-			DEFAULT_CHAT_FRAME:AddMessage("NAT: test " ..player, 0.6,1.0,0.6);
 			if unitid ~= nil
 			then
 				if UnitHealth(unitid) > 6800

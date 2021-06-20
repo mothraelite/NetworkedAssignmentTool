@@ -13,6 +13,15 @@ local interrupt_controller; --interrupt drop down menu controller
 local priest_controller; --priest drop down menu controller
 local network_controller;
 
+--[[
+    current bugs:
+        1) race condition for master
+        2) current assignments not being transmitted/received correctly so it acts like its never set up
+            a: check 9.0 send calls
+            b: check and verify 
+        3) event for joining raid not working, should ask for setup or setup if none vail
+--]]
+
 --xml references for easy access
 local NAT = {};
 NAT.subframes = {};
@@ -58,7 +67,7 @@ function NAT_init(_frame)
 
 	--setup reg functions
 	NAT.frame:RegisterForDrag("LeftButton");
-	NAT.frame:RegisterEvent("RAID_ROSTER_UPDATE"); --fires on personal promotion, personal demotion, anyone joining raid, anyone leaving raid
+	NAT.frame:RegisterEvent("GROUP_ROSTER_UPDATE"); --fires on personal promotion, personal demotion, anyone joining raid, anyone leaving raid
 	NAT.frame:RegisterEvent("RAID_TARGET_UPDATE"); --unfortunately, no response that indicates what was changed. probably going to notify all assigned tanks that things have changed though.
 	NAT.frame:RegisterEvent("CHAT_MSG_ADDON");
     C_ChatInfo.RegisterAddonMessagePrefix("NAT");
@@ -119,7 +128,7 @@ function NAT_request_master()
 end
 
 function NAT_handle_events(event, ...)
-	if event == "RAID_ROSTER_UPDATE" 
+	if event == "GROUP_ROSTER_UPDATE" 
 	then
 		--if im not setup yet, request a setup or become master
 		if network_controller.state == -1
@@ -571,7 +580,7 @@ function NAT_reset_visuals()
 	
 	for i,button in ipairs(NAT.chooser_buttons)
 	do
-		button:SetPoint("TOPLEFT", NAT.frame, "TOPLEFT",-15,-35-50*(i-1));
+		button:SetPoint("TOPLEFT", NAT.frame, "TOPLEFT",-25,-35-50*(i-1));
 	end
 end
 
@@ -632,7 +641,7 @@ function NAT_hover_choose_frames(_frame, _dir, _mode) --dir: 1 = left, dir: 2 = 
 			_frame:SetPoint(point, relative_to, relative_point, xof, yof);
 
 		else
-			xof = -15
+			xof = -25
 			_frame:SetPoint(point, relative_to, relative_point, xof, yof);
 		end
 	else

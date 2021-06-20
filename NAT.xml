@@ -31,7 +31,7 @@
 				<OnDragStop>NAT:StopMovingOrSizing();</OnDragStop>
 			</Scripts>
 			
-			 <Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background"
+			 <!--<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background"
 				   edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
 			   <BackgroundInsets>
 				 <AbsInset left="11" right="12" top="12" bottom="11"/>
@@ -43,7 +43,7 @@
 				 <AbsValue val="32"/>
 			   </EdgeSize>
 			  
-			 </Backdrop>
+			 </Backdrop> //!-->
 
 			 <Layers>
 				<Layer level="ARTWORK">
@@ -110,7 +110,7 @@
 						</Anchor>
 					</Anchors>
 					 <Layers>
-						<Layer level="ARTWORK">
+						<Layer level="OVERLAY">
 							<!-- Setup bar //-->
 							<Texture name="TPCFrameTitle" file="Interface\AddOns\NetworkedAssignmentTool\resources\images\head.tga" >
 								<Size>
@@ -186,21 +186,38 @@
 				</Frame>
 			 
 				<!--NAT TANK VIEW//-->
-				<Frame name='NAT_tank_body' frameStrata="MEDIUM">
+				<Frame name='NAT_tank_body' frameStrata="MEDIUM"  inherits="BackdropTemplate">
 					<Size><AbsDimension x="504" y="450"/></Size>
 					<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="-2" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					<Backdrop bgFile="Interface\AddOns\NetworkedAssignmentTool\resources\images\tank_bg.tga">
-					   <BackgroundInsets>
-							<AbsInset left="11" right="12" top="12" bottom="11"/>
-					   </BackgroundInsets>
-					</Backdrop>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="-2" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors> 
+                    
+                    <KeyValues>
+                        <KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_16_16_5555" type="global"/>
+                        <KeyValue key="backdropBorderColor" value="LEGENDARY_ORANGE_COLOR" type="global"/>
+                        <KeyValue key="backdropBorderColorAlpha" value="1" type="number"/>
+                    </KeyValues>
+
 					 <Layers>
+                        <Layer level="ARTWORK">
+                            <Texture name="TPCFrameTitle" file="Interface\AddOns\NetworkedAssignmentTool\resources\images\tank_bg.tga" >
+								<Size>
+									<AbsDimension x="490" y="436" />
+								</Size>
+								<Anchors>
+									<Anchor point="TOP">
+										<Offset>
+											<AbsDimension x="0" y="-8" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Texture>
+                        </Layer>
+                     
 						<Layer level="OVERLAY">
 							<FontString inherits="GameFontNormal" name="NATTankPostLabel" text="raid" justifyV="RIGHT">
 								<Anchors>
@@ -519,21 +536,36 @@
 				</Frame>
 				
 				<!--NAT HEALER VIEW//-->
-				<Frame name='NAT_healer_body' frameStrata="MEDIUM" hidden="true">
+				<Frame name='NAT_healer_body' frameStrata="MEDIUM"  inherits="BackdropTemplate" hidden="true">
 					<Size><AbsDimension x="504" y="450"/></Size>
 					<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="-2" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					<Backdrop bgFile="Interface\AddOns\NetworkedAssignmentTool\resources\images\healer_bg.tga">
-					   <BackgroundInsets>
-							<AbsInset left="11" right="12" top="12" bottom="11"/>
-					   </BackgroundInsets>
-					</Backdrop>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="-2" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                    <KeyValues>
+                        <KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_16_16_5555" type="global"/>
+                        <KeyValue key="backdropBorderColor" value="LEGENDARY_ORANGE_COLOR" type="global"/>
+                        <KeyValue key="backdropBorderColorAlpha" value="1" type="number"/>
+                    </KeyValues>
 					 <Layers>
+                         <Layer level="ARTWORK">
+                            <Texture name="TPCFrameTitle" file="Interface\AddOns\NetworkedAssignmentTool\resources\images\healer_bg.tga" >
+								<Size>
+									<AbsDimension x="490" y="436" />
+								</Size>
+								<Anchors>
+									<Anchor point="TOP">
+										<Offset>
+											<AbsDimension x="0" y="-8" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Texture>
+                        </Layer>
+                     
 						<Layer level="OVERLAY">
 							<FontString inherits="GameFontNormal" name="NATHealPostLabel" text="raid">
 								<Anchors>
@@ -839,21 +871,36 @@
 			</Frame>
 			 
 				<!--NAT INTERRUPT VIEW//-->
-				<Frame name='NAT_interrupt_body' frameStrata="MEDIUM" hidden="true">
+				<Frame name='NAT_interrupt_body' frameStrata="MEDIUM" inherits="BackdropTemplate" hidden="true">
 					<Size><AbsDimension x="504" y="450"/></Size>
 					<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="-2" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					<Backdrop bgFile="Interface\AddOns\NetworkedAssignmentTool\resources\images\interrupt_bg.tga">
-					   <BackgroundInsets>
-							<AbsInset left="11" right="12" top="12" bottom="11"/>
-					   </BackgroundInsets>
-					</Backdrop>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="-2" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                    <KeyValues>
+                        <KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_16_16_5555" type="global"/>
+                        <KeyValue key="backdropBorderColor" value="LEGENDARY_ORANGE_COLOR" type="global"/>
+                        <KeyValue key="backdropBorderColorAlpha" value="1" type="number"/>
+                    </KeyValues>
 					 <Layers>
+                         <Layer level="ARTWORK">
+                            <Texture name="TPCFrameTitle" file="Interface\AddOns\NetworkedAssignmentTool\resources\images\interrupt_bg.tga" >
+								<Size>
+									<AbsDimension x="490" y="436" />
+								</Size>
+								<Anchors>
+									<Anchor point="TOP">
+										<Offset>
+											<AbsDimension x="0" y="-8" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Texture>
+                        </Layer>
+                        
 						<Layer level="OVERLAY">
 							<FontString inherits="GameFontNormal" name="NATInterruptPostLabel" text="raid">
 								<Anchors>
@@ -1172,21 +1219,36 @@
 				</Frame>
 				
 				<!--NAT PRIEST VIEW//-->
-				<Frame name='NAT_priest_body' frameStrata="MEDIUM" hidden="true">
+				<Frame name='NAT_priest_body' frameStrata="MEDIUM" inherits="BackdropTemplate" hidden="true">
 					<Size><AbsDimension x="504" y="450"/></Size>
 					<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="-2" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					<Backdrop bgFile="Interface\AddOns\NetworkedAssignmentTool\resources\images\priest_bg.tga">
-					   <BackgroundInsets>
-							<AbsInset left="11" right="12" top="12" bottom="11"/>
-					   </BackgroundInsets>
-					</Backdrop>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="-2" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                    <KeyValues>
+                        <KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_16_16_5555" type="global"/>
+                        <KeyValue key="backdropBorderColor" value="LEGENDARY_ORANGE_COLOR" type="global"/>
+                        <KeyValue key="backdropBorderColorAlpha" value="1" type="number"/>
+                    </KeyValues>
 					 <Layers>
+                         <Layer level="ARTWORK">
+                            <Texture name="TPCFrameTitle" file="Interface\AddOns\NetworkedAssignmentTool\resources\images\priest_bg.tga" >
+								<Size>
+									<AbsDimension x="490" y="436" />
+								</Size>
+								<Anchors>
+									<Anchor point="TOP">
+										<Offset>
+											<AbsDimension x="0" y="-8" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Texture>
+                        </Layer>
+                        
 						<Layer level="OVERLAY">
 							<FontString inherits="GameFontNormal" name="NATPriestPostLabel" text="raid">
 								<Anchors>
@@ -1492,21 +1554,36 @@
 			</Frame>
 			 
 				<!--NAT MAGE VIEW//-->
-				<Frame name='NAT_mage_body' frameStrata="MEDIUM" hidden="true">
+				<Frame name='NAT_mage_body' frameStrata="MEDIUM" inherits="BackdropTemplate" hidden="true">
 					<Size><AbsDimension x="504" y="450"/></Size>
 					<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="-2" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					<Backdrop bgFile="Interface\AddOns\NetworkedAssignmentTool\resources\images\mage_bg.tga">
-					   <BackgroundInsets>
-							<AbsInset left="11" right="12" top="12" bottom="11"/>
-					   </BackgroundInsets>
-					</Backdrop>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="-2" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                    <KeyValues>
+                        <KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_16_16_5555" type="global"/>
+                        <KeyValue key="backdropBorderColor" value="LEGENDARY_ORANGE_COLOR" type="global"/>
+                        <KeyValue key="backdropBorderColorAlpha" value="1" type="number"/>
+                    </KeyValues>
 					 <Layers>
+                         <Layer level="ARTWORK">
+                            <Texture name="TPCFrameTitle" file="Interface\AddOns\NetworkedAssignmentTool\resources\images\mage_bg.tga" >
+								<Size>
+									<AbsDimension x="490" y="436" />
+								</Size>
+								<Anchors>
+									<Anchor point="TOP">
+										<Offset>
+											<AbsDimension x="0" y="-8" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Texture>
+                        </Layer>
+                     
 						<Layer level="OVERLAY">
 							<FontString inherits="GameFontNormal" name="NATMagePostLabel" text="raid">
 								<Anchors>
@@ -1812,21 +1889,36 @@
 			</Frame>
 			 
 				<!--NAT DRUID VIEW//-->
-				<Frame name='NAT_druid_body' frameStrata="MEDIUM" hidden="true">
+				<Frame name='NAT_druid_body' frameStrata="MEDIUM" inherits="BackdropTemplate" hidden="true">
 					<Size><AbsDimension x="504" y="450"/></Size>
 					<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="-2" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					<Backdrop bgFile="Interface\AddOns\NetworkedAssignmentTool\resources\images\druid_bg.tga">
-					   <BackgroundInsets>
-							<AbsInset left="11" right="12" top="12" bottom="11"/>
-					   </BackgroundInsets>
-					</Backdrop>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="-2" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+                    <KeyValues>
+                        <KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_16_16_5555" type="global"/>
+                        <KeyValue key="backdropBorderColor" value="LEGENDARY_ORANGE_COLOR" type="global"/>
+                        <KeyValue key="backdropBorderColorAlpha" value="1" type="number"/>
+                    </KeyValues>
 					 <Layers>
+                         <Layer level="ARTWORK">
+                            <Texture name="TPCFrameTitle" file="Interface\AddOns\NetworkedAssignmentTool\resources\images\druid_bg.tga" >
+								<Size>
+									<AbsDimension x="490" y="436" />
+								</Size>
+								<Anchors>
+									<Anchor point="TOP">
+										<Offset>
+											<AbsDimension x="0" y="-8" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Texture>
+                        </Layer>
+                        
 						<Layer level="OVERLAY">
 							<FontString inherits="GameFontNormal" name="NATDruidPostLabel" text="raid">
 								<Anchors>
@@ -2132,21 +2224,36 @@
 			</Frame>
 				
 				<!--NAT WARLOCK VIEW//-->
-				<Frame name='NAT_warlock_body' frameStrata="MEDIUM" hidden="true">
+				<Frame name='NAT_warlock_body' frameStrata="MEDIUM" inherits="BackdropTemplate" hidden="true">
 					<Size><AbsDimension x="504" y="450"/></Size>
 					<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="-2" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					<Backdrop bgFile="Interface\AddOns\NetworkedAssignmentTool\resources\images\warlock_bg.tga">
-					   <BackgroundInsets>
-							<AbsInset left="11" right="12" top="12" bottom="11"/>
-					   </BackgroundInsets>
-					</Backdrop>
+                        <Anchor point="TOPLEFT">
+                            <Offset>
+                                <AbsDimension x="-2" y="0"/>
+                            </Offset>
+                        </Anchor>
+                    </Anchors>
+					<KeyValues>
+                        <KeyValue key="backdropInfo" value="BACKDROP_TOOLTIP_16_16_5555" type="global"/>
+                        <KeyValue key="backdropBorderColor" value="LEGENDARY_ORANGE_COLOR" type="global"/>
+                        <KeyValue key="backdropBorderColorAlpha" value="1" type="number"/>
+                    </KeyValues>
 					 <Layers>
+                         <Layer level="ARTWORK">
+                            <Texture name="TPCFrameTitle" file="Interface\AddOns\NetworkedAssignmentTool\resources\images\warlock_bg.tga" >
+								<Size>
+									<AbsDimension x="490" y="436" />
+								</Size>
+								<Anchors>
+									<Anchor point="TOP">
+										<Offset>
+											<AbsDimension x="0" y="-8" />
+										</Offset>
+									</Anchor>
+								</Anchors>
+							</Texture>
+                        </Layer>
+                     
 						<Layer level="OVERLAY">
 							<FontString inherits="GameFontNormal" name="NATWarlockPostLabel" text="raid">
 								<Anchors>
@@ -2459,7 +2566,7 @@
 					<Anchors>
 						<Anchor relativeTo="NAT" point="TOPLEFT">
 							<Offset>
-								<AbsDimension x="-15" y="-85" />
+								<AbsDimension x="-25" y="-85" />
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -2508,7 +2615,7 @@
 					<Anchors>
 						<Anchor relativeTo="NAT" point="TOPLEFT">
 							<Offset>
-								<AbsDimension x="-15" y="-135" />
+								<AbsDimension x="-25" y="-135" />
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -2556,7 +2663,7 @@
 					<Anchors>
 						<Anchor relativeTo="NAT" point="TOPLEFT">
 							<Offset>
-								<AbsDimension x="-15" y="-185" />
+								<AbsDimension x="-25" y="-185" />
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -2605,7 +2712,7 @@
 					<Anchors>
 						<Anchor relativeTo="NAT" point="TOPLEFT">
 							<Offset>
-								<AbsDimension x="-15" y="-235" />
+								<AbsDimension x="-25" y="-235" />
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -2654,7 +2761,7 @@
 					<Anchors>
 						<Anchor relativeTo="NAT" point="TOPLEFT">
 							<Offset>
-								<AbsDimension x="-15" y="-285" />
+								<AbsDimension x="-25" y="-285" />
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -2703,7 +2810,7 @@
 					<Anchors>
 						<Anchor relativeTo="NAT" point="TOPLEFT">
 							<Offset>
-								<AbsDimension x="-15" y="-335" />
+								<AbsDimension x="-25" y="-335" />
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -2749,7 +2856,7 @@
 
 			   
 			 <!-- Choose between tank/healing/interupt/misc assignments //-->
-			    <Button inherits="OptionsButtonTemplate" name="NATPostButton" text="Post">
+			    <Button inherits="OptionsButtonTemplate" name="NATPostButton" text="Post" frameStrata="HIGH">
 					<Size><AbsDimension x="80" y="30"/></Size>
 					<Anchors>
 						<Anchor relativeTo="NAT" point="BOTTOM">
