@@ -383,7 +383,7 @@ function(_postInputBoxObject, _postLabelObject, _viewBody)
 				for index, player in ipairs(controller.assigned_players[mark])
 				do
 					--if there was color applied to player. shitty server doesn't allow colored text in chat
-					if strlen(player) > 10
+					if strsub(player, 4) == "|cff"
 					then
 						player = strsub(player, 11, strlen(player));
 					end
@@ -394,7 +394,7 @@ function(_postInputBoxObject, _postLabelObject, _viewBody)
 
 				--if color applied to mark. shitty server doesn't allow colored text in chat
 				local out_mark = mark;
-				if strlen(out_mark) > 10
+				if strsub(mark, 4) == "|cff"
 				then
 					out_mark = strsub(out_mark, 11, strlen(out_mark));
 				end
